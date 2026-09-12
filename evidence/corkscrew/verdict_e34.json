@@ -1,0 +1,49 @@
+{
+  "experiment": "E34 morph descent 9→7(prereg_e34_morph.json @88d622d 凍結)",
+  "start_state": "st9(起點對決勝者 85.77 vs st9s2 81.70 @88d622d)",
+  "bf16_ifeval_strict": 0.9094269870609981,
+  "bf16_humaneval": 0.957317,
+  "criteria": {
+    "M1_main": {
+      "verdict": "PASS",
+      "e34_7m_ifeval_strict": 0.8650646950092421,
+      "e34_7m_ifeval_instruction": 0.8932853717026379,
+      "floor_090_bf16": 0.8184842883548983,
+      "delta_pp": 4.658,
+      "retention_vs_bf16": 0.9512,
+      "reference_coords": {
+        "linear_law_from_scratch_pct": 84.0,
+        "e33_9e_endpoint": 0.88909426987061,
+        "st9_window_stage_hard": 0.8576709796672828,
+        "note": "7元 終點高於 9元 窗態硬導出;離 9元 管線終點僅 −2.40pp;超線性律 from-scratch 參考 ~2.5pp。無同代從頭 7元 對照臂(D3 裁撤),判讀連同預算聲明。"
+      }
+    },
+    "M2_cliff": {
+      "verdict": "PASS",
+      "e34_7m_humaneval": 0.835366,
+      "retention": 0.8726,
+      "floor_085_bf16": 0.813719,
+      "reference": {"e28_qat_9e_humaneval": 0.896341,
+        "note": "9元→7元 humaneval 89.63→83.54(−6.1pp),劣化大於 IFEval 的 −2.4pp,與四科錨定『humaneval 最敏感』一致,但未過懸崖線"}
+    },
+    "M3_mechanism": {
+      "verdict": "FAIL",
+      "basin_n": 955397214,
+      "to_half": 0.8413, "to_zero": 0.1587, "to_other": 0.0,
+      "null_projection": {"to_half": 0.818, "to_zero": 0.182},
+      "abs_delta_half": 0.0233, "threshold": 0.03,
+      "note": "方向偏驅趕(多推 ±0.5 少送 0)但幅度 2.33pp < 3pp 凍結門檻——流向統計上不足以區分『驅趕』與『慢動作投影+訓練修復』。M3 獨立於 M1:降元本身成功,機制敘事未證。"
+    },
+    "M4_stability": {
+      "verdict": "PASS",
+      "n_nonfinite": 0,
+      "gdisc1_median": 0.0862, "gdisc1_max": 0.1202,
+      "threshold_2x_e33_median": 0.1538,
+      "banding_monitor": "7/31 窗末>首×1.5(監測揭露不裁決;E33 同判準 31/31,加長平台+走廊改變 loss 形狀)"
+    },
+    "budget_statement": "morph 臂 = 9元 訓練(沉沒復用)+ sweep 54min + e2e ~2.4h + 導出裁判 ~0.5h + humaneval ~0.2h;無同預算對照臂。"
+  },
+  "overall": "M1/M2/M4 PASS,M3 FAIL 照實——訓練驅趕降元路線首戰成功(7元 IFEval 86.51 / humaneval 83.54,雙科過關),但『流向異於投影』的機制判準未達標。",
+  "next_rungs": "7→5 無 c 碰撞點(需 threshold-merge)或 7→3 跳級(c: 0.5→0 單走廊)為開放問題;5→3 走 c*₅→0。",
+  "timestamp": "2026-08-12T08:40+08:00"
+}

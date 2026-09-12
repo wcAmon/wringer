@@ -1,0 +1,12 @@
+{
+ "tag": "g3",
+ "grid": 3,
+ "c": 0.6,
+ "n_calib": 128,
+ "seed": 20260806,
+ "zerotrain_val_ce": 2.8080677837133408,
+ "t1_nonzero": 0.5812,
+ "t2_nonzero": 0.0,
+ "runtime_s": 248.8,
+ "timestamp": "2026-08-09T22:18:50.269641"
+}

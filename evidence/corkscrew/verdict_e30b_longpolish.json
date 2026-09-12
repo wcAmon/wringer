@@ -1,0 +1,19 @@
+{
+ "name": "verdict_e30b_longpolish",
+ "date": "2026-08-10",
+ "prereg": "prereg_e30b_longpolish.json(@1146bf4,GPU 前凍結)",
+ "arm_official_ifeval": {
+  "st3_lp300": {"strict_prompt": 0.30684, "strict_inst": 0.43165, "loose_prompt": 0.34750, "generation_s": 886.6}
+ },
+ "retention": 0.3374,
+ "monitor_only": {"kd_loss": "0.696 → 末段均值 ~0.28(有界震盪,無發散)", "post_polish_val_ce": "2.879 → 2.044——收在 bf16 錨 CE 2.003 附近,未穿透;對照 pol50(bf16 teacher)穿到 1.759 ⇒ teacher 選擇決定 CE 收斂終點"},
+ "tests": {
+  "U1": {"verdict": "PASS", "evidence": "KD loss 有限且下降(kd_log 300 筆入帳)"},
+  "U2": {"verdict": "PASS", "evidence": "strict 30.68 > st3_pol50 27.54(+3.14)"},
+  "U3": {"verdict": "PASS_LOW_EDGE", "evidence": "保留 33.7%,壓帶下緣 [33%, 60%]——過帶但僅險過"},
+  "U4": {"verdict": "PASS", "evidence": "生成 886.6s < 968.8s(損傷探針同向續恢復)"}
+ },
+ "marginal_analysis": "配方整體升級(teacher 88.54 取代 bf16 + steps 50→300 = 6×)只買到 +3.14 strict;對照 0→50 步買到 +6.65。邊際收益折半以上,α-only(200 張量)容量天花板實錘——輸出對齊的自由度不足以修復 T 指派本身的損傷(flip 8.81% 黏死爛 init 是根因,見 verdict_e30_t3 T4)。",
+ "branch_decision": "走 gain_but_short 分岔:α-only 天花板實錘 → 持續訓練戰役另立(agentic 混合 + KD 錨,載體升級 LoRA/全參,防 proxy #5;需新 prereg 才開 GPU)。bf16-teacher 消融不觸發(U2 過,e28_qat teacher 無異常)。",
+ "runtime": {"polish300_s": "~1130", "export_s": "~200", "judge_s": 886.6, "wall": "03:08→03:47 CST"}
+}

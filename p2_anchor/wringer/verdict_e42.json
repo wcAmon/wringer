@@ -1,0 +1,37 @@
+{
+ "experiment": "E42 規模化第二級(語料 2.1×+code tilt 52.5%+fill 7500+e2e 1200 捆綁)",
+ "prereg": "prereg_e42.json FROZEN @fb82743;逐字執行,無 amendment",
+ "chain": "cal6 24,000 列(@a7b5b2b)→ fill res42 r512 7500 步(19:27-05:04,KD 尾 0.087-0.115)→ A 三科 → 凍結排水 st42(E41 臂1 配置逐字)→ e2e FKL 1200 → export e42_3g --verify → B 三科",
+ "scores": {
+  "A_e42a": {"ifeval": 0.7874, "humaneval": 0.5915, "gsm8k": 0.8370},
+  "B_e42_3g": {"ifeval": 0.6359, "humaneval": 0.4329, "gsm8k": 0.7710},
+  "baseline_e41_g16": {"ifeval": 0.7227, "humaneval": 0.3598, "gsm8k": 0.7817},
+  "ref_e40_A": {"ifeval": 0.7431, "humaneval": 0.3720, "gsm8k": 0.8112}
+ },
+ "verdicts": {
+  "G1_champion": "FAIL——B-IFEval 63.59 < 72.27;E41 e41_g16 衛冕,冠軍譜系不變 44.55→50.28→54.90→70.43→72.27",
+  "H_scale2": "淨負——ΔIF = −8.68pp < −1;規模化第二級捆綁在 IFEval 主判上倒退",
+  "R_he_floor": "PASS+code 軸新高——B-he 43.29 ≥ 地板 34.98 且 > 35.98;低元系 humaneval 史上新高(前高 35.98,+7.31pp)",
+  "R_rho": "分科保留率:ρ_if 0.808(E40 同排水配方對 res40 為 0.948-0.973)、ρ_he 0.732、ρ_gs 0.921;gsm8k 77.10 無地板照記(−1.07)",
+  "R6_stability": "PASS——gdisc max 0.0861 ≤ 0.1724、31/31 finalize、nonfinite 0、holdout−train 末值 gap ≤ 1.8e-5 無擴口"
+ },
+ "ceiling_record": "A 點三科全史上新高:IFEval 78.74(E40 A 74.31,+4.43)、humaneval 59.15(E40 A 37.20,+21.95)、gsm8k 83.70(+2.58)——儲存軸大幅可修,res42 水庫為在案資產",
+ "attribution": {
+  "bundle_honest": "四變因捆綁(語料 2.1×/tilt 52.5%/fill 7500/e2e 1200),依 prereg 不回改;歸因走 E42b 拆軸",
+  "s1_drain_throughput": "主嫌:天花板越高、固定排水管越漏——A−B 掉 15.15pp,ρ_if 0.808 vs E41 對 res40 的 0.973;E38 吞吐約束律(ρ₂ 0.485,r256 接不住 50.65)之溫和重演:E41 臂1 排水配方是對 res40(A 74.31)校準的,對 res42(A 78.74)欠口徑",
+  "s2_tilt_dilution": "共犯:分科解耦定律(E38)劑量反應雙面顯形——code 52.5% 使 he 天花板 +21.95、B-he +7.31 新高;同時 ifshape 配比壓至 15.4%,IFEval 端 fill/e2e 訊號被稀釋",
+  "s3_e2e_share_unknown": "A→B 損失中 drain 段與 e2e 段分帳未拆(st42 未 e2e 態未評);E35-C 曾證 e2e +11.27pp,本輪 e2e 是否反向待 E42b 拆",
+  "proxy_note": "e2e val CE 1.6023→1.6042 微升與官方 B 大跌同向,但幅度完全不成比例(+0.0019 CE vs −8.68pp)——CE 對災難不敏感,維持 monitor-only 紀律;t_flip 4e-06,碼分佈第四度凍結,損失全在 α 連續軸"
+ },
+ "guard_tier": "未觸發(G1 FAIL;IFBench/LCB-V6 依 prereg 只在冠軍交接時跑)",
+ "next_ladder": "prereg FAIL 分支=E42b 拆軸消融(語料/步數/tilt 三因子)。廉價優先序候選(待用戶裁):(a)res42 重排水臂——不重蓄水,只調排水口徑(gsteps/W_max/drain calib 規模)直取 s1,~7h/臂;(b)st42 免 e2e export 補評——拆 drain/e2e 分帳,~2h,直取 s3;(c)tilt 回撥臂(code 35% 均衡版語料重蓄)直取 s2,最貴 ~20h",
+ "artifacts": {
+  "corpus": "E42_TRAIN_MANIFEST.json sha 8cb8dfbf(@a7b5b2b)",
+  "fill": "exports/e42_A + a1eval/*_e42a",
+  "drain": "train_st42.json",
+  "e2e": "train_st42_e2e.json(pre/post CE 1.6023/1.6042)",
+  "export": "exports/e42_3g(verify PASS)+ a1eval/*_e42_3g",
+  "champion_state": "不變:qs_st41g_e2e / exports/e41_g16"
+ },
+ "date": "2026-08-17"
+}

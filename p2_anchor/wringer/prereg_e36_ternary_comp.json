@@ -1,0 +1,56 @@
+{
+ "experiment": "E36 7→3 全組合:合併即補償(error-feedback collapse)+ 移動老師自蒸餾鏈",
+ "status": "FROZEN",
+ "smoke_result": "GPU smoke PASS(08-12 20:3x):三閘全過——①4ep 走廊[0,3] 訓練+comp 事件+collapse+extract exit 0;②斷言塊 exit 0(grid=3/c=0/T2≡0 落盤、comp_events≥2、含 Δc>0 活事件、teacher_drift 有限、morph3_flow/logit_c_final/loss_holdout 欄位齊);③resume 3元 材化 resume-skip ✓。表面債:smoke 腳本 stdout 數值被 \\r 進度流吞(E35 同款),正式鏈以 train_st3c.json 為記錄",
+ "user_directive_final": "用戶 08-12 晚裁 B:E36 照本設計凍結發射;水庫 LoRA(量化後旁路 γ 排水)另行討論,候選 E37",
+ "user_directive": "用戶 08-12 三裁:①C 歸因補測先跑;②一次全組合,成功再歸因(失敗就另尋路徑);③戰場 7→3",
+ "hypothesis": "E35 失敗歸因=KD-to-bf16 使靜態投影成為局部最優(終碼 96.3% 即投影、logit_c 中位 0.73 合併阻力),recruitment 需要跨權重耦合更新而逐權重梯度無此通道。兩機制補上:A. 合併即補償——把 7→3 視為 c·T₂ 平面的結構化剪枝,每次 c 遞減用 H=XXᵀ 驅動的貪婪整格跳躍把失去的功能重分配到其他權重(0 胞→±1 胞=顯式 recruitment);B. 移動老師——窗目標由 bf16 改為 λ 混合『自己上一個 c 刻度的硬模式輸出』(BitNet 形式錨定,用戶案的窗級連續版),吸引子隨走廊移動而非固定在投影",
+ "math": {
+  "dW_identity": "W_hard(c₂)−W_hard(c₁) = (c₂−c₁)·α⊙T₂(k2 表示恆等式)= 走廊增量的理論來源與事件跳過閘(Δc_module ≤ 1e-4 免解;逐模組實測,logit_c 調製,禁用排程名義值)",
+  "R_semantics": "CPU 檢②實測裁定:逐事件 Δc 切片殘差(每權重 ~0.1α)永遠低於整格步 α 的增益判準,solver 零翻轉——殘差改為直接量測總虧欠 R = W_fp − W_hard(當下,硬指派含 dθ,LoRA/comp 經 u 已反映)。性質:①走廊累積天然入帳(c 滑越多虧欠越大,翻轉逐事件變划算);②免記帳無雙重計算(梯度已修部分反映在 W_hard);③防翻覆(逆轉淨增益翻轉的增益必為負);④機制升格為貪婪 H 引導的向 fp 再量化(GPTQ 全域選點版)+與訓練交錯",
+  "H_semantics": "逐模組輸入二階矩 H = Σ xxᵀ(K×K);重建誤差 ‖ΔW·X‖² = Tr(ΔW·H·ΔWᵀ),H 即該損失對權重的 Hessian;非對角 = 輸入通道相關性 = 『誰能替誰代班』地圖",
+  "degenerate_guard": "無約束補償是退化解:潛空間全額回填只是把 ridge u 推回原位,累積至 c=0 時 u 停在門檻 0.5 刀口上。補償必須限制為『異地整格跳躍』——用其他權重的 ±α 步重現 R 的功能,禁止原地回填",
+  "flip_score": "單權重 (m,k) 移動 δ 的目標變化 Δobj = δ²·H_kk − 2δ·(R·H)[m,k];取 δ = ±α[m,blk](整格,號向 (RH)[m,k]),僅收 Δobj<0(淨增益)之翻轉;R·H 為單一 matmul,GPU 上逐模組 ms 級",
+  "landing": "翻轉以 comp 潛空間位移實現:comp[m,k] += α·(target_center − u_cur),u 落在目標格胞中心(硬投影穩定,非刀口);target_center 由 grid_from_c(7, c_now) 取胞心",
+  "error_feedback": "貪婪 3 輪:每輪正增益翻轉候選按增益排序,選擇集大小走階梯回退(k=cap/rounds 封頂 → k/2 → … → 1,逐一算聯合 obj,取實降最多者;無改善即停)——CPU 檢②實測裁定:獨立評分批次翻轉在強相關欄上聯合超加性超衝(obj 116→881),單調性必須由構造保證非假設;R ← R − ΔW_applied 後重算 R·H 再選(GPTQ 式殘差回饋);未吸收殘差交給梯度(LoRA/logit/dθ 平滑吸收小數部分)"
+ },
+ "design": {
+  "base": "課程與 E35 prereg 全同(60ep/win2/stride1/gamma0.9/plateau0.62/s2.0/走廊[3,33]/learn-theta/holdout0.05/cal1 sweep/cal2 e2e600);僅疊加兩機制",
+  "comp_events": "走廊內每 5 epoch 一事件 ∪ {morph_hi−1}:ep 8,13,18,23,28,32(6 事件;末事件必在 collapse 前一步——m=1 後 T₂≡0,恆等式讀不到殘段 Δc;ep32 後殘餘 Δc≈0.017·α 交給梯度);另 ep3 老師初始化事件(僅刷新 Y_self,Δc=0 無 comp);每事件逐模組:讀實測 Δc → 算 R(T₂ 取當下硬指派,含 dθ)→ 鮮 H(與老師刷新同一趟前傳掛 hook 累積)→ 貪婪翻轉 → 寫 comp;Δc≤1e-4 者跳過(窗重疊已 collapse 模組天然免除)",
+  "eligibility": "可翻集合:u 在 0 胞內部者可跳 ±1(recruit)、u 在 ±1/±(1+c) 胞者可跳鄰胞(release);安全封頂:每模組每事件 ≤3% 權重",
+  "teacher": "每事件(含走廊起點 ep3)以硬模式(部署形態)前傳全訓練批,得 Y_self;混合損失 loss = (1−λ)·huber(yh,Y_fp) + λ·huber(yh,Y_self)",
+  "lambda_schedule": "λ: ep<3 = 0 → 線性升至 0.6 @ep8 → 平台 0.6 至 ep33 → 線性降回 0 @ep40 → STE 尾段 0(收尾重錨 bf16,防自蒸餾鏈誤差累積)",
+  "single_pass_economy": "老師刷新與 H 累積共用同一趟 no-grad 前傳(每事件 ≈1/3 epoch 成本)"
+ },
+ "run_tag": "st3c;鏈:sweep(st7m→st3c)→ e2e_soft(--tag st3c_e2e --steps 600 --batch 8 --data cal2)→ export exports/e36_3m --verify → 官方 IFEval + humaneval",
+ "run_cmd": "PYTHONPATH=. .venv/bin/python -m p2_anchor.corkscrew.train_st --grid 7 --tag st3c --state-tag st7m --epochs 60 --win 2 --stride 1 --gamma 0.9 --plateau-frac 0.62 --s-plateau 2.0 --morph-to 3 --morph-lo 3 --morph-hi 33 --learn-theta --holdout-frac 0.05 --comp --resume",
+ "criteria": {
+  "N1_survival": "官方 IFEval strict(e36_3m)> 0.375(E31 e2e 35.49 + 2pp;同 E35 M1 線)→ 機制路線存續",
+  "N1plus_champion": "≥ 0.4455(E32 現任冠軍)→ 3元 新冠軍,路線勝出",
+  "N2_record": "humaneval 照跑照記不設門檻(對照 E35 10.98)",
+  "N3_measurement_duty": "必存:①逐事件 comp log{flips, absorb_ratio=1−‖R_after‖_H/‖R_before‖_H, teacher_drift=huber(Y_self,Y_fp)};②morph3_flow null_flip_frac(機制若有效應 ≫ E35 的 3.7%);③logit_c_final;④loss+holdout 曲線;⑤ridge_traj_to_one",
+  "N4_stability": "gdisc1 median ≤ 0.1724 且 nonfinite=0(同 E35)",
+  "disposition": "用戶預裁:N1 PASS(成功)→ 後續歸因消融(補償-only / 老師-only)再裁;N1 FAIL(失敗)→ 不再加碼本路線,另尋路徑(候選:回 E32 配方線 B)"
+ },
+ "anchors": {
+  "bf16": 0.90943, "e35_corridor_e2e": 0.28651, "e31_gptq_zt": 0.28651,
+  "e31_gptq_e2e": 0.3549, "e32_e2e_3gon_best": 0.4455,
+  "e35_null_flip_frac": 0.0369, "e35_logit_c_median": 0.728,
+  "e35c_noe2e": 0.17375,
+  "e35c_reading": "e2e 零貢獻前提否證:e2e 對走廊態 +11.27pp(連續軸修復,生成 3188.9s→1053.4s 行為簽名同證);28.65≡投影臂改讀為碼天花板飽和;負資產兩階段成立(17.38<28.65、28.65<35.49);E36 前提更強——分數主宰權在碼軸,補償機制正是對碼下手"
+ },
+ "budget_statement": "sweep ~95–110min(E35 85min + 6事件×~3s/窗 + 老師前傳)+ e2e ~85min + export/裁判 ~50min ≈ 4h;GPU smoke 於 E35-C 鏈收卷後(GPU 讓渡)",
+ "engineering_plan": {
+  "stq.py": "STQParam 加 comp buffer(fp32,非訓練,延遲 init):w_lat = W + comp + BA/r;extract/forward 自動吸收,部署形態不變",
+  "comp.py": "新模組:H hook 累積器(逐模組輸入二階矩,與老師前傳共趟)+ 貪婪翻轉 solver(flip_score/landing/error_feedback 如 math 節)",
+  "train_st.py": "事件排程(走廊內每 --comp-every epoch)+ λ 混合損失 + Y_self 刷新 + 逐事件 log;新旗標 --comp --comp-every 5 --comp-rounds 3 --comp-cap 0.03 --teacher-lambda 0.6(全部預設關,舊行為逐位不變)"
+ },
+ "cpu_checks": [
+  "①δW 恆等式:toy 張量上 W_hard(c₂)−W_hard(c₁) ≡ (c₂−c₁)·α⊙T₂ 逐位;corridor 逐模組 c 讀值與 set_m 排程一致",
+  "②solver 健全性:合成相關輸入 toy 上 absorb_ratio 逐輪單調升、翻轉落胞心、硬投影往返穩定(extract 復現預期碼)、H-目標值優於零補償基線",
+  "③comp 生命週期:STQParam forward/extract/collapse 全程 comp 被吸收,extract w_hard ≡ k2_weight(T1,T2,α,c) 逐位;--comp 關閉時與現行為逐位一致"
+ ],
+ "cpu_checks_result": "PASS(08-12 17:3x,全 CPU):①δW 恆等式逐位+corridor 讀值一致;②solver toy(6 donor 欄 0.45 + 閒置欄 0.02 共同因子相關)obj 116.36→40.71(absorb 65%,flips=3 含 recruit,逐輪單調)、異胞防護/落胞心/硬投影穩定;③extract≡k2_weight、collapse 後 comp 吸收、旗標關 comp=None、comp=0 前向逐位等價。兩項機制級發現已回寫設計:R 升級為總虧欠直接量測(R_semantics)、選擇集階梯回退(error_feedback)",
+ "freeze_condition": "CPU 三檢 PASS ✓ + GPU smoke(--smoke --comp:4ep 走廊[0,3],≥1 個 Δc>0 comp 事件 + 老師刷新 + resume)PASS → status: FROZEN → 上機",
+ "timestamp": "2026-08-12T17:05+08:00"
+}

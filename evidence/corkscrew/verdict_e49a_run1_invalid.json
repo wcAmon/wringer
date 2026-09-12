@@ -1,0 +1,16 @@
+{
+ "experiment": "E49-a run1:判定無效(劑量違規)——非混料裁決",
+ "date": "2026-08-24",
+ "invalidation": {
+  "root_cause": "鏈命令漏帶 --plateau-every → res_fill 預設 300 生效,蓄水 300/7500 步(4% 劑量)被 plateau 判停;res42 原配方顯式 plateau_every=1e9 跑滿——『逐字繼承』執行違規,執行者疏失",
+  "instrument_note": "plateau 判停以 val CE 為據,而 val CE 實際變差(1.6042→1.6055)仍判『收斂』——E38 amendment_1『plateau 判停=儀器故障(第十型)』原樣重演;res_fill 預設值本身是已知壞機制",
+  "discipline": "run1 三科數字不得用於混料裁決;唯一合法讀數=缺水態行為法證"
+ },
+ "run1_numbers_forensic_only": {
+  "scores": {"if": 72.46, "he": 38.41, "gs": 78.77, "A_comp": 0.6706},
+  "he_channel": "空 28.7pp/真錯 32.9pp/非空通過率 53.8%(vs e42a 滿水 72.9%)=缺水壓的是『答對率』不是『作答率』;空回應率與滿水態同帶=思考失律不隨水位變化的旁證",
+  "artifacts": "eval 卷宗改名 *_e49a_dose300_A 留檔;fill_res49a_dose300.json 留檔;res_res49a/exports 已清"
+ },
+ "action": "run2 即發:同鏈同單變因,補 --plateau-every 1000000000;7500 步 ~12h → A 點三科;stage_A 判準不變",
+ "prereg": "prereg_e49_draft FROZEN;run1 不記為 stage_A 結果"
+}

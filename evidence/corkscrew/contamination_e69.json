@@ -1,0 +1,608 @@
+{
+ "corpus": {
+  "bank": {
+   "docs": 11192,
+   "word_tokens": 3114257,
+   "ngrams8": 2607662
+  },
+  "calib": {
+   "docs": 384,
+   "word_tokens": 4569921,
+   "ngrams8": 3151244
+  }
+ },
+ "tables": {
+  "bank|ifeval:prompt": {
+   "n": 541,
+   "hit13": 4,
+   "hit13_frac": 0.0074,
+   "max_run": 14,
+   "mean_run": 2.33,
+   "run>=13": 4,
+   "run>=25": 0,
+   "run>=50": 0,
+   "run>=100": 0
+  },
+  "bank|humaneval:prompt": {
+   "n": 164,
+   "hit13": 55,
+   "hit13_frac": 0.3354,
+   "max_run": 41,
+   "mean_run": 10.03,
+   "run>=13": 55,
+   "run>=25": 2,
+   "run>=50": 0,
+   "run>=100": 0
+  },
+  "bank|humaneval:canonical_solution": {
+   "n": 164,
+   "hit13": 31,
+   "hit13_frac": 0.189,
+   "max_run": 37,
+   "mean_run": 7.04,
+   "run>=13": 31,
+   "run>=25": 4,
+   "run>=50": 0,
+   "run>=100": 0
+  },
+  "bank|humaneval:test": {
+   "n": 164,
+   "hit13": 24,
+   "hit13_frac": 0.1463,
+   "max_run": 42,
+   "mean_run": 6.02,
+   "run>=13": 24,
+   "run>=25": 7,
+   "run>=50": 0,
+   "run>=100": 0
+  },
+  "bank|gsm8k:question": {
+   "n": 1319,
+   "hit13": 0,
+   "hit13_frac": 0.0,
+   "max_run": 12,
+   "mean_run": 0.44,
+   "run>=13": 0,
+   "run>=25": 0,
+   "run>=50": 0,
+   "run>=100": 0
+  },
+  "bank|gsm8k:answer": {
+   "n": 1319,
+   "hit13": 1,
+   "hit13_frac": 0.0008,
+   "max_run": 14,
+   "mean_run": 0.53,
+   "run>=13": 1,
+   "run>=25": 0,
+   "run>=50": 0,
+   "run>=100": 0
+  },
+  "calib|ifeval:prompt": {
+   "n": 541,
+   "hit13": 1,
+   "hit13_frac": 0.0018,
+   "max_run": 13,
+   "mean_run": 1.43,
+   "run>=13": 1,
+   "run>=25": 0,
+   "run>=50": 0,
+   "run>=100": 0
+  },
+  "calib|humaneval:prompt": {
+   "n": 164,
+   "hit13": 33,
+   "hit13_frac": 0.2012,
+   "max_run": 25,
+   "mean_run": 8.23,
+   "run>=13": 33,
+   "run>=25": 1,
+   "run>=50": 0,
+   "run>=100": 0
+  },
+  "calib|humaneval:canonical_solution": {
+   "n": 164,
+   "hit13": 19,
+   "hit13_frac": 0.1159,
+   "max_run": 29,
+   "mean_run": 4.91,
+   "run>=13": 19,
+   "run>=25": 1,
+   "run>=50": 0,
+   "run>=100": 0
+  },
+  "calib|humaneval:test": {
+   "n": 164,
+   "hit13": 13,
+   "hit13_frac": 0.0793,
+   "max_run": 42,
+   "mean_run": 5.24,
+   "run>=13": 13,
+   "run>=25": 3,
+   "run>=50": 0,
+   "run>=100": 0
+  },
+  "calib|gsm8k:question": {
+   "n": 1319,
+   "hit13": 0,
+   "hit13_frac": 0.0,
+   "max_run": 10,
+   "mean_run": 0.27,
+   "run>=13": 0,
+   "run>=25": 0,
+   "run>=50": 0,
+   "run>=100": 0
+  },
+  "calib|gsm8k:answer": {
+   "n": 1319,
+   "hit13": 1,
+   "hit13_frac": 0.0008,
+   "max_run": 13,
+   "mean_run": 0.2,
+   "run>=13": 1,
+   "run>=25": 0,
+   "run>=50": 0,
+   "run>=100": 0
+  }
+ },
+ "examples": {
+  "bank|ifeval:prompt": [
+   {
+    "id": "2704",
+    "run": 14,
+    "src": "bank:ifshape:ifshape-002083",
+    "snippet": "write a haiku about foolish behavior in the form of a question , for an audience of young readers . it should include the topic of not studying . give exactly two different responses , separated by 6 asterisk symbols"
+   },
+   {
+    "id": "2683",
+    "run": 13,
+    "src": "bank:ifshape:ifshape-002083",
+    "snippet": "i ' ve got a collection of military insignia that i ' d like to get rid of , but i don ' t know how . can you help me ? give exactly two different responses , separating them"
+   },
+   {
+    "id": "322",
+    "run": 13,
+    "src": "bank:ifshape:ifshape-002083",
+    "snippet": "who is joe biden and donald trump ' s national security advisors ? responses should be separated by 6 asterisk symbols ( * * * * * * ) . in other words , your output should look like :"
+   },
+   {
+    "id": "3324",
+    "run": 13,
+    "src": "bank:ifshape:ifshape-002083",
+    "snippet": "write two versions of itinerary for a 7 day trip to hawaii , designed for college students . separate the two versions with 6 asterisk symbols ( * * * * * * ) . each version must have 7"
+   }
+  ],
+  "bank|humaneval:prompt": [
+   {
+    "id": "HumanEval/115",
+    "run": 41,
+    "src": "bank:code:code-001491",
+    "snippet": "def max_fill ( grid , capacity ) : import math \" \" \" you are given a rectangular grid of wells . each row represents a single well , and each 1 in a row represents a single unit of"
+   },
+   {
+    "id": "HumanEval/129",
+    "run": 28,
+    "src": "bank:code:code-000037",
+    "snippet": "def minpath ( grid , k ) : \" \" \" given a grid with n rows and n columns ( n > = 2 ) and a positive integer k , each cell of the grid contains a value"
+   },
+   {
+    "id": "HumanEval/74",
+    "run": 24,
+    "src": "bank:code:code-002155",
+    "snippet": "def total_match ( lst1 , lst2 ) : ' ' ' write a function that accepts two lists of strings and returns the list that has total number of chars in the all strings of the list less than the"
+   },
+   {
+    "id": "HumanEval/116",
+    "run": 22,
+    "src": "bank:code:code-000019",
+    "snippet": "def sort_array ( arr ) : \" \" \" in this kata , you have to sort an array of non - negative integers according to number of ones in their binary representation in ascending order . for similar number"
+   },
+   {
+    "id": "HumanEval/69",
+    "run": 21,
+    "src": "bank:code:code-000045",
+    "snippet": "def search ( lst ) : ' ' ' you are given a non - empty list of positive integers . return the greatest integer that is greater than zero , and has a frequency greater than or equal to"
+   },
+   {
+    "id": "HumanEval/110",
+    "run": 21,
+    "src": "bank:code:code-000004",
+    "snippet": "def exchange ( lst1 , lst2 ) : \" \" \" in this problem , you will implement a function that takes two lists of numbers , and determines whether it is possible to perform an exchange of elements between"
+   },
+   {
+    "id": "HumanEval/26",
+    "run": 20,
+    "src": "bank:code:code-000004",
+    "snippet": "from typing import list def remove_duplicates ( numbers : list [ int ] ) - > list [ int ] : \" \" \" from a list of integers , remove all elements that occur more than once . keep"
+   },
+   {
+    "id": "HumanEval/64",
+    "run": 20,
+    "src": "bank:code:code-000574",
+    "snippet": "fix = \" \" \" add more test cases . \" \" \" def vowels_count ( s ) : \" \" \" write a function vowels_count which takes a string representing a word as input and returns the number of"
+   },
+   {
+    "id": "HumanEval/9",
+    "run": 19,
+    "src": "bank:code:code-000497",
+    "snippet": "from typing import list , tuple def rolling_max ( numbers : list [ int ] ) - > list [ int ] : \" \" \" from a given list of integers , generate a list of rolling maximum element"
+   },
+   {
+    "id": "HumanEval/33",
+    "run": 19,
+    "src": "bank:code:code-000029",
+    "snippet": "def sort_third ( l : list ) : \" \" \" this function takes a list l and returns a list l ' such that l ' is identical to l in the indicies that are not divisible by three"
+   }
+  ],
+  "bank|humaneval:canonical_solution": [
+   {
+    "id": "HumanEval/147",
+    "run": 37,
+    "src": "bank:code:code-000010",
+    "snippet": "a = [ i * i - i + 1 for i in range ( 1 , n + 1 ) ] ans = [ ] for i in range ( n ) : for j in range ( i"
+   },
+   {
+    "id": "HumanEval/94",
+    "run": 32,
+    "src": "bank:code:code-000006",
+    "snippet": "def isprime ( n ) : for i in range ( 2 , int ( n * * 0 . 5 ) + 1 ) : if n % i = = 0 : return false return true maxx ="
+   },
+   {
+    "id": "HumanEval/129",
+    "run": 30,
+    "src": "bank:code:code-001933",
+    "snippet": "n = len ( grid ) val = n * n + 1 for i in range ( n ) : for j in range ( n ) : if grid [ i ] [ j ] = = 1"
+   },
+   {
+    "id": "HumanEval/80",
+    "run": 27,
+    "src": "bank:code:code-001095",
+    "snippet": "if len ( s ) < 3 : return false for i in range ( len ( s ) - 2 ) : if s [ i ] = = s [ i + 1 ] or s [ i"
+   },
+   {
+    "id": "HumanEval/71",
+    "run": 23,
+    "src": "bank:code:code-001428",
+    "snippet": "if a + b < = c or a + c < = b or b + c < = a : return - 1 s = ( a + b + c ) / 2 area = ( s"
+   },
+   {
+    "id": "HumanEval/106",
+    "run": 23,
+    "src": "bank:code:code-000010",
+    "snippet": "ret = [ ] for i in range ( 1 , n + 1 ) : if i % 2 = = 0 : x = 1 for j in range ( 1 , i + 1 ) : x"
+   },
+   {
+    "id": "HumanEval/107",
+    "run": 21,
+    "src": "bank:code:code-000042",
+    "snippet": "def is_palindrome ( n ) : return str ( n ) = = str ( n ) [ : : - 1 ] even_palindrome_count = 0 odd_palindrome_count = 0 for i in range ( 1 , n + 1 )"
+   },
+   {
+    "id": "HumanEval/130",
+    "run": 20,
+    "src": "bank:code:code-000366",
+    "snippet": "if n = = 0 : return [ 1 ] my_tri = [ 1 , 3 ] for i in range ( 2 , n + 1 ) : if i % 2 = = 0 : my_tri . append"
+   },
+   {
+    "id": "HumanEval/11",
+    "run": 17,
+    "src": "bank:code:code-000405",
+    "snippet": "def xor ( i , j ) : if i = = j : return ' 0 ' else : return ' 1 ' return ' ' . join ( xor ( x , y ) for x , y"
+   },
+   {
+    "id": "HumanEval/55",
+    "run": 17,
+    "src": "bank:code:code-000027",
+    "snippet": "if n = = 0 : return 0 if n = = 1 : return 1 return fib ( n - 1 ) + fib ( n - 2 )"
+   }
+  ],
+  "bank|humaneval:test": [
+   {
+    "id": "HumanEval/115",
+    "run": 42,
+    "src": "bank:code:code-001491",
+    "snippet": "def check ( candidate ) : # check some simple cases assert true , \" this prints if this assert fails 1 ( good for debugging ! ) \" assert candidate ( [ [ 0 , 0 , 1 ,"
+   },
+   {
+    "id": "HumanEval/129",
+    "run": 42,
+    "src": "bank:code:code-000008",
+    "snippet": "def check ( candidate ) : # check some simple cases print assert candidate ( [ [ 1 , 2 , 3 ] , [ 4 , 5 , 6 ] , [ 7 , 8 , 9 ] ]"
+   },
+   {
+    "id": "HumanEval/96",
+    "run": 41,
+    "src": "bank:code:code-003232",
+    "snippet": "def check ( candidate ) : assert candidate ( 5 ) = = [ 2 , 3 ] assert candidate ( 6 ) = = [ 2 , 3 , 5 ] assert candidate ( 7 ) = = ["
+   },
+   {
+    "id": "HumanEval/87",
+    "run": 39,
+    "src": "bank:code:code-000670",
+    "snippet": "def check ( candidate ) : # check some simple cases assert candidate ( [ [ 1 , 2 , 3 , 4 , 5 , 6 ] , [ 1 , 2 , 3 , 4 , 1 ,"
+   },
+   {
+    "id": "HumanEval/142",
+    "run": 30,
+    "src": "bank:code:code-000207",
+    "snippet": "def check ( candidate ) : # check some simple cases assert candidate ( [ 1 , 2 , 3 ] ) = = 6 assert candidate ( [ 1 , 4 , 9 ] ) = = 14 assert"
+   },
+   {
+    "id": "HumanEval/152",
+    "run": 29,
+    "src": "bank:code:code-000231",
+    "snippet": "def check ( candidate ) : # check some simple cases assert candidate ( [ 1 , 2 , 3 , 4 , 5 , 1 ] , [ 1 , 2 , 3 , 4 , 2 , -"
+   },
+   {
+    "id": "HumanEval/111",
+    "run": 26,
+    "src": "bank:code:code-000059",
+    "snippet": "def check ( candidate ) : # check some simple cases assert candidate ( ' a b b a ' ) = = { ' a ' : 2 , ' b ' : 2 } , \" this prints"
+   },
+   {
+    "id": "HumanEval/74",
+    "run": 24,
+    "src": "bank:code:code-002155",
+    "snippet": "def check ( candidate ) : # check some simple cases assert true , \" this prints if this assert fails 1 ( good for debugging ! ) \" assert candidate ( [ ] , [ ] ) = ="
+   },
+   {
+    "id": "HumanEval/110",
+    "run": 21,
+    "src": "bank:code:code-000004",
+    "snippet": "def check ( candidate ) : # check some simple cases assert candidate ( [ 1 , 2 , 3 , 4 ] , [ 1 , 2 , 3 , 4 ] ) = = \" yes \" assert"
+   },
+   {
+    "id": "HumanEval/126",
+    "run": 17,
+    "src": "bank:code:code-000004",
+    "snippet": "def check ( candidate ) : # check some simple cases assert candidate ( [ 5 ] ) = = true assert candidate ( [ 1 , 2 , 3 , 4 , 5 ] ) = = true assert"
+   }
+  ],
+  "bank|gsm8k:question": [],
+  "bank|gsm8k:answer": [
+   {
+    "id": "410",
+    "run": 14,
+    "src": "bank:math:math-004221",
+    "snippet": "taffy is buying 1 pound for $ 3 and gets 1 pound half off . so 1 / 2 off of 1 pound is $ 3 / 2 = $ 1 . 50 + $ 3 . 00 = $"
+   }
+  ],
+  "calib|ifeval:prompt": [
+   {
+    "id": "13",
+    "run": 13,
+    "src": "calib:13",
+    "snippet": "what is the history of nyc prospect park ? please wrap your entire answer in json format . you can use markdown ticks such as ` ` ` . for example : ` ` ` json { . . ."
+   }
+  ],
+  "calib|humaneval:prompt": [
+   {
+    "id": "HumanEval/129",
+    "run": 25,
+    "src": "calib:7",
+    "snippet": "def minpath ( grid , k ) : \" \" \" given a grid with n rows and n columns ( n > = 2 ) and a positive integer k , each cell of the grid contains a value"
+   },
+   {
+    "id": "HumanEval/74",
+    "run": 23,
+    "src": "calib:295",
+    "snippet": "def total_match ( lst1 , lst2 ) : ' ' ' write a function that accepts two lists of strings and returns the list that has total number of chars in the all strings of the list less than the"
+   },
+   {
+    "id": "HumanEval/78",
+    "run": 21,
+    "src": "calib:231",
+    "snippet": "def hex_key ( num ) : \" \" \" you have been tasked to write a function that receives a hexadecimal number as a string and counts the number of hexadecimal digits that are primes ( prime number , or"
+   },
+   {
+    "id": "HumanEval/33",
+    "run": 19,
+    "src": "calib:47",
+    "snippet": "def sort_third ( l : list ) : \" \" \" this function takes a list l and returns a list l ' such that l ' is identical to l in the indicies that are not divisible by three"
+   },
+   {
+    "id": "HumanEval/37",
+    "run": 19,
+    "src": "calib:47",
+    "snippet": "def sort_even ( l : list ) : \" \" \" this function takes a list l and returns a list l ' such that l ' is identical to l in the odd indicies , while its values at"
+   },
+   {
+    "id": "HumanEval/64",
+    "run": 19,
+    "src": "calib:312",
+    "snippet": "fix = \" \" \" add more test cases . \" \" \" def vowels_count ( s ) : \" \" \" write a function vowels_count which takes a string representing a word as input and returns the number of"
+   },
+   {
+    "id": "HumanEval/107",
+    "run": 19,
+    "src": "calib:113",
+    "snippet": "def even_odd_palindrome ( n ) : \" \" \" given a positive integer n , return a tuple that has the number of even and odd integer palindromes that fall within the range ( 1 , n ) , inclusive"
+   },
+   {
+    "id": "HumanEval/111",
+    "run": 19,
+    "src": "calib:105",
+    "snippet": "def histogram ( test ) : \" \" \" given a string representing a space separated lowercase letters , return a dictionary of the letter with the most repetition and containing the corresponding count . if several letters have the"
+   },
+   {
+    "id": "HumanEval/115",
+    "run": 19,
+    "src": "calib:192",
+    "snippet": "def max_fill ( grid , capacity ) : import math \" \" \" you are given a rectangular grid of wells . each row represents a single well , and each 1 in a row represents a single unit of"
+   },
+   {
+    "id": "HumanEval/9",
+    "run": 18,
+    "src": "calib:255",
+    "snippet": "from typing import list , tuple def rolling_max ( numbers : list [ int ] ) - > list [ int ] : \" \" \" from a given list of integers , generate a list of rolling maximum element"
+   }
+  ],
+  "calib|humaneval:canonical_solution": [
+   {
+    "id": "HumanEval/80",
+    "run": 29,
+    "src": "calib:280",
+    "snippet": "if len ( s ) < 3 : return false for i in range ( len ( s ) - 2 ) : if s [ i ] = = s [ i + 1 ] or s [ i"
+   },
+   {
+    "id": "HumanEval/147",
+    "run": 23,
+    "src": "calib:77",
+    "snippet": "a = [ i * i - i + 1 for i in range ( 1 , n + 1 ) ] ans = [ ] for i in range ( n ) : for j in range ( i"
+   },
+   {
+    "id": "HumanEval/107",
+    "run": 22,
+    "src": "calib:1",
+    "snippet": "def is_palindrome ( n ) : return str ( n ) = = str ( n ) [ : : - 1 ] even_palindrome_count = 0 odd_palindrome_count = 0 for i in range ( 1 , n + 1 )"
+   },
+   {
+    "id": "HumanEval/106",
+    "run": 21,
+    "src": "calib:7",
+    "snippet": "ret = [ ] for i in range ( 1 , n + 1 ) : if i % 2 = = 0 : x = 1 for j in range ( 1 , i + 1 ) : x"
+   },
+   {
+    "id": "HumanEval/130",
+    "run": 20,
+    "src": "calib:115",
+    "snippet": "if n = = 0 : return [ 1 ] my_tri = [ 1 , 3 ] for i in range ( 2 , n + 1 ) : if i % 2 = = 0 : my_tri . append"
+   },
+   {
+    "id": "HumanEval/11",
+    "run": 17,
+    "src": "calib:259",
+    "snippet": "def xor ( i , j ) : if i = = j : return ' 0 ' else : return ' 1 ' return ' ' . join ( xor ( x , y ) for x , y"
+   },
+   {
+    "id": "HumanEval/55",
+    "run": 16,
+    "src": "calib:119",
+    "snippet": "if n = = 0 : return 0 if n = = 1 : return 1 return fib ( n - 1 ) + fib ( n - 2 )"
+   },
+   {
+    "id": "HumanEval/63",
+    "run": 16,
+    "src": "calib:119",
+    "snippet": "if n = = 0 : return 0 if n = = 1 : return 0 if n = = 2 : return 1 return fibfib ( n - 1 ) + fibfib ( n - 2 ) + fibfib"
+   },
+   {
+    "id": "HumanEval/129",
+    "run": 16,
+    "src": "calib:32",
+    "snippet": "n = len ( grid ) val = n * n + 1 for i in range ( n ) : for j in range ( n ) : if grid [ i ] [ j ] = = 1"
+   },
+   {
+    "id": "HumanEval/96",
+    "run": 15,
+    "src": "calib:121",
+    "snippet": "primes = [ ] for i in range ( 2 , n ) : is_prime = true for j in range ( 2 , i ) : if i % j = = 0 : is_prime = false break if"
+   }
+  ],
+  "calib|humaneval:test": [
+   {
+    "id": "HumanEval/129",
+    "run": 42,
+    "src": "calib:7",
+    "snippet": "def check ( candidate ) : # check some simple cases print assert candidate ( [ [ 1 , 2 , 3 ] , [ 4 , 5 , 6 ] , [ 7 , 8 , 9 ] ]"
+   },
+   {
+    "id": "HumanEval/87",
+    "run": 37,
+    "src": "calib:106",
+    "snippet": "def check ( candidate ) : # check some simple cases assert candidate ( [ [ 1 , 2 , 3 , 4 , 5 , 6 ] , [ 1 , 2 , 3 , 4 , 1 ,"
+   },
+   {
+    "id": "HumanEval/152",
+    "run": 27,
+    "src": "calib:102",
+    "snippet": "def check ( candidate ) : # check some simple cases assert candidate ( [ 1 , 2 , 3 , 4 , 5 , 1 ] , [ 1 , 2 , 3 , 4 , 2 , -"
+   },
+   {
+    "id": "HumanEval/74",
+    "run": 23,
+    "src": "calib:295",
+    "snippet": "def check ( candidate ) : # check some simple cases assert true , \" this prints if this assert fails 1 ( good for debugging ! ) \" assert candidate ( [ ] , [ ] ) = ="
+   },
+   {
+    "id": "HumanEval/145",
+    "run": 21,
+    "src": "calib:27",
+    "snippet": "def check ( candidate ) : # check some simple cases assert candidate ( [ 1 , 11 , - 1 , - 11 , - 12 ] ) = = [ - 1 , - 11 , 1 ,"
+   },
+   {
+    "id": "HumanEval/142",
+    "run": 20,
+    "src": "calib:192",
+    "snippet": "def check ( candidate ) : # check some simple cases assert candidate ( [ 1 , 2 , 3 ] ) = = 6 assert candidate ( [ 1 , 4 , 9 ] ) = = 14 assert"
+   },
+   {
+    "id": "HumanEval/115",
+    "run": 19,
+    "src": "calib:192",
+    "snippet": "def check ( candidate ) : # check some simple cases assert true , \" this prints if this assert fails 1 ( good for debugging ! ) \" assert candidate ( [ [ 0 , 0 , 1 ,"
+   },
+   {
+    "id": "HumanEval/70",
+    "run": 18,
+    "src": "calib:27",
+    "snippet": "def check ( candidate ) : # check some simple cases assert candidate ( [ 1 , 2 , 3 , 4 ] ) = = [ 1 , 4 , 2 , 3 ] assert candidate ( [ 5"
+   },
+   {
+    "id": "HumanEval/111",
+    "run": 18,
+    "src": "calib:105",
+    "snippet": "def check ( candidate ) : # check some simple cases assert candidate ( ' a b b a ' ) = = { ' a ' : 2 , ' b ' : 2 } , \" this prints"
+   },
+   {
+    "id": "HumanEval/126",
+    "run": 16,
+    "src": "calib:27",
+    "snippet": "def check ( candidate ) : # check some simple cases assert candidate ( [ 5 ] ) = = true assert candidate ( [ 1 , 2 , 3 , 4 , 5 ] ) = = true assert"
+   }
+  ],
+  "calib|gsm8k:question": [],
+  "calib|gsm8k:answer": [
+   {
+    "id": "410",
+    "run": 13,
+    "src": "calib:34",
+    "snippet": "taffy is buying 1 pound for $ 3 and gets 1 pound half off . so 1 / 2 off of 1 pound is $ 3 / 2 = $ 1 . 50 + $ 3 . 00 = $"
+   }
+  ]
+ },
+ "he_def": {
+  "bank": {
+   "n": 18,
+   "ids": [
+    "HumanEval/10",
+    "HumanEval/25",
+    "HumanEval/31",
+    "HumanEval/45",
+    "HumanEval/48",
+    "HumanEval/53",
+    "HumanEval/55",
+    "HumanEval/69",
+    "HumanEval/71",
+    "HumanEval/84",
+    "HumanEval/85",
+    "HumanEval/93",
+    "HumanEval/106",
+    "HumanEval/126",
+    "HumanEval/127",
+    "HumanEval/132",
+    "HumanEval/152",
+    "HumanEval/161"
+   ]
+  },
+  "calib": {
+   "n": 4,
+   "ids": [
+    "HumanEval/84",
+    "HumanEval/106",
+    "HumanEval/158",
+    "HumanEval/161"
+   ]
+  }
+ }
+}

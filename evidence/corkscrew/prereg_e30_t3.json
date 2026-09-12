@@ -1,0 +1,30 @@
+{
+ "name": "e30_t3_direct",
+ "date": "2026-08-09",
+ "spec": "docs/2026-08-09-t3-campaign-plan.md(bf16→3 直攻;L2 禁級聯)",
+ "motivation": "3 元 = 壓縮天花板(單位面 1.585 b/w + α@g32 0.5 = 2.08 b/w,對 bf16 ~7.7×,單累加器核)。CAT-Q 三元在 Qwen3 族掉 8-11 點,90% 線大概率不可達——雙軌判準誠實入帳。θ 可學(零檔占比 = 三元第一敏感參數)直接進首輪配方,dθ=0 臂缺省不設(消融留 Phase 4)。",
+ "frozen_recipe": "quantize --grid 3 --tag g3(GPTQ+joint α,calib 128)→ train_st --grid 3 --state-tag g3 --learn-theta(512×2048×30ep/窗,win4/stride2,γ.8/s0 30,LoRA r64 lr 6e-4,δ_α/θ lr 3e-3,huber,clip 1.0,seed 20260806)→ polish --tag st3_pol50 --state-tag st3 --steps 50 --lr 3e-5(teacher bf16,語料 calib_train_512)",
+ "arms": {"g3_zt": "GPTQ 基線(對照)", "st3_zt": "退火零打磨", "st3_pol50": "退火+打磨"},
+ "judge": "官方 A1 框架 IFEval(vLLM,取樣 temp1.0/top_p.95/top_k20/presence1.5),分母 = 本機 bf16 錨 strict 90.94;val CE 只作監測(proxy 反轉五筆在案);裁決全量 541",
+ "criteria": {
+  "try_line": "IFEval strict 保留 ≥90%(嘗試線,非承諾)",
+  "pareto_line": "同記憶體帕累托口徑(3 元 4B ~1.2GB 權重 vs 更小 bf16 模型)——secondary,首輪僅記錄絕對分,對照模型另立 prereg"
+ },
+ "predictions": {
+  "T1": "接線:等價閘 1e-6 PASS;g3 GPTQ 可重建、val CE 有限",
+  "T2": "st3_zt 官方 IFEval > g3_zt(退火在粗網格增益更大;guava D2 同款)",
+  "T3": "st3_pol50 IFEval strict 保留 ∈ [55%, 88%](誠實寬帶;CAT-Q 三元 -8~-11 點 × A1 重 RL 後訓練更脆;過 90% 不是預設)",
+  "T4": "T 翻轉率 vs g3 ∈ [15%, 60%](3 元指派搜索空間 >> 9 元的 22.16%)",
+  "T5": "θ 可學生效:st3 各層 θ_eff 偏離中點中位數 > 0.01(否則 θ 自由度未被使用,記錄並轉 Phase 4 消融)",
+  "T6": "警報帶:窗 loss 非有限即停;末 > 首×1.5 警告(V5 帶化)"
+ },
+ "branches": {
+  "pass90": "全過 → 收官 + HF 雙形態發佈(超預期)",
+  "near(80-90)": "g=16 臂(α 開銷 +0.5 → 2.58 b/w;另立 prereg)",
+  "short(<80)": "t9 teacher 長打磨 200-400 步(t9 已過本機官方認證;另立 prereg)",
+  "T2_fail": "退火在 3 元無增益 → s0/γ 粗網格特調掃描(比照 guava D2_fail)",
+  "still_short": "持續訓練戰役另立(agentic 混合 + KD 錨;防 proxy #5 侵蝕)"
+ },
+ "squeeze_precondition": "train_st 內建入口快取引擎,等價閘 1e-6 為跑前斷言;冒煙(--smoke)先行驗接線,冒煙不裁決",
+ "disclosure": "本檔於 E30 任何正式 GPU 執行前寫死(冒煙接線驗證除外)。9 元復刻臂(E29a g=32 對齊 guava)延後至 t3 首輪之後——用戶裁定 t3 優先。"
+}

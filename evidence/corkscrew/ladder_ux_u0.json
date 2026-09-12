@@ -1,0 +1,42 @@
+{
+ "mode": "fold",
+ "state": "g9",
+ "hparams": {
+  "mode": "fold",
+  "state_tag": "g9",
+  "res_tag": "res62s2",
+  "fold_layers": "none",
+  "no_refit_others": true,
+  "target": "cross",
+  "damp": 0.01,
+  "cross_mix": 1.0,
+  "r_bits": 2,
+  "fold_block": 0,
+  "prior_lam": 0.01,
+  "t2_spec": "",
+  "alpha_block": 0,
+  "alpha_bits": 0,
+  "drop_r": false,
+  "alt": 3,
+  "n_calib": 128,
+  "calib": "evidence/p1_grouping/calib_e58r1b_traj.pt",
+  "lengths": "evidence/p1_grouping/calib_e58r1b_len.pt",
+  "batch": 4,
+  "max_layer": 31,
+  "save_tag": "ux_u0",
+  "out": "evidence/p1_grouping/corkscrew/ladder_ux_u0.json",
+  "smoke": false
+ },
+ "modules": {},
+ "ledger": {
+  "code_fixed": 3.2,
+  "code_entropy": 3.1382,
+  "alpha": 0.5,
+  "beta": 0.0,
+  "r": 0.0,
+  "weights": 3565158400,
+  "total_fixed": 3.7,
+  "total_entropy": 3.6382
+ },
+ "runtime_s": 342.1
+}

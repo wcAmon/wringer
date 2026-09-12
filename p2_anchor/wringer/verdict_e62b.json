@@ -1,0 +1,225 @@
+{
+ "experiment": "E62b — down_proj 輸出側 L 桶(列塊 128)進 comp 事件 + 梯度共訓",
+ "prereg": "p2_anchor/corkscrew/prereg_e62b.json(FROZEN @75e3a37)",
+ "date": "2026-09-05",
+ "verdict": "NEG(falsifier 觸發:ρ 0.869 < 0.873 且 he 31.71 < 33.5)⇒ L 撤;位置軸封盤;S2 用 st61c 引擎;【診斷後見】去 L 後 ρ 0.916 PASS 帶(L=訓練鷹架,推論有害),見 diagnostic_stripL",
+ "official": {
+  "anchors": {
+   "ifeval": 92.79,
+   "humaneval": 94.51,
+   "gsm8k": 95.53
+  },
+  "A4_reservoir": {
+   "comp": 0.7038,
+   "ifeval": 81.52,
+   "humaneval": 45.12,
+   "gsm8k": 72.18
+  },
+  "four_point_table": {
+   "甲(st54r→res58r1 直排)": {
+    "rho": 0.777
+   },
+   "st61b": {
+    "rho": 0.872,
+    "ifeval": 73.2,
+    "humaneval": 33.54,
+    "gsm8k": 66.57
+   },
+   "st61c": {
+    "rho": 0.889,
+    "comp": 0.626,
+    "ifeval": 75.23,
+    "humaneval": 35.37,
+    "gsm8k": 66.19,
+    "empties": {
+     "ifeval": 30,
+     "humaneval": 35,
+     "gsm8k": 65
+    }
+   },
+   "st62b": {
+    "rho": 0.869,
+    "comp": 0.6114,
+    "ifeval": 75.23,
+    "humaneval": 31.71,
+    "gsm8k": 65.73,
+    "empties": {
+     "ifeval": 39,
+     "humaneval": 31,
+     "gsm8k": 58
+    }
+   }
+  },
+  "rho_by_subject": {
+   "ifeval": 0.923,
+   "humaneval": 0.703,
+   "gsm8k": 0.911
+  },
+  "delta_vs_st61c": {
+   "ifeval": 0.0,
+   "humaneval": -3.66,
+   "gsm8k": -0.46,
+   "rho": -0.02
+  },
+  "vote_vs_st61c": "NEG(Δρ −0.020 超出票帶 ±0.016)",
+  "secondary": {
+   "rho_he>=0.75": "FAIL(0.703)",
+   "he>=35.37": "FAIL(31.71,−6/164 題)",
+   "empties": "同量級無擴口(39/31/58 vs 30/35/65)"
+  },
+  "note_ifeval_identical": "IFEval 407/541 兩臂同分,但逐題回應僅 12/541 相同=聚合層巧合,非決定論同態"
+ },
+ "mechanism_diagnostics_not_judges": {
+  "lmix_ls": {
+   "n_events": 737,
+   "gain_mean": 0.082,
+   "gain_median": 0.024,
+   "gain_range": [
+    0.0033,
+    0.7169
+   ],
+   "t_min": 1.0,
+   "t_lt1": 0,
+   "sv_floor_hits": 0,
+   "sv_min_min": 0.733
+  },
+  "L_profile": {
+   "n_modules": 32,
+   "dist_I_mean": 0.263,
+   "dist_I_range": [
+    0.215,
+    0.728
+   ],
+   "note": "L31 dist_I 0.637 越出預期帶 0.1–0.4;其餘 0.215–0.325"
+  },
+  "final_level_ratio_vs_st61c": 1.002,
+  "window_holdout_ratio_vs_st61c": "窗 0–9 =1.00;窗 10–29 0.64–0.97(均≈0.90);窗 30 1.065",
+  "tau_early_stop_windows": {
+   "st62b": 21,
+   "st61c": 19,
+   "definition": "drain_epochs<25"
+  },
+  "flips": "31 窗中 27 窗低於 st61c;重區(窗 18–30)比 0.73–0.88;net_flip 0.000428 vs 0.000491",
+  "gdisc1": "重區 15 窗連續不高於 st61c(−5%~−26%)",
+  "M_gain": "逐窗與 st61c 貼合(±0.005):L 未擠壓 M 份額",
+  "post_drain_val_ce": {
+   "st62b": 1.9329,
+   "st61c": 1.9312,
+   "note": "第 13 型,僅記錄"
+  }
+ },
+ "predictions_scored": {
+  "P1 ρ∈[0.895,0.915]": "FAIL(0.869)",
+  "P2 final_level 比 <0.85": "FAIL(1.002:水位未動)",
+  "P3 he≥36 / IF 不退>1pp": "FAIL(he 31.71)/ PASS(IF 0.00)",
+  "P4 lmix gain≥0.15、sv_hits<5%": "FAIL(0.082)/ PASS(0)",
+  "tau 預期≥22": "近乎(21 vs 19;方向寫反:L 使窗提前收斂而非增加活化)"
+ },
+ "attribution": {
+  "headline": "L 桶在局部量測全面「更好」(窗 holdout −10%、翻碼 −15%、gdisc1 −15%、τ 提前收斂)但官方 he −3.66/gs −0.46=第 14 型 proxy 失效候選:窗級前向 holdout 亦與官方脫鉤",
+  "why_L_gain_small": "探針 L_H 0.60–0.88 是對理想目標一次到位的零訓練解;in-run 的 L 從上一事件續解,每事件增量僅 2–8%(中位 2.4%)。探針對 in-run 情境第二次失準(第一次 X_H 0.927 vs in-run 1.12)",
+  "why_he_hurt": "he 是碼軸最敏感科(E58R1b he ρ 隨翻碼單調降);L 讓翻碼 −15% 卻 he −3.66=減少翻碼並未保住碼軸,反而把殘差搬進 L(int8 常駐)後尾段 STE 對碼的修補力道降低。候選歸因:L 吸收殘差→碼的梯度訊號變弱→碼軸修復不足;與 E62a「共適應稅」同族(載體替代梯度修復)",
+  "IFEval_untouched": "IFEval 0.00 差=L 對指令遵循軸無效亦無害;傷害集中 he,與 down_proj 語意(MLP 輸出)對程式碼生成敏感一致",
+  "position_axis_closed": "M(輸入側,E61c +0.017)與 L(輸出側,−0.020)在 A4 台上的淨效應相反;輸出側 int8 載體在此引擎不可修,位置軸封盤",
+  "not_attributable_to_bug": "H1–H5b 等價閘 PASS、export verify 200 張量 0 mismatch、單變因純淨(--lmix-block 128 唯一差異)、決定論鏈;NEG 是設計結果非儀器事故"
+ },
+ "consequences": {
+  "S2": "用 st61c 引擎(ρ 0.889,不加位元);先讀冠軍蓄水 A 閘(res_fill st51c_e2e r128,~14h)再排水",
+  "north_star": "student+M+L ≥0.90 改為 student+M ≥0.90;L 撤",
+  "next_candidates_for_user": [
+   "(a) 直接點 S2 蓄水鏈 s2_fill_chain.sh(先讀 A)",
+   "(b) 碼軸修 he:E62 探針顯示 down_proj 殘差可吸但傷 he,改試 L 只掛非 down_proj 或 L 僅入 export 不共訓(零訓練後處理)",
+   "(c) 回防:st61c 引擎 + he 定向語料(E52 he +3.05 方向)"
+  ],
+  "stripML": "M 不可拆(ρ 0.686);純碼引擎=st61b;見 diagnostic_stripML"
+ },
+ "evidence": [
+  "evidence/p1_grouping/corkscrew/train_st62b.json",
+  "evidence/p1_grouping/a1eval/{ifeval,humaneval,gsm8k}_e62_st62b",
+  "exports/e62_st62b(verify 200/0 mismatch)",
+  "$SCRATCHPAD/e62b_chain.log"
+ ],
+ "diagnostic_stripL": {
+  "date": "2026-09-05 23:xx",
+  "what": "st62b 碼+α+M,export --strip-lmix(L=I),零訓練;a1eval/*_e62_st62b_noL;verify 200/0",
+  "official": {
+   "ifeval": 75.05,
+   "humaneval": 40.24,
+   "gsm8k": 66.87,
+   "comp": 0.6449,
+   "rho": 0.916,
+   "empties": {
+    "ifeval": 35,
+    "humaneval": 26,
+    "gsm8k": 36
+   }
+  },
+  "delta": {
+   "vs_st62b": {
+    "ifeval": -0.18,
+    "humaneval": 8.53,
+    "gsm8k": 1.14,
+    "rho": 0.047
+   },
+   "vs_st61c": {
+    "ifeval": -0.18,
+    "humaneval": 4.87,
+    "gsm8k": 0.68,
+    "rho": 0.027
+   }
+  },
+  "verdict": "H_overfit 成立:L 在推論時有害(去 L +0.047 ρ);碼未被練弱,反而 st62b 的碼+M 去 L 後 ρ 0.916 > st61c 0.889 = A4 台史上最高、首次進 PASS 帶(≥0.90);Δρ +0.027 超出噪音帶 ±0.016 → POS",
+  "reading": "L 是「訓練鷹架」:共訓時吸走校準分佈特有的殘差(局部帳),碼與 M 學到可轉移部分;export 時丟棄 L 即丟棄過擬合分量。這是『增加可學表徵、不增加推論位元』的實例(用戶 2026-09-05 提出之判準)。he +4.87、gsm8k 空核 65→36 為主要來源",
+  "caveats": [
+   "單次、非 prereg 臂(診斷後見);需 E63 prereg 複製(同 seed 決定論 + 語料/seed 變體)",
+   "仍含 M int8(0.35 b/w 內);純碼數字未知 → 需 strip M+L 再量(碼與 M 共適應,去 M 可能傷)",
+   "E62b 主裁 NEG 不變(交付態含 L);此為衍生發現"
+  ],
+  "implications": [
+   "S2 排水引擎候選改為 st62b 引擎 + export 去 L(ρ 0.916)vs st61b 純碼 0.872;最終交付仍須純碼 → 下一探針 strip M+L",
+   "鷹架原則可推廣:任何載體都可『訓練時掛、export 時拆』,裁判只看拆後官方"
+  ],
+  "status": "E63 prereg 待用戶;S2 已自動起跑(res_fill 無 resume);純碼 strip 探針需暫停 S2 ~2h,待用戶裁"
+ },
+ "diagnostic_stripML": {
+  "date": "2026-09-05 23:5x",
+  "what": "st62b 碼+α 純碼,export --strip-lmix --strip-mix(L=I,M=I),零訓練;a1eval/*_e62_st62b_codes;verify 通過;用戶裁 (a):暫停 S2 先量純碼",
+  "official": {
+   "ifeval": 59.89,
+   "humaneval": 25.0,
+   "gsm8k": 51.4,
+   "comp": 0.4827,
+   "rho": 0.686,
+   "empties": {
+    "ifeval": 48,
+    "humaneval": 43,
+    "gsm8k": 105
+   }
+  },
+  "delta": {
+   "vs_noL(碼+M)": {
+    "rho": -0.23,
+    "ifeval": -15.16,
+    "humaneval": -15.24,
+    "gsm8k": -15.47
+   },
+   "vs_st61c(碼+M)": {
+    "rho": -0.203,
+    "ifeval": -15.34,
+    "humaneval": -10.37,
+    "gsm8k": -14.79
+   },
+   "vs_st61b(純碼)": {
+    "rho": -0.186,
+    "ifeval": -13.31,
+    "humaneval": -8.54,
+    "gsm8k": -15.17
+   }
+  },
+  "verdict": "M_CARRIES_HARD:純碼 ρ 0.686 低於 st61b 純碼引擎 0.872(NEG,−0.186 遠超噪音帶);三科齊跌 −15pp、空回擴口(105 gs)=M 為真載體,與 M 共訓的碼把功能交給 M,不可事後拆除",
+  "reading": "M/L 不對稱定案:L=訓練鷹架(拆了更好 +0.047),M=真載體(拆了崩 −0.230)。機制差異=M 在每次 comp 事件以閉式 LS 直接吸收殘差(碼依賴 M);L 只作梯度共訓鬆弛量(碼未把功能移入)。",
+  "implication_s2": "純碼交付的排水引擎必須是 st61b(從頭無 M),不能走「st62b 引擎再去 M」;st62b 去 L 0.916 僅為碼+M 上界診斷,非交付路線;S2 排水判準以 st61b 純碼 B 對 0.7469 ±0.016",
+  "status": "單次觀測;S2 蓄水(res62s2)已於 23:53 自動點火"
+ },
+ "erratum_2026-09-06": "st61b 非純碼:exports/e61_st61b 位面含 .mix(M 72×128×128,偏 I 0.0013;hparams mix_block 128)。純碼訓練基線=甲 st58rb ρ 0.777;零訓練非對稱 pa63_asymblkq2 0.820。本檔中『st61b 純碼 0.872』讀作『碼+M(近單位陣)』;排水算術以 0.777/0.820 重讀(詳 prereg_e63_s1.json erratum_baseline)。"
+}

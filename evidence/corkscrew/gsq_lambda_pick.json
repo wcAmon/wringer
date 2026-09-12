@@ -1,0 +1,16 @@
+{
+ "A30": 0.387,
+ "A29": 0.455,
+ "extra": "--no-gumbel",
+ "basis": "Adam L0 per-module H(lam) linear interp (lam 0.3/0.4/0.55/0.7), weight-count weighted over 200 modules; out_proj/v_proj protected=3.10; full-attn q/k/o ~ in_proj_qkv curve",
+ "H_pred": {
+  "A30": 3.0,
+  "A29": 2.9
+ },
+ "engine": "adam (tsgd rejected: err 0.139 vs 0.082 @lam0.4 L0, L1-2 collapse H~1.4)",
+ "H_actual": {
+  "A30": 2.9575,
+  "A29": 2.833
+ },
+ "note_actual": "全模型實際聯合熵低於 L0 外推 0.04/0.07(z/k/o 崩塌拉低);J_A 以實際 H 對 R 線內插"
+}

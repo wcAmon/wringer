@@ -1,0 +1,181 @@
+{
+ "tag": "st46smk",
+ "grid": "mix(state)",
+ "state_tag": "st41g_e2e",
+ "res_tag": "res42",
+ "seed": 20260806,
+ "equiv_gate_rel": 0.0,
+ "hparams": {
+  "tag": "st46smk",
+  "state_tag": "st41g_e2e",
+  "res_tag": "res42",
+  "n_calib": 32,
+  "calib": "evidence/p1_grouping/calib_drain_e42b.pt",
+  "batch": 4,
+  "win": 2,
+  "stride": 1,
+  "gsteps": 2,
+  "tau": 0.5,
+  "w_max": 1,
+  "comp_rounds": 3,
+  "comp_cap": 0.03,
+  "tail_soft": 2,
+  "tail_ste": 1,
+  "s0": 30.0,
+  "s_plateau": 2.0,
+  "lora_r": 64,
+  "lora_lr": 0.0006,
+  "factor_lr": 0.003,
+  "theta_lr": null,
+  "clip": 1.0,
+  "learn_theta": true,
+  "holdout_frac": 0.0,
+  "resume": false,
+  "res_zero": false,
+  "group_override": "24-31:16",
+  "strain_wmax": false,
+  "calib_domains": null,
+  "domain_weights": null,
+  "dom_exit": null,
+  "tau_dom": null,
+  "beta_denoise": 0.0,
+  "gamma_field": false,
+  "field_epochs": 0,
+  "stop_after_layer": 0,
+  "smoke": true
+ },
+ "windows": [
+  {
+   "window": [
+    0,
+    2
+   ],
+   "finalized": [
+    0
+   ],
+   "w_max": 1,
+   "drain_epochs": 4,
+   "loss": [
+    6.1e-05,
+    4.7e-05,
+    4.2e-05,
+    3.4e-05,
+    3.6e-05,
+    2.3e-05,
+    1.5e-05
+   ],
+   "gdisc1_exit_rel": 0.001949,
+   "flips_vs_p0": 7426,
+   "final_level": 10148675.4079,
+   "drain_events": [
+    {
+     "gamma": 0.5,
+     "flips": 768,
+     "absorb": [
+      0.0066,
+      0.0082,
+      0.0118,
+      0.0492,
+      0.029,
+      0.0024
+     ],
+     "obj": [
+      2242945.0,
+      213337.3438,
+      20.7208,
+      93715.6953,
+      73922.4062,
+      26.7617
+     ],
+     "ev_flips": 0,
+     "revisit": 0,
+     "ep": 0,
+     "level": 2623967.9278,
+     "wait": 0,
+     "gamma_now": 0.5
+    },
+    {
+     "gamma": null,
+     "flips": 673,
+     "absorb": [
+      0.0235,
+      0.0143,
+      0.2735,
+      0.0289,
+      0.0253,
+      0.0026
+     ],
+     "obj": [
+      2202300.5,
+      216285.125,
+      38.896,
+      94026.2656,
+      74981.9062,
+      28.9528
+     ],
+     "ev_flips": 631,
+     "revisit": 0,
+     "ep": 1,
+     "level": 2587661.6457,
+     "wait": 1,
+     "gamma_now": 0.5
+    },
+    {
+     "gamma": 0.0,
+     "flips": 5724,
+     "absorb": [
+      0.0052,
+      0.0061,
+      0.0952,
+      0.1511,
+      0.1969,
+      0.004
+     ],
+     "obj": [
+      8727510.0,
+      858692.6875,
+      155.8697,
+      331153.5,
+      249762.3906,
+      122.1193
+     ],
+     "ev_flips": 5074,
+     "revisit": 79,
+     "ep": 2,
+     "level": 10167396.5671,
+     "wait": 0,
+     "gamma_now": 0.0
+    },
+    {
+     "gamma": null,
+     "flips": 2316,
+     "absorb": [
+      0.0049,
+      0.0159,
+      0.0802,
+      0.0945,
+      0.0416,
+      0.0022
+     ],
+     "obj": [
+      8722852.0,
+      869217.375,
+      228.8888,
+      308803.125,
+      247444.8125,
+      129.2066
+     ],
+     "ev_flips": 1874,
+     "revisit": 249,
+     "ep": 3,
+     "level": 10148675.4079,
+     "wait": 1,
+     "gamma_now": 0.0
+    }
+   ]
+  }
+ ],
+ "stopped_after_layer": 0,
+ "runtime_s": 27.8,
+ "timestamp": "2026-08-22T08:59:13.593208"
+}

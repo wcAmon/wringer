@@ -1,0 +1,104 @@
+{
+ "id": "E65-X",
+ "title": "E65-X 兩端夾擊階梯 —— 從九元往下折 T2(U)與從三元往上加 T2β(D)在 he–位元平面會合,加 g128 折層臂(A)定 α 帳;零訓練、全部 he 單科裁",
+ "status": "FROZEN 2026-09-08(用戶「發射」;X 先於 R2;點火順序 U0→U1→閘→U2–U4→D1–D3→u1g128→u2g128→verdict);amendment_3 後 14:5x 重點火 D1–D3→verdict",
+ "goal_context": "目標 2.7 bpw 下 comp ≥ 0.90。兩側整合(docs/2026-09-08-two-sided-ternary-nonary.md):差距 0.099 中 0.086 是 HumanEval;he 隨位元走(E41/E52/E56/E58R1b、g9 88.41、T2 全折 0%),IF 隨訓練走(res62s2 +9.4、E28)。故位元配置只裁 he(5–15 min/點),訓練留給 E65-R2 補 IF/GS。九元碼熵 3.10(實量兩位面近均勻、聯合熵無互資訊),g128+α8 砍不到 2.6 ⇒ 碼預算 2.54 ⇒ 九元最多 ~59% 權重 ⇒ 必為混格,問「T2 放哪」。",
+ "evaluation_epoch": {
+  "rule": "同 harness(a1eval)、seed 20260806、同採樣、vLLM 同版;he 絕對分數對舊錨 94.51;新錨另列不混用",
+  "noise_band": "he 單跑 ±3 pp(churn 基線 he 擺 3.05);Δ he > 3 pp 才讀方向;comp 帶 ±0.016",
+  "ledger": "固定率(三元 1.6 / 五元 2.33 / 九元或 T2β 3.2 b/w;α bits/B;β 16/B;r log2(k)/B)與理想熵兩欄,由 ladder_e65x.ledger 實算"
+ },
+ "tool": "p2_anchor/corkscrew/ladder_e65x.py(fold / t2add / alpha 三模式共用逐層骨架)+ chain_e65_x.sh + verdict_e65_x.py",
+ "arms": {
+  "U_fold_from_g9": {
+   "start": "data/qs_g9(全九元 g32,GPTQ 零訓練;he 88.41 / IF 78.56 / gs 94.16;comp 0.9226)",
+   "solver": "--mode fold --target cross:層 li 的目標 W_t = W9·C·Σ33⁻¹(C = X9ᵀX3,Σ33 = X3ᵀX3;老師 g9 副本與已折學生同批前傳;阻尼 0.01·mean diag),使 X3·W_tᵀ ≈ X9·W9ᵀ(Codex §8.3 跨層偏移補償);折層:T2→0、(α, r_blk) 交替閉式 + 逐元非對稱重投影(level 3)×3 + r 量化 2 bit;未折層:碼固定、α 對 W_t 閉式重擬;每層寫回、就地推進",
+   "points": {
+    "U0": "不折(只重擬 α;漂移應 ≈ 0)—— 儀器對照,預期 he ≈ 88",
+    "U1": "折 L0–15(T2 能量 27%;碼固定率 ≈ 2.40)",
+    "U2": "折 L0–19(36%;≈ 2.20)",
+    "U3": "折 L0–23(52%;≈ 2.00)",
+    "U4": "折 L0–27(73%;≈ 1.80)"
+   },
+   "gate": "U1 he < 70 ⇒ falsifier_U,跳過 U2–U4",
+   "known_risk": "T2 全折(g16、Σ9 目標)he 0%/0.61%;本臂三個差異:部分折、交叉目標、循序寫回。U1 亦崩 ⇒ 三者都不夠 ⇒ 從上路線只剩訓練式",
+   "smoke_finding_2026-09-08": "16 calib、折 L0–1:交叉目標層 0 漂移精確 0(增量式 Cm);層 1 對老師輸出相對誤差能量 W9 目標 0.08–0.27 → 補償目標 0.03–0.08(3× 降)→ 折後 0.10–0.19(折碼誤差主宰);未折層 α 重擬只吃回小半(0.09–0.33 → 0.08–0.28);T1 換碼率 32–40%(與 Codex 全折 30.7% 同量級,九元 T1 的 ±0.4 值投影三元必換)",
+   "amendment_levers": [
+    "--refit-codes(未折九元層對交叉目標重投影 level 9,吃回補償;首輪不開)",
+    "--cross-mix < 1(補償縮量)",
+    "--damp"
+   ]
+  },
+  "D_t2add_from_pa64": {
+   "start": "data/qs_pa64_asymrefitq2 + res_res62s2 水(冠軍 0.8235;he 64.02)",
+   "solver": "--mode t2add:選中三元模組加第二位面 W ≈ α·T1(負側×r) + β·T2(β 逐 block FP16;r 固定;E63 fit_t2beta 的 r 感知版);Σ 於 pa64 部署形態單趟;煙測 down_proj 殘差吸收 89%,T2 非零率 0.51",
+   "points": {
+    "D1": "down_proj L0–15(+0.10 碼 +β)",
+    "D2": "D1 + 全模組 L8–15(≈ +0.25 碼 +β)",
+    "D3": "全模組 L0–15(≈ +0.45 碼 +β;超帶,只探 he 天花板)"
+   },
+   "gate": "D3 he < 70 ⇒ falsifier_D(加位面反傷 ⇒ 三元血統 he 天花板是碼盆地不是位元)"
+  },
+  "A_alpha_g128": {
+   "start": "同 U(g9)",
+   "solver": "--mode fold --fold-block 128:折層的 T1 重投影與 α、r 直接在 g128 下解(碼與 α 同時定,非事後粗化)",
+   "points": {
+    "A1": "U1 的 g128 變體(折 L0–15;α 帳 0.5 → 0.31)",
+    "A2": "U2 的 g128 變體(折 L0–19;α 帳 → 0.27)"
+   },
+   "eval": "he",
+   "judge": "he(g128 變體) − he(同點 g32) > −3 ⇒ G128_OK(折層 α 粗化免費,碼預算相應上調);否則 α 粒度有價",
+   "smoke_finding_2026-09-08": "pa64 碼固定、α 事後重分組到 g128:局部誤差為水能量的 1.3–25×(out_proj 25×)= 碼在 g32 α 下練成,事後粗化不可行;α8 log 碼書(256 級)在 out_proj 94× = 需專門量化器(留後續);故 A 臂改為折層同時解碼的 g128"
+  }
+ },
+ "judges": {
+  "J_U1": "he_U1 ≥ 78 PASS / [70,78) 灰 / < 70 falsifier_U",
+  "J_D3": "he_D3 − 64.02 > 3 ⇒ D_POS;< 70 ⇒ falsifier_D",
+  "collect": "he ≥ 86 且固定率總帳 ≤ 2.75 的點,最便宜兩點各跑官方三科(1.5 h/點);comp ≥ 0.85 ⇒ 成為 E65-R2 蓄水起點;無此點 ⇒ 零訓練位元配置封盤,0.90 須靠訓練",
+  "meeting": "同碼熵帶 U 點 he − D 點 he = 九元血統 vs 三元血統的盆地差;>10 pp ⇒ 後續蓄水/QAT 起點取九元側",
+  "J_G128": "he(u{1,2}g128) − he(u{1,2}) > −3 ⇒ G128_OK"
+ },
+ "predictions": {
+  "U0": "he ∈ [85, 90],drift_rel ≈ 0",
+  "U1": "he ∈ [78, 86]",
+  "U3": "he ∈ [65, 78]",
+  "D1": "he +3~6 pp",
+  "A1_g128": "he(U1) −2~−5"
+ },
+ "falsifiers": {
+  "both": "U1 < 70 且 D3 < 70 ⇒ 零訓練混格封盤;只剩 九元 QAT(E28 式 g128)+ 分段降元 + 蓄水 的訓練路線",
+  "instrument": "U0(=g9 原態)he < 85 ⇒ 評測管線有誤(amendment_2)"
+ },
+ "order_and_cost": "U0→U1(cross)→U1w(w9)→TARGET→U2→U3→U4→D1→D2→D3→u1g128→u2g128→verdict;12 點 × ~30 min ≈ 6 h;收卷官方 2 點 +3 h;零訓練",
+ "engineering": {
+  "ram": "60 G 機:fold 模式兩條活化流(老師/學生)就地推進,各 ~10.7 G @128×16k;統計趟不存輸出",
+  "disk": "每點態 7.5 G(data/qs_ux_*)保留;export 用完即刪;收卷後只留會合點",
+  "hold": "$S/E65X_HOLD 暫停下一點",
+  "smoke": "ladder --smoke 三模式 + fold g128 + export --verify 全過(2026-09-08 12:1x);α 事後粗化/α8 兩變體否證(見 arms.A_alpha_g128)"
+ },
+ "not_doing": "不訓練;不改 c=0.6;不做 VQ/旋轉/β 第三中心;不在本輪跑三科全量(收卷除外);不自主點火",
+ "relation_to_e65_r2": "X 先於 R2:X ~7 h 決定 R2 在哪個位元配置上蓄水;R2 從會合點起,預期 A₂ 觸 0.90 帶",
+ "decision_for_user": [
+  "核准 E65-X FROZEN 與點火",
+  "次序 X→R2",
+  "T2 全折剩餘產物 exports/t2fold_*(27 G)、data/qs_t2fold_*(15 G)是否清理"
+ ],
+ "amendment_1": {
+  "when": "2026-09-08 12:5x(U0 he 82.93 收到後、U1 未讀前)",
+  "finding": "U0(不折、只重擬 α)碼與 g9 逐位相同、校準 Σ 誤差 0,但 dense 權重 L31 差 17–44%、有碼 block 的 α 最多變 137×;he 82.93 vs 同日 g9 對照 89.02(−6.1 pp,2× 噪音帶)。根因:scale_joint 聯合 LS 在 Σ 近零空間方向無約束(ridge 1e-6 相對過小),目標精確可表示時解在零空間任意飄移——校準集看不到、官方看得到(第 11 型的純形式)",
+  "fix": "ktier.scale_joint 加 prior/lam(Tikhonov 拉向先驗,prior=None 行為逐位不變);fold/refit 的 α 先驗 = g9 α(重分組取 block 均值)、r 先驗 = 1,λ = 0.01·diag(A);U0 煙測 dW ≤ 0.002(修前 0.44)、折層 absorb 不變;checks_asym_mix 全 PASS",
+  "disposition": "U0/U1 作廢重跑(舊產物存 *_bad_nullspace);t2add/alpha 模式沿用 E64 驗證過的無先驗解法不動;U0 儀器閘改為 he ≥ 85 且 dW ≤ 0.01"
+ },
+ "amendment_2": {
+  "when": "2026-09-08 13:2x(amendment_1 重跑 U0 至 L28,未讀 he)",
+  "finding": "未折層 α 重擬(先驗 λ=0.01)+ 交叉補償形成正回饋:U0 無折,dW 由 L1 0.002 指數放大至 L15 0.165、L28 0.202,對老師輸出誤差 8%。補償把取樣噪音當漂移,重擬再把它寫進下一層",
+  "fix": "未折層一律不重擬(--no-refit-others;GPTQ 標準:未量化層原權重),交叉補償只在折層;U0 = g9 原態(同日對照);新增 U1w(--target w9,學生 Σ、W9 目標)與 U1(cross)A/B,勝者 TARGET 用於 U2–U4/g128 臂;J_TARGET:cross−w9 Δhe > 3 補償有效 / < −3 有害",
+  "disposition": "amendment_1 的先驗正則保留(折層 α/r 仍拉向 g9 α);U0 儀器閘改為 he ≥ 85(dW 恆 0)"
+ },
+ "amendment_3": {
+  "when": "2026-09-08 14:5x(U1w 0.61 falsifier_U 定案後、D1 he 55.49 讀到後)",
+  "finding": "(1) U1w(純折 L0–15、w9 目標、無補償)he 0.61% = Codex 全折同值;U1(cross)0.0 且折層 drift 0.97/flips 0.56 = 交叉補償正回饋第二次。falsifier_U 成立,與補償方式無關 ⇒ A 臂 g128 折層變體撤銷(無可比對象)。(2) D1 he 55.49(−8.5 pp vs pa64)為儀器結果:t2add 目標 W_t = dense(pa64)+水,但 pa64_asymrefitq2 本身即冠軍碼對 dense(st51c_e2e)+水 重擬,dense 已含水 ⇒ 水加兩次;煙測基底差 ‖dense(st51c_e2e)−dense(pa64)‖/‖pa64‖ = 0.026–0.040 = 水量級,證實",
+  "fix": "ladder_e65x 新增 --target-state-tag(t2add/alpha 的目標基底態);D1–D3 改 W_t = dense(st51c_e2e)+res62s2 水、起點碼/α/r 仍為 pa64;煙測 down_proj L0–2 殘差比 0.134–0.138(吸收 86%)、dW 0.034–0.042、β/α 中位 0.03(第二位面為薄修正面)",
+  "disposition": "D1 作廢(產物存 *_bad_doublewater);D1–D3 重跑;U0/U1/U1w 結果保留;u1g128/u2g128 撤銷;判準 J_D3 不變;預期修正:D 臂增益上限 ≈ 水庫天花板(pa64 0.8235 已 ≥ res62s2 讀者 0.8216),D1 +3~6 pp 的原預測偏樂觀,he 帶內持平即 D_NULL"
+ }
+}

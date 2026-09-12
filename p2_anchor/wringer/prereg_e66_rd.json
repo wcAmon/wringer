@@ -1,0 +1,96 @@
+{
+ "id": "E66-RD",
+ "title": "E66-RD 率失真台階 —— 九元格點不變、求解器加率項壓偏分佈,零訓練 λ 階梯量每 0.1 b/w 的 he 斜率,並與「減格點」台階(S1-GPTQ-only)同熵對照;勝者接碼可訓 KD 分步下行",
+ "status": "ADJUDICATED 2026-09-08 22:xx:R1 GREY 82.93(−5.5)/R2 76.83/R3 73.78(直線 ~5 pp/0.1 b/w,無加速)/S1g 30.49 ⇒ J_AB RATE_WINS +43;零訓練率軸與格點軸皆貼 GGUF 曲線;P2 未開(待 E67 求解器對決先裁)",
+ "goal_context": "9 元 g9 comp 0.9226 @3.60/3.70;熵測量(@4766a90)碼近 i.i.d.、一階熵 3.101 ⇒ 無損地板 3.16(g128 α8),到不了 2.7。3.2 以下每 0.1 b/w 都要換碼;蓄排水不修 he(E37/E41/E52/E56),he 只隨碼軸動(E34/E51/E64)。本臂把「率失真壓偏」當台階,與「減格點」台階同台比零訓練 he 斜率。",
+ "evaluation_epoch": {
+  "rule": "同 a1eval、seed 20260806、vLLM 同版;he 對舊錨 94.51;g9 同日對照 88.41",
+  "noise_band": "he 單跑 ±3 pp;Δ > 3 pp 才讀方向",
+  "ledger": "碼=熵編碼(ladder.ledger code_entropy)與固定率兩欄並列;α g32 0.5 / g128 0.125;r 若有 log2(k)/B"
+ },
+ "tool": "ktier.gptq_grid_rd(GPTQ 列序 + 率罰 rounding:cost = ((w − v·A_j)/U_jj)²/s_mod + λ·bits_v;Σ 加權誤差單位、模組內歸一化 s_mod = mean_j(mean_m A²/U_jj²) ⇒ λ 無量綱跨模組同等傾斜,模組內按 OBS 顯著度逐元連續選擇)+ ladder_e65x --mode rate --lam(目標 dense(g9) 本尊、α 固定、Σ 循序學生輸入、解完寫回)+ chain_e66_rd.sh + verdict_e66_rd.py",
+ "instrument_check": {
+  "R0": "smoke(L0–2、16 calib)λ=0 ⇒ 該三層 18 模組 flips 全 0(bit-exact);不為 0 即引擎 bug,停"
+ },
+ "points": {
+  "R1": "λ 0.095 → H ≈ 3.0(實測翻碼預期 ~14%)",
+  "R2": "λ 0.135 → H ≈ 2.9(~24%)",
+  "R3": "λ 0.175 → H ≈ 2.8(~31%)",
+  "S1g": "對照:L0–7 九→三 GPTQ 直解(同引擎 --rate-level 3:α TWN 先驗 → GPTQ → α 閉式重擬(prior lam 0.01)兩輪;無 r),其餘層不動;碼熵 ≈ 2.7–2.8(L0–7 權重占比 ~25%),零訓練"
+ },
+ "records_per_point": [
+  "flip_frac",
+  "code_entropy",
+  "err_h ratio(Σ 加權)",
+  "dW rel",
+  "he",
+  "empties"
+ ],
+ "judges": {
+  "J_R1": "he ≥ 84 ⇒ PASS(接 P2);[80,84) GREY;< 80 ⇒ FALSIFIER_RD(8% 換碼即出盆地,率台階封盤)",
+  "J_SLOPE": "R1→R3 he 對熵的斜率;若 R2 或 R3 掉幅 > R1 的 2×(非線性加速)⇒ 台階上限記在該點",
+  "J_AB": "R 曲線線性內插到 S1g 的碼熵後比 he:> +3 ⇒ 率台階勝;< −3 ⇒ 減格點台階勝(改走 §3.3);帶內 ⇒ 以帳與工程成本裁",
+  "J_TYPE11": "err_h ratio 與 he 排序不一致即記第 11 型;局部誤差不作裁判"
+ },
+ "phase2_if_pass": "勝者台階第一步起 e2e_soft 碼可訓 KD(bf16 老師,軟 T + STE 硬尾;硬投影改率罰 rounding 保熵),he 閘 ≥ 84 @3.0 / ≥ 80 @2.9 / ≥ 78 @2.8,每步 ~4–5 h;最終 he ≥ 86 才有 comp 0.90;收尾 E37 蓄水 r128 → 凍碼排水 → 官方三科",
+ "falsifiers": [
+  "R1 he < 80",
+  "P2 第一步訓練後 he 回不到 84 ⇒ 斜率壓不平,目標改 2.9–3.0 帶",
+  "交付帳不認熵編碼 ⇒ 本臂作廢"
+ ],
+ "cost": {
+  "P0": "0.5 天工程 + 煙測",
+  "P1": "4 點 × 45 min ≈ 3 h GPU",
+  "P2": "~4–5 h/步",
+  "P3": "~14 h + 1.5 h"
+ },
+ "forbidden": [
+  "FROZEN 前點火",
+  "自主跑官方三科",
+  "無先驗的 α/r 重解(scale_joint prior lam 0.01)",
+  "用局部誤差當裁判"
+ ],
+ "amendment_1": {
+  "finding": "α 固定時 u 精確落格,u 單位的率罰 (u−v)²+λ·bits 是階梯函數:λ≤0.12 零翻碼、0.15 一步 20.7%(probe_rd_lambda.py,rd_lambda_calib.json)",
+  "fix": "率罰改在 Σ 加權誤差單位(逐列 1/U_jj、逐 (列,塊) α 連續分佈)+ 模組內歸一化;λ→H 由 smoke(L0–2)--lam-scan 校準,選 H≈3.0/2.9/2.8 三檔寫入 rd_lambda_pick.json;R1 實測熵偏離目標 >0.03 則記錄不重跑"
+ },
+ "chain_rule": "R1 he < 0.80 ⇒ 跳過 R2/R3 但仍跑 S1g(對照獨立);每點 export 用完即刪,態留 data/qs_rd_*",
+ "amendment_2": {
+  "finding": "R0 smoke bit-exact PASS(L0–2 18 模組 flips 0);λ 校準(rd_lambda_pick.json)H 3.0/2.9/2.8 ↔ λ 0.095/0.135/0.175,對應翻碼 ~14/24/31%,為指數傾斜 TV 下界(8/13/18%)的 2×——GPTQ 誤差回饋產生補償翻碼(降 Σ 誤差、不降熵)",
+  "disposition": "照 λ 點火;判準不變(he);points 的換碼預估改為實測;若 R1 he FALSIFIER,歸因需分辨「熵傾斜」與「補償翻碼」兩者:可加 R1′(同 λ、關回饋=逐元最近取整,翻碼 ≈ TV 下界)作歸因臂,待裁不自動跑"
+ },
+ "verdict": {
+  "rows": {
+   "g9": [
+    3.101,
+    88.41
+   ],
+   "R1": [
+    3.003,
+    82.93
+   ],
+   "R2": [
+    2.908,
+    76.83
+   ],
+   "R3": [
+    2.809,
+    73.78
+   ],
+   "S1g": [
+    2.717,
+    30.49
+   ]
+  },
+  "J_R1": "GREY",
+  "J_SLOPE": "無加速(6.4→3.1,噪音帶內)",
+  "J_AB": "RATE_WINS(+43 pp 同熵)",
+  "readings": [
+   "零訓練率台階 = 直線約 5 pp/0.1 b/w,與 §3.2 經驗斜率重合(E65-X 結論第三次獨立確認)",
+   "同熵下『少用邊緣色』遠勝『減顏色數』:淺層 L0–7 整段 9→3 零訓練即崩(30.49),率傾斜保住 73.78;後續任何台階一律走率軸,減格點台階封盤(零訓練)",
+   "R1 翻碼集中深層 out_proj(47%)= RCO 配置檔標為最需保護的張量;歸因候選,E67 加保護",
+   "失敗形態同 g9(空回 4 vs 5、長度同)⇒ he 掉的是能力非失律,閉合加權無著力點"
+  ],
+  "next": "E67 DRAFT:GSQ 式全局軟指派 + 可微熵項 + out_proj/v 保護,同熵 3.0/2.9 對決 R1/R2(>+3 pp 即求解器品質兌現);RCO 式配置;GSQ 式排水待新水庫"
+ }
+}

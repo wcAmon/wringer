@@ -1,0 +1,55 @@
+{
+ "experiment": "E42 規模化第二級:語料 2×+code tilt+fill/e2e 加步——基底 E41 冠軍 g16 帶",
+ "status": "FROZEN",
+ "date_draft": "2026-08-16",
+ "design_provenance": "用戶裁定鏈:①E42 路線=增產料+延長 fill/e2e+humaneval 對齊(2026-08-16);②出題改 DeepSeek V4 Flash 0731,先導過閘後三線產畢 @831e002(11,263 題 $21.11);③humaneval 入格帶地板;④兩層裁判制核准(『可以』);⑤E41 已裁 @a2aa6a8:位元預算改投加步軸、E42 基底=e41_g16。機制基礎:E40 fill KD 尾 0.098-0.13 欠訓訊號+E38 分科解耦定律(域餵料有效/raw code 反傷)+E41 碼分佈凍結(增益走 α 連續軸→語料/吞吐是瓶頸座標)",
+ "shared_base": {
+  "state": "data/qs_st41g_e2e(E41 冠軍連續態,L24-31 g16 帶保留——humaneval 軸全價位元)",
+  "teacher": "bf16 snapshot 945c40a4 不動;4B 唯一 KD 老師(答題)",
+  "baseline": "B = exports/e41_g16:IFEval 72.27 / humaneval 35.98 / gsm8k 78.17"
+ },
+ "corpus_v3": {
+  "pools": "code 7,185(舊 1,244+MBPP 927+新 5,014)| ifshape 5,796(舊 2,047+新 3,749)| math 4,531(舊 2,031+新 2,500);總 17,512;人類語料照舊保留;新舊庫 cross-dedup 已在產線保證",
+  "assembly": "本機 4B on-manifold 答題(E39 律),目標 ~24,000 列 ≈ 80M token(E40 語料 ~2.1×);tilt:code 域 50-55%(k≈1.67-1.84 重複取樣,溫度採樣去重複),if+math 攤餘(k≈1.05-1.16)",
+  "verified_only": "只收程序驗證過的 QA(E38 raw-code 稀釋稅律);答案由 4B 生成、程序裁對錯,對答案入語料",
+  "artifact": "calib_e42_train.pt + drain 子集 calib_drain_e42.pt(前 128 列),sha256 入 manifest;答題 GPU 預算 ~8-10h"
+ },
+ "chain": {
+  "fill": "水庫重蓄 res42:r512 旁路 KD 蓄水,steps 3600→7500(token 比例化 ~2.1×,批口徑同 E40);裁判點 A(天花板,免 e2e 窗態三科)",
+  "drain": "凍結排水,配置逐字承 E41 臂1(g16 band 24-31:16,gsteps 5, τ0.5, W_max 4, tail 10/4, learn-theta)",
+  "e2e": "FKL only 600→1200 步(RKL 已除名,E40 R3);export e42_3g --verify",
+  "judge": "B 三科官方(IFEval/humaneval/gsm8k)"
+ },
+ "judges": {
+  "G1_champion": "B-IFEval > 0.7227 → 新冠軍(strict prompt,A1 協定同錨)",
+  "H_scale2": "ΔIF = B − 72.27:>+4pp = 規模化第二級成立;+1~+4pp = 正向未達律;−1~+1 無效;<−1 淨負",
+  "R_he_floor": "humaneval 入格(用戶裁):B-he ≥ 0.3498(地板=冠軍 35.98 −1pp);低於地板則 code tilt 歸因批啟動;>0.3598 記 code 軸新高",
+  "R_rho": "ρ = B/A 保留率主量測(E38 吞吐約束監測);gsm8k 記錄無地板",
+  "R6_stability": "gdisc ≤ 0.1724、31/31 finalize、nonfinite 0、holdout 無擴口——同 E40/E41 逐字"
+ },
+ "guard_tier": {
+  "rule": "防守科只在冠軍交接時跑(G1 PASS 才觸發),持出誠實:IFBench 與 LCB-V6 永不餵料(無同形題庫)",
+  "subjects": "IFBench(官方卡 69.1 參考)+ LiveCodeBench-V6(59.6 參考);首度觸發時同場補 bf16 自錨(A1 協定)",
+  "adjudication": "防守科裁『增益是否遷移』=真恢復 vs 題庫形狀過擬合(第十二型 proxy 失效預防);monitor 性質,不否決 G1,但 FAIL 型態入歸因並約束下一輪語料設計"
+ },
+ "discipline": {
+  "official_only": "判準只認官方科目;val CE/KD monitor-only(九筆反轉+型十+型十一在案)",
+  "bundle_honest": "本輪=規模化捆綁(語料 2×+tilt+fill 2×+e2e 2×),非單變因;若 FAIL 歸因需拆軸時走 E42b 消融,不回改本 prereg",
+  "no_pt_in_git": ".pt/.npz 不進 git;manifest+sha256 留痕",
+  "fail_honest": "FAIL 照實;地板破則 tilt 歸因批,不遮",
+  "frozen_gate": "本檔用戶 FROZEN 後才開跑答題與 fill;凍結後只許 amendment 附記(啟動前、未偷看數據)"
+ },
+ "budget_estimate": "答題 ~8-10h(GPU)+ fill ~7h + A 三科 1.6h + drain 1.5h + e2e 1200 ~3.6h + export/verify 0.3h + B 三科 1.6h ≈ 24-26h 總(GPU 兩天內)",
+ "artifacts_plan": [
+  "calib_e42_train.pt(manifest)",
+  "train_res42_fill.json",
+  "a1eval/*_e42a/(A 點)",
+  "train_st42.json",
+  "train_st42_e2e.json",
+  "a1eval/*_e42_3g/",
+  "exports/e42_3g",
+  "verdict_e42.json"
+ ],
+ "next_ladder": "PASS → E43 候選:(a)語料 3× 續規模化 (b)guard FAIL 型態驅動的語料重配 (c)9元 冠軍態同語料復刻(88.91 線);FAIL → E42b 拆軸消融(語料/步數/tilt 三因子)",
+ "date_frozen": "2026-08-16(用戶裁:ok)"
+}

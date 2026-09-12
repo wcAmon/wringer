@@ -1,0 +1,55 @@
+{
+ "id": "E63-T2",
+ "title": "E63 步驟 3 —— down_proj 開第二三元位面(T2):碼空間槓桿的零訓練探針 + 官方配對",
+ "status": "CLOSED 2026-09-07 07:4x:POS(a +0.061 / b +0.034 / c −0.047;見 verdict_e63_t2.json)",
+ "lineage": "E63 S0 粒度定律(逐列 r 無效 0.993 / 逐 block r 0.750 / 官方 POS +0.054)→ 推到元素粒度 = T2 位面;G9_FLOOR 9元 零訓練 comp 0.9226 @ecd9d3b;down_proj = 吸水最差家族(ctrl absorb 0.55 vs 0.76)、非對稱增益最小(0.82 vs 0.69)= 瓶頸在碼",
+ "bit_account": "T2 只開 down_proj:每層線性參數佔比 0.2093 ⇒ 全模型 +0.331 b/w(位面 idx 4 bit 包本就 9 元相容;記帳按資訊量 1.58→3.17);合併非對稱(其他模組 2 bit r)⇒ +0.331+0.049 ≈ +0.38 b/w",
+ "platform": "A4(st54r + res58r1),Σ 同 probe_asym(128 calib_e58r1b × 16k,lengths 遮罩),零訓練、各臂不前傳",
+ "arms_local": {
+  "ctrl": "T1 固定、T2=0、α 閉式(= pa63_ctrl)",
+  "t2fix": "T1 固定,T2 逐元最近 ↔ α 閉式 ×3(留盆地一)",
+  "t2gptq": "9 元 GPTQ 直解 W_t(T1 亦重解 = 出盆地;E59 教訓的反向對照)+ α 閉式"
+ },
+ "arms_official": {
+  "pt63_t2fix_dp": "down_proj ← t2fix(grid 9),其他 ← pa63_ctrl(grid 3)",
+  "pt63_t2gptq_dp": "down_proj ← t2gptq,其他 ← pa63_ctrl",
+  "pt63_t2fix_dp_asym": "down_proj ← t2fix,其他 ← pa63_asymblkq2(交付候選:碼側 + 尺度側兩級)"
+ },
+ "judges": {
+  "local_diag_only": "ratio/absorb/flips_t1/t2_nz(第 11 型前科,不裁)",
+  "official": "Δcomp 帶 ±0.011:(a) t2fix_dp − ctrl(0.5235);(b) t2fix_dp_asym − asymblkq2(0.5772);(c) t2gptq_dp − t2fix_dp(盆地票)",
+  "falsifier": "(a) ≤ +0.011 ⇒ down_proj 開 T2 封盤(碼空間非 down_proj 瓶頸 / 第 11 型)"
+ },
+ "predictions_written_before_run": {
+  "P1": "局部 t2fix down_proj ratio 中位 ≤ 0.40(9 元對 3 元量化步距縮 ~2.5×);t2gptq ≤ 0.30",
+  "P2": "t2fix flips_t1 = 0(構造);t2gptq flips_t1 ≥ 0.10(出盆地)",
+  "P3": "官方 (a) Δcomp ≥ +0.03(down_proj 佔 1/6 模組但為瓶頸家族)",
+  "P4": "官方 (b) Δcomp ≥ +0.02;t2fix_dp_asym ρ ≥ 0.86(零訓練)",
+  "P5": "官方 (c):t2gptq_dp 不優於 t2fix_dp 超過帶(E59 出盆地=局部好官方不好;若 POS 則盆地假說在 3→9 方向不成立)"
+ },
+ "cost": "探針 ~25 min(可與 S1 訓練共存,前向 only ~12 GB)+ compose + 官方 3 臂 × 1.5h(S1 官方後)",
+ "chain": "p2_anchor/corkscrew/chain_e63_t2.sh(哨兵 T2_PROBE_SMOKE/PROBE_DONE/COMPOSE/EXPORT/EVAL/B/DELTA/VERDICT;hold $S/T2_HOLD)",
+ "not_doing": [
+  "T2 開在全模組(=9 元回歸,已知 0.92)",
+  "T2 訓練式排水(待零訓練 POS 後另立)",
+  "自主擴臂"
+ ],
+ "evidence_out": [
+  "evidence/p1_grouping/corkscrew/probe_t2{,_smoke}.json",
+  "data/qs_pt63_*(不進 git)",
+  "a1eval/*_e63_pt63_*",
+  "verdict_e63_t2.json"
+ ],
+ "amendment_1_after_smoke_before_full": {
+  "when": "2026-09-06 22:0x(煙測 2 層 16 calib 後、全模型前)",
+  "finding": "t2fix(T1 固定、c=0.6)down_proj ratio 0.97–0.985、T2 非零率 0.1–0.2% ⇒ T2 步距 c·α=0.6α 遠大於水殘差,四捨五入全歸零;臂設計失效(非假說失效)。t2gptq(出盆地重解)0.57–0.70、flips_t1 1–2%",
+  "change": "新增主臂 t2beta:殘差位面 w = α·T1 + β·T2,β 逐 (row,block) Σ-加權 LS(scale_joint),交替 T2 最近 ↔ β ↔ α ×3;狀態鍵 t2beta (M,nB)、位面 .t2beta fp32;decode w = α t1 (負側×r) + β t2;checks_t2 D5/D6。t2fix 保留為局部紀錄不上官方;官方臂改 t2beta_dp / t2gptq_dp / t2beta_dp_asym",
+  "bit_account_revised": "down_proj:T2 1.58 + β 0.5 = +2.08 b/w ⇒ 全模型 +0.435 b/w(+asym 其他模組 ≈ +0.48)",
+  "predictions_for_t2beta_written_before_full": {
+   "P1'": "局部 t2beta down_proj ratio 中位 ≤ 0.45;T2 非零率 ≥ 0.3;β/α 中位 ∈ [0.05, 0.3]",
+   "P3'": "官方 a = t2beta_dp − ctrl ≥ +0.03",
+   "P4'": "b = t2beta_dp_asym − asymblkq2 ≥ +0.02",
+   "P5'": "c = t2gptq_dp − t2beta_dp 不 POS"
+  }
+ }
+}

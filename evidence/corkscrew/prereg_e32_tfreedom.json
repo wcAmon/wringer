@@ -1,0 +1,49 @@
+{
+ "experiment": "E32 T-freedom × window-grain ladder(3元)",
+ "preregistered": "2026-08-10",
+ "frozen_before_gpu": true,
+ "user_directive": "08-10:T自由度、窗戶粒度調整全部設計進 E32,E31 結果不擋後續研究(prereg 先凍,執行排隊在 E31 收卷+四科錨定之後)",
+ "motivation": "E30 病灶=T 指派黏死爛 init(flip 8.81%),α-only 天花板已實錘。T 自由度 = u可動性(rank)× θ可動性 × 穿越時間(退火曲線);窗粒度軸另測跨層視野。E31 測 g16+e2e(遠端);E32 沿 rank×退火對角線與窗寬軸各推一格,單變因歸因。",
+ "baseline": {
+  "recipe": "E31 凍結配方:quantize g3b16(復用)→ train_st win4/stride2/γ0.8/s0=30/r64/θ可學 → e2e_soft 600步/batch8/γ0.8/s0=30 → export → 官方 IFEval",
+  "e31_e2e_strict": "TO_FILL_AT_LAUNCH(E31 開牌數字;僅作分母,不改臂與判準)",
+  "e31_window_flip": "TO_FILL_AT_LAUNCH(train_st3b16.json t_flip_rate_vs_init)",
+  "bf16_anchor_strict": 90.94,
+  "lp300_strict": 30.68
+ },
+ "arms": {
+  "e32a_slow_anneal": {
+   "knob": "穿越時間:γ 0.8→0.9(軟段 27/30 ep,STE 尾 3 ep),s0 不變",
+   "cmd": "train_st --grid 3 --tag st3b16a --state-tag g3b16 --learn-theta --resume --n-calib 512 --calib evidence/p1_grouping/calib_train_512.pt --gamma 0.9",
+   "code_change": "無(既有參數)"
+  },
+  "e32b_rank_ladder": {
+   "knob": "u 可動性:深層(層22-31)r64→r128,淺層不變",
+   "cmd": "train_st --grid 3 --tag st3b16r --state-tag g3b16 --learn-theta --resume --n-calib 512 --calib evidence/p1_grouping/calib_train_512.pt --lora-r-deep 128 --deep-from 22",
+   "code_change": "train_st.py +6行(逐模組 rank 選擇,stq.py 不動);冒煙需覆蓋雙 rank(--deep-from 2)"
+  },
+  "e32c_wide_window": {
+   "knob": "跨層視野:win 4→6(stride 2 不變,14 窗,末窗定案 6 層)",
+   "cmd": "train_st --grid 3 --tag st3b16w --state-tag g3b16 --learn-theta --resume --n-calib 512 --calib evidence/p1_grouping/calib_train_512.pt --win 6",
+   "code_change": "無(既有參數)"
+  }
+ },
+ "shared_tail": "各臂接同一 e2e 段:e2e_soft --tag <tag>_e2e --state-tag <tag> --grid 3 --steps 600 --batch 8 --data calib_train_512.pt → export --verify → 官方 IFEval(judge_arm 同 e31_chain 模式);e2e 段參數全臂恆定,窗內變因單獨歸因",
+ "judge": "官方 IFEval strict prompt-level,vLLM 鏈,錨 bf16 90.94;每臂只評 e2e 終態(省 zt 裁判,窗內機制用 flip/gdisc 檔案量測)",
+ "criteria": {
+  "X1_mechanism": "各臂窗段 t_flip_rate_vs_init > E31 st3b16 flip(自由度旋鈕真的提高置換率;逐臂判)",
+  "X2_sanity": "各臂訓練 loss 有限、無 V5 帶化警報連發;e2e KD 有限",
+  "X3_main": "最佳臂 e2e strict > E31 e2e strict + 2.0(541 題,+2.0≈11 題,超出抖動)",
+  "X4_attribution": "逐臂:該臂 e2e strict > E31 e2e strict + 2.0 ⇒ 該旋鈕標記『有效』",
+  "X5_honest_band": "最佳臂保留率 ∈ [35%, 75%](vs 90.94)"
+ },
+ "branches": {
+  "geq2_knobs_valid": "E33 對角線合體臂(有效旋鈕疊加,一次驗證交互)",
+  "one_knob_valid": "併入基線配方成為新 recipe,轉四科實評該臂",
+  "zero_valid_and_X1_pass": "flip 升了但分數不動 ⇒ T 重指派非瓶頸,軸關閉;轉資料多樣性/全參/類別參數化評估",
+  "zero_valid_and_X1_fail": "旋鈕沒推動 flip ⇒ 引擎層問題,查 s 排程實作與 lr 配比後重跑單臂"
+ },
+ "queue_order": "E31 收卷判 V1-V6 → 四科錨定鏈(bf16/e28_qat/e31最佳/lp300)→ E32 三臂序跑(每臂 ~4.5-5h:窗訓 2.6h(e32c ~1.4×)+ e2e 1.5h + 裁判 0.5h;總 ~15h,過夜)",
+  "disclosure": "rank-ladder 代碼將先跑 2 窗冒煙(--smoke --lora-r-deep 128 --deep-from 2 覆蓋雙 rank 路徑,獨立 tag 即刪,不裁決);baseline 兩欄待 E31 開牌回填,回填不改臂/判準/分岔",
+ "seed": 20260806
+}

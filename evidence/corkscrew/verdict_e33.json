@@ -1,0 +1,95 @@
+{
+ "experiment": "E33 v2",
+ "prereg": "prereg_e33_7lane_v2.json @ceff4ff",
+ "bf16_ifeval_strict": 0.9094269870609981,
+ "criteria": {
+  "Z1_pre_ceiling": {
+   "verdict": "PASS",
+   "e33pre_9e_strict": 0.88909426987061,
+   "floor_e28_qat": 0.8853974121996303,
+   "delta_pp": 0.3696857670979714
+  },
+  "Z2_main": {
+   "verdict": "N/A",
+   "e33_7e_strict": null,
+   "floor_90pct": 0.8184842883548983,
+   "retention_vs_bf16": null,
+   "delta_pp": null,
+   "linear_law_prediction_pct": 84.0
+  },
+  "Z3_sweep2_value": {
+   "verdict": "PASS",
+   "median_ratio_end2_over_end1": 0.8728323699421966,
+   "frac_windows_improved": 1.0,
+   "n_windows": 31,
+   "confound": "sweep1=cal1 / sweep2=cal2,不同語料不同尺度;PASS 僅能宣告各自語料上的末 loss 高低"
+  },
+  "Z3_sweep2_value_main7": {
+   "verdict": "N/A",
+   "reason": "缺兩迴之一"
+  },
+  "Z4_stability": {
+   "st9": {
+    "verdict": "FAIL",
+    "plateau_exempt_epochs": 6,
+    "n_banded": 31,
+    "max_consecutive_banded": 31,
+    "n_nonfinite_windows": 0
+   },
+   "st9s2": {
+    "verdict": "FAIL",
+    "plateau_exempt_epochs": 6,
+    "n_banded": 31,
+    "max_consecutive_banded": 31,
+    "n_nonfinite_windows": 0
+   },
+   "st7": {
+    "verdict": "N/A"
+   },
+   "st7s2": {
+    "verdict": "N/A"
+   },
+   "e2e_st9s2": {
+    "verdict": "PASS",
+    "ste_mean": 0.14342742333333333,
+    "soft_tail_mean": 0.17006163333333335
+   },
+   "e2e_st7s2": {
+    "verdict": "N/A"
+   },
+   "e2e_st9s2_sg": {
+    "verdict": "PASS",
+    "ste_mean": 0.03476158333333334,
+    "soft_tail_mean": 0.0401378
+   },
+   "verdict": "FAIL",
+   "failed": [
+    "st9",
+    "st9s2"
+   ]
+  },
+  "Z5_honest_band": {
+   "verdict": "N/A",
+   "retention": null,
+   "band": [
+    0.55,
+    0.95
+   ],
+   "note": "誠實帶:落帶外代表量測或管線有問題,不是好消息"
+  },
+  "Z6_selfgen": {
+   "verdict": "FAIL",
+   "e33pre2_9e_strict": 0.8817005545286506,
+   "e33pre_9e_strict": 0.88909426987061,
+   "margin_pp": 1.0,
+   "delta_pp": -0.7393715341959428
+  },
+  "second_criterion_humaneval": {
+   "e33_7e_humaneval": null,
+   "bf16": 0.957317,
+   "retention": null,
+   "verdict": "N/A",
+   "note": "非 prereg 判準(prereg 已凍結);四科錨定 @ab0adc5 立的讀出協定:<85% 判『表面過關實質已裂』,不得當再降一級的起點"
+  }
+ }
+}

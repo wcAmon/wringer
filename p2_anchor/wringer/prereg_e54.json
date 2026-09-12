@@ -1,0 +1,93 @@
+{
+ "experiment": "E54 起點重建:cal7 同配方 2× 語料 + GPTQ 三元 g32 全新底座 + 蓄水→高溫逐窗換碼→e2e 磨合→低溫壓回 全鏈(局部最優脫逃)",
+ "status": "FROZEN v3 + amendment_1 + amendment_2(21:44 S4b 料源換 cal8 自然終止列;用戶核准)",
+ "date": "2026-08-26 18:2x +0800",
+ "process_note": "v1 曾未經用戶核准即標 FROZEN 並點火(18:07),用戶糾正入卷(@e17ec2d,feedback 記憶已立);v2=用戶裁示鏈結構(新增 S4b 低溫壓回段)+ 三旋鈕(temp 0.3/top_p 0.9、B1 單跑+B2 雙跑、900 列/600 步)後正式凍結;cal8 產料與 GPTQ g32 為用戶原話指定,期間未停",
+ "user_ruling": {
+  "origin": "用戶 08-26 傍晚裁定(原文要旨):E53 不能單純用語料軸失敗形容——我們基於前冠軍重新打磨,很可能在局部最優下偏離局部最優;BitNet 本身用大量語料做恢復=三元模型本來就需要大量碼軸重置;我們的方法只是低預算恢復路線,仍會卡局部最優。因此回到起點:cal7 相同語料擴增一倍 → 製作 GPTQ 三元 g32 模型 → 重新蓄水→逐窗→e2e",
+  "s4b_ruling": "用戶 18:1x 追加:既然有兩段打磨,應在 e2e 再接一段低溫閉合語料 e2e——完成『高溫逐窗換碼、e2e 磨合、低溫壓回』的退火課程;三旋鈕:採樣 temp 0.3/top_p 0.9、裁點 B1 單跑+B2 雙跑、劑量 900 列/600 步",
+  "reading": "H_localopt:冠軍血統(st47d→st51c 一路 e2e 微調)的盆地繼承在高分區成為負資產,語料級干預(E52/E53)推不動是因為 policy 被釘在冠軍盆地;程序內判例支持=E35 M3『7元 盆地繼承為負資產』;反向判例=E31 from-scratch 35.49 < E32 繼承 44.55(但彼時無水庫工具,E37 之後蓄排鏈已證 +5.73pp 可修儲存軸)"
+ },
+ "hypotheses": {
+  "H_localopt": "全新 GPTQ g32 盆地 + 2× 大劑量語料 + 蓄排全鏈 + 低溫壓回 → 裁判點 B2 可及或超越冠軍帶;若成立,E53 語料內容除罪(同配方語料在新盆地成功=E53 的病在盆地不在料)",
+  "H_anneal": "低溫壓回段(S4b)= 溫度軸的『訓練分佈=推理分佈』:換碼/磨合段在高溫流形廣覆蓋,最後一段把 policy 壓回 eval 取樣的高機率流形;主量測 Δ_anneal = B2 − B1(方向與幅度照實)",
+  "confound_declared": "誠實預記:E54 vs E53 差異=盆地重置 × 2× 劑量 × 全鏈(蓄排) × g32 底座 × 退火段 五因子綑綁;B2 勝訴裁『重建路線成立』但單因子歸因不可拆(唯 Δ_anneal 可拆);敗訴時同樣混雜(g32 較冠軍半 g16 更粗=天然逆風,FAIL 不自動否證 H_localopt 本體)",
+  "falsifier": "裁判點 B2 mean 甲 < 0.70(連 E53 的 0.6970 都不及)→ 重建路線劣於血統打磨,fresh-basin 軸封盤,回冠軍血統做量化殘留軸/迴圈硬核小臂"
+ },
+ "corpus": {
+  "gen_hot": "gen_e54_longtraj.py:cal7(gen_e53_longtraj)逐字同配方,僅改 PER_DOMAIN 900→1800、SEED 20260826、輸出名;bf16 教師釘定 revision、temp 1.0/top_p 0.95/max_tokens 8192、全保留(閉合+截斷)、8-gram 除汙列切;預期 ~7200−除汙 列 ~49M 有效 token",
+  "gen_lt": "gen_e54lt.py:S4b 壓回料——temp 0.3/top_p 0.9、PER_DOMAIN 900、SEED 20260828、只留閉合列(截斷丟棄)、同 bank/除汙;per-domain closure_rate_lt=溫度軸儀器點(對照 temp 1.0 四點 6.3%-46.7%)",
+  "chunks_view": "build_e54_chunks.py:有效區滿 2048 切片——**v3 降級為僅 S1 GPTQ cov 用**(用戶裁 S2/S3 直上 8k;GPTQ 維持歷代 2048 統計口徑);S2-S4b 一律 8k 整軌+lengths mask",
+  "s2s3_8k_ruling": "用戶 18:4x 裁定『全 8k(S2+S3 都改)』——理由:chunk 視圖的 state-reset 失真使 H 完全看不到長 context 激活區(真 8k 前傳約七成 token context>2048,chunk 視圖為零成),病灶敘事(失律住深思考弧)恰在被切掉的分佈裡;E37 ρ=0.969 是 2048 時代量測,不自動外推"
+ },
+ "pipeline": {
+  "S0_gen": "serve bf16 teacher → gen_e54_longtraj(高溫 2×)∥ gen_e54lt(低溫壓回料,同 serve 窗併行)→ 雙 manifest(無 hard gate,數字照實)→ chunks 視圖",
+  "S1_base": "quantize --grid 3 --block 32 --tag g3b32 --n-calib 128 --calib chunks → export exports/e54_g3b32 --verify → 單跑三科 = 甲_floor(零訓練地板,儀器記錄不裁決)",
+  "S2_fill": "res_fill --tag res54 --state-tag g3b32 --ref-export exports/e54_g3b32 --data calib_e54_traj.pt --lengths calib_e54_len.pt --batch 2 --microbatch 1 --kd-impl hidchunk --steps 1200(16384 tok/步=E37 phase1 等值 19.7M tok;平台判停照 E37);先 --smoke 20步(P0 位元閘 + 8k 記憶體 + lengths 接線);合併 fp → exports/e54_resA → 單跑三科 = 裁判點 A(水庫天花板)",
+  "S3_drain": "train_res --tag st54r --state-tag g3b32 --res-tag res54 --calib calib_e54_traj.pt --lengths calib_e54_len.pt --n-calib 256 --batch 4 --learn-theta --holdout-frac 0.05 --resume(τ0.5/W_max4/Δγ五格沿 E37 校準;先 --smoke 2窗);8k H 樣本 2.1M tok = E37 的 2×;X+Y 駐留 ~21-26GB 記憶體帳",
+  "S4_e2e": "e2e_soft --tag st54r_e2e --state-tag st54r --data calib_e54_traj.pt --lengths calib_e54_len.pt --steps 1200 --batch 2 --microbatch 1 --gamma 0.8 --s0 30 --lora-r 64 --lora-lr 1e-4 --factor-lr 3e-4 --clip 1.0 --kd-dir fwd --full-ckpt --kd-impl hidchunk --close-weight 256 --close-post-weight 16 --close-post-k 8(高溫磨合)→ export exports/e54_hot --verify → 單跑三科 = 裁判點 B1",
+  "S4b_anneal": "e2e_soft --tag st54lt_e2e --state-tag st54r_e2e --data calib_e54lt_traj.pt --lengths calib_e54lt_len.pt --steps 600 其餘旗標同 S4(低溫壓回;λ_close 256 照用)→ export exports/e54_3g --verify",
+  "S5_judge": "雙跑三科(w128/w128r2)= 裁判點 B2(均值制主判)"
+ },
+ "self_calibrations": {
+  "lambda_close_256": "兩段 e2e 閉合權重皆取 E51 冠軍值 256(E53 的 32 下調在其 FAIL 歸因中列共犯候選;『cal7 相同語料』指產料配方,訓練側取已證最優值)",
+  "chunks_for_S1S3": "蓄水/逐窗走 2048 chunk 視圖=E37 已證 régime;8k 整軌只進 e2e 兩段(訓練分佈對齊留在鏈尾)",
+  "seeds": "cal8 20260826 / cal8lt 20260828(與 cal7 的 20260827 皆相異,軌跡獨立)",
+  "smoke_gates": "S2/S3 各自 --smoke 先行(fresh GPTQ 態與 E37 冠軍態的 state 結構差異風險 + 8k 記憶體 + lengths mask 新路徑),FAIL 即停鏈修理,不算裁決"
+ },
+ "engineering_v3": {
+  "date": "2026-08-26 18:4x",
+  "comp.py": "HAccum 加 self.mask(B,S bool):設定時只累積有效位置;None=舊行為(float 移至選取後,數值恆等)",
+  "train_res.py": "--lengths:逐批 M 遮罩(對齊 capture 批次);train_epoch 主/桿2 兩路遮罩均值(同尺度)、holdout 遮罩、comp_event 逐批設 acc.mask;None=原表達式逐位不變",
+  "res_fill.py": "--lengths:KD loss 位置權重(lim=xl−1 截斷列尾修正,e2e_soft 逐字同語義);smoke 同步切片;None=舊行為",
+  "cpu_checks": "PASS(18:4x):①HAccum mask==逐列裁切 H(3.8e-6 ULP 級)+None 路徑 0.0 逐位;②遮罩 huber==有效切片 huber(0.0);③lim 語義;④M 批次對齊"
+ },
+ "judges": {
+  "protocol": "官方 benchmark 唯一裁判;主判雙跑均值制(σ_mean≈0.006);訓練曲線/val CE/閉合率/level/flips 一律 monitor-only",
+  "floor": "甲_floor 記錄(不裁決);預期遠低於冠軍=正常",
+  "A_gate": "裁判點 A 甲 ≤ 甲_floor + 0.01 → E54_ABORT_A:水庫對 g32 缺口裝不到東西,歸因蓄水端(rank/KD),S3 起不上場",
+  "B1_relay": "裁判點 B1 單跑三科(中繼,記錄不裁換防)= 退火前座標;Δ_anneal = B2_mean − B1 為 S4b 主量測(單跑 vs 雙跑均值的噪音不對稱照實註記)",
+  "B2_primary": "mean 甲 > 0.7388(冠軍雙跑均值)→ 換防新冠軍;≥ 0.80 → 計劃收官里程碑",
+  "B2_partial": "mean 甲 ∈ [0.726, 0.7388](−2σ 帶內)→ PARTIAL:新血統以更低起點追平,五因子混雜不可拆,續裁權回用戶",
+  "B2_fail": "mean 甲 < 0.726 → FAIL 照實,st51c_e2e 衛冕;< 0.70 觸發 falsifier(fresh-basin 軸封盤)",
+  "rho": "ρ = (B2 − floor)/(A − floor) 照 E37 主量測(烘焙效率);ρ_if/ρ_he/ρ_gs 分科照記",
+  "comparability_note": "冠軍底座=半 g16 政策;本臂依用戶原文全 g32(對齊 post-80% 全三元 g32 路線圖)——非同底座,主判取官方絕對分數,不做同底座讓分",
+  "B1_fuse": "(amendment_1)B2_mean < B1 單跑時:e54_hot 補雙跑,主判座標=max(B2_mean, B1_mean);詳 amendment_1.judge_fuse"
+ },
+ "measurement_duty": [
+  "S0:cal8 per-domain closure_rate_8k/p_exceed_8k vs cal7 四點(同配方複測=儀器再現性);cal8lt closure_rate_lt 四點(溫度軸新儀器)",
+  "S1:甲_floor 三科 + 空回應數(fresh g32 的 P1 型失律基線)",
+  "S2:KD 曲線、平台判停步數、A 三科",
+  "S3:逐格 {γ,flips,absorb,level,wait}、γ≡0 斷言、D6 流向",
+  "S4/S4b:val CE(monitor)、t_flip、closure 權重命中數;S4b 前後 empties 對比(壓回對空回應的作用)",
+  "S5:B2 三科×2、empties、stable 空核(對冠軍 50/E53 50 帶比較;he stable 對 16-18 帶=量化殘留軸診斷續讀)",
+  "S5(amendment_1):若觸發保險絲=e54_hot 補雙跑三科×2 照記;Δ_anneal 以 B2_mean − B1_mean(雙跑對雙跑)重算一份並列(消單雙跑噪音不對稱)",
+  "S4b(amendment_2):E54AN_MANIFEST(篩選列數/len 分佈/抽樣 seed);cal8lt EOS 饑荒率 79.6% 入溫度軸儀器組"
+ ],
+ "budget_est": "gen(雙流併行)~3-5h + quantize ~1-2h + floor 0.6h + fill ~2h + A 0.6h + drain ~2h + e2e ~1.9h + B1 0.6h + anneal ~1h + B2 雙跑 ~1.2h ≈ 15-17h(跨夜鏈,哨兵佇列自主接續=本 prereg 用戶核准後之授權範圍)",
+ "artifacts_policy": ".pt/.npz 不入 git;states data/qs_g3b32、data/res_res54、data/qs_st54r{,_e2e}、data/qs_st54lt_e2e;exports e54_g3b32/e54_resA/e54_hot/e54_3g(收卷後依磁碟政策清非冠軍)",
+ "anchors": {
+  "champion_mean": 0.7388,
+  "e53_mean": 0.697,
+  "bf16": {
+   "ifeval": 92.79,
+   "humaneval": 94.51,
+   "gsm8k": 95.53
+  }
+ },
+ "amendment_1": {
+  "date": "2026-08-26 21:30 +0800(S0 產料進行中,無任何裁判點讀數=見數據前修訂;用戶核准指令「修」)",
+  "fact_correction": "官方裁判採樣實測=temp 1.0/top_p 0.95/top_k 20/min_p 0/presence_penalty 1.5(ifeval_runner 與 subject_runner 皆同,Qwen3.5 對齊參數)→ H_anneal 原文『壓回 eval 取樣的高機率流形』前提錯誤:eval 不在低溫,cal8 高溫料才是採樣參數對齊 eval 的那份(產料端無 top_k/presence 仍為刻意差異=採老師自然分佈)",
+  "h_anneal_rereading": "S4b 改讀=mode-concentrated 教材假說(GKD mode-seeking 的資料側實現:欠容量學生把容量集中在老師主模式);原文保留不改(證據保存)。預記混雜:cal8lt code closure_lt 34.11%=閉合篩選偏向簡單題,S4b 的 code 教材偏食,Δ_anneal 分科讀數(尤 he)受此混雜",
+  "judge_fuse": "保險絲規則:若 B2_mean < B1(單跑)→ 對 e54_hot(B1 態)補雙跑得 B1_mean;主判座標=max(B2_mean, B1_mean),換防/收官/PARTIAL/FAIL/falsifier 全部以該座標裁;S4b 記純期權敗訴照實。若 B2_mean ≥ B1 單跑 → 原判準不變(B2 主判)。門檻數字(0.7388/0.80/0.726/0.70)一字不動",
+  "rationale": "S4b 原理論護航(溫度軸 train/serve 對齊)因 fact_correction 失效,降級為對稱賭注;其位於主判前最後一棒,若負貢獻會拖累 B2 才進主判。保險絲使 S4b 成純增益期權:勝加分、敗僅計 600 步訓練費,不綁架主判"
+ },
+ "amendment_2": {
+  "date": "2026-08-26 21:44 +0800(S0 hot 流仍在產,S4b 未跑=見數據前修訂;用戶裁「換 cal8 自然終止列」)",
+  "finding": "cal8lt 收口實測(E54LT_TRAJ_MANIFEST):閉合率 temp0.3 全域崩塌(agentic 33.2/ifshape 25.3/code 34.1/math 90.6 vs temp1.0 的 62.6/77.1/53.3/93.7)=溫度反轉非 code 特例;且留存 1624 列中 79.6%(1292)吃滿 8192 無自然終止=EOS 饑荒——</think> 有收但答案段 ramble 到上限;真自然終止僅 332 列(產量 9.2%,近全 math)。病灶從『思考不終止』移到『答案不終止』;E53 歸因候選『無閉合列毒性』26.9% 即列嫌,本料 79.6%",
+  "ruling": "S4b 料源替換:改用 cal8 高溫料的自然終止列(len<8192=EOS 在窗內)——溫度對齊 eval(temp1.0,呼應 amendment_1 事實更正)、教材全完整收尾、mode-concentrated 由選擇實現;build_e54_anneal.py 篩選+定額 900 列(SEED 20260828 抽樣),lengths 遮罩照用。cal8lt 降級為溫度軸儀器紀錄(不入訓練),閉合率四點+EOS 饑荒率照實入卷",
+  "s4b_amended": "build_e54_anneal.py(cal8 收口後跑)→ e2e_soft --tag st54lt_e2e --state-tag st54r_e2e --data calib_e54an_traj.pt --lengths calib_e54an_len.pt --steps 600 其餘旗標同 S4 → export exports/e54_3g --verify",
+  "honest_note": "域配比:cal8 列域標籤未存,len<8192 篩選天然偏 math/ifshape(閉合率高域)、稀釋 code——照實預記為 Δ_anneal 混雜(取代原 cal8lt 簡單題偏食混雜);若 cal8 manifest 顯示自然終止列 <900,全取照實",
+  "post_check": "22:55 cal8 hot 收口對照:hot 亦 78.7% 吃滿 8192(5533/7030)≈ lt 的 79.6%=EOS 饑荒為產線通性(raw /completions 無 stop 字串,答案後可續生),非低溫特有;低溫特有的只有 </think> 閉合崩塌(finding 該句修正)。歷代語料(cal4→cal8)與冠軍訓練同受此性質。amendment_2 篩選正確性不受影響:自然終止+閉合池 1428 列 → 900 列(len_q [902,1414,3937],E54AN_MANIFEST sha 01e3f0ae)。四點儀器複測 PASS(ag 62.56/if 77.06/code p_exceed 45.5 vs 46.7/math 94.22)。產線 stop 字串修正=語料配方變更,列未來新臂討論項,本臂不動"
+ }
+}

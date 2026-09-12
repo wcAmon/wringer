@@ -1,0 +1,114 @@
+{
+ "id": "E64-PL",
+ "title": "E64-PL 探針階梯 —— 2.7 bpw 目標下四個槓桿的零訓練/求解器級真值:r 上冠軍台(S1)、位元放置(S2)、VQ 求解器 A/B(S3)",
+ "status": "FROZEN 2026-09-08(用戶裁 Q1 核准 / Q2 加 asymrefit 臂 / Q3 權重占比對齊 / Q4 S3 工程可先起);點火順序 S1→S2→S3",
+ "goal_context": "用戶裁定目標:總帳 ≈ IQ2_M 級(2.7 bpw 含 α/r,不含 embedding)下 comp ≥ 0.90。現況:冠軍 st51c_e2e 理想帳 2.70(含 r)→ 兩跑均值 0.7388 / 單跑 0.7469;缺口 0.15 無單一槓桿可補,須疊加 r、放置、碼本幾何、蓄排水。E64 只量槓桿幅度,不換防、不投大工程。",
+ "evaluation_epoch": {
+  "rule": "本卷所有官方讀數在同一 epoch:同 harness(a1eval 鏈)、同 seed 20260806、同採樣;主判一律用『同 epoch 臂間 Δ』;絕對 comp 以舊錨 92.79/94.51/95.53 計以便與卷史可比,另列新錨(F8 鏈 bf16 重跑 90.57/93.90/96.21)換算值",
+  "noise_band": "臂間 Δcomp ±0.016(churn_baseline_st51c 兩跑);單科護欄:任一科不得低於對照臂 1.0 pp 以上"
+ },
+ "arms": {
+  "S1_r_on_champion": {
+   "question": "r(每 block 2 bit 負側尺度)在冠軍台零訓練能拿多少?可交付 2.70 bpw 態能否直接到 0.80?",
+   "platform": "碼 qs_st51c_e2e(3/5/9 分級:L0–15/L16–27/L28–31;g16 25%)+ 水 res_res62s2(A 0.8216);目標 W_t = dense(碼) + BA/r",
+   "arms": {
+    "ctrl": "T 固定,α 對 W_t 閉式重擬合(對稱)—— 冠軍台的直投基線",
+    "asymblkq2": "T 固定,(α, r_blk) 交替閉式 + r 量化 2 bit(每模組 log 碼書)+ α 重擬合 —— 主臂,位元 +0.078 b/w(半 g16)",
+    "asymrefit": "T 逐元非對稱重投影 ↔ (α, r) 交替(局部換碼)—— 盆地風險探針(用戶 Q2 加);判讀:asymrefit − asymblkq2 > +0.016 ⇒ 換碼有益(盆地內);< −0.016 ⇒ 換碼有害(第 11 型:局部誤差降、官方跌),S3 目標與翻碼量須設殺閘"
+   },
+   "official": "三臂各一跑官方三科(~1.5 h/臂)",
+   "judges": {
+    "J1": "Δ = asymblkq2 − ctrl > +0.016 ⇒ r 跨台成立(A4 S0 為 +0.0537);≤ 0.016 ⇒ r 增益為 A4 特有,E63 S1 引擎在冠軍台預期下修",
+    "J2": "asymblkq2 絕對值:≥ 0.7629(=0.7469+0.016)⇒ 零訓練即新可交付冠軍;[0.7388, 0.7629) 持平;< 0.7388 ⇒ 第 11 型警報(閉式重擬合把碼拉離盆地),停 S3 前先驗屍",
+    "J3": "ctrl 對 0.7388:量『α 單獨吸水』;若 ctrl < 0.72 ⇒ A 態目標對冠軍碼的閉式重擬合本身有害,S3 目標定義須改"
+   },
+   "predictions": {
+    "P1": "ctrl ∈ [0.74, 0.77]",
+    "P2": "asymblkq2 ∈ [0.78, 0.82](A4 增益 +0.054 × 冠軍台較高基底折 0.8–1.0)",
+    "P3": "ρ_he(asym)− ρ_he(ctrl) ≥ +0.03(S0 he +7.3 主增益在 he)"
+   },
+   "engineering": "probe_asym.py 目前強制 grid=3、T2 置零(L218):須泛化到混格 —— V = T1 + c·T2 取代 T3(asym_V/solve_r_blk/fit_alpha_r/dense_asym 以 V 為輸入,負側 v<0 乘 r,與 stq._apply_rneg 語義一致);state 落盤保留原 T2/grid;checks:C1 純三元層逐位等於舊路;C2 9元 層 r≡1 時 dense 逐位等於 dense_weight;C3 export/decode bit-exact。估 0.5 天 + 煙測 0.5 h(--smoke 2 層)"
+  },
+  "S2_placement": {
+   "question": "第二位面(T2β)放在深層讀者端是否比放在 down_proj 更划算?誤差質量地圖有沒有因果效力?",
+   "platform": "A4(st54r 純三元 + res58r1),與 E63 T2 探針同台可直接對照:ctrl 0.744 / asymblkq2 0.820 / t2beta_dp_asym(down_proj 全層 + r)0.868",
+   "arm": "pt64_t2beta_readers_asym:T2β 開在深層讀者端(gate_proj/up_proj/in_proj_qkv/in_proj_z)+ r;層集由最深層往淺加入直到權重占比 ≈ down_proj 全層的 21.2%(readers L24–31 = 15.9%、L18–31 = 27.4%,預計落在 L22–31 附近,prereg FROZEN 時填實際層集與占比,位元對齊 ±0.02 b/w)",
+   "official": "一跑官方三科(~1.5 h)+ 探針全模型 ~30 min",
+   "judges": {
+    "J4": "Δ_place = readers_asym − t2beta_dp_asym(0.868×0.7038=comp 0.611):> +0.016 ⇒ 讀者端放置 POS(error-mass 有因果效力,D 路線 task-aware 分配立案);|Δ| ≤ 0.016 ⇒ 放置中性(位元是位元,E32 線性律);< −0.016 ⇒ down_proj 特殊(寫者端槓桿),error-mass 地圖封",
+    "J5": "單科形態:readers 臂 he 對 t2β_dp 的 Δ 另記(down_proj T2 的 he +5.5 是否被讀者端取代)"
+   },
+   "predictions": {
+    "P4": "Δ_place ∈ [+0.00, +0.04](誤差質量 89% 在讀者端,但官方槓桿已知只驗過 down_proj;中性帶上緣)",
+    "P5": "若 POS,增益集中在 gs/if;he 由 down_proj 主導的假說"
+   },
+   "engineering": "probe_t2.py 加 --modules(型態集)與 --layer-min;compose 支援任意模組集(現只 down_proj,L122–138);位元帳自動印(所選權重占比 × 2.08);估 0.5 天"
+  },
+  "S3_solver_ab": {
+   "question": "B 路線收編:在排水引擎 comp 事件內,4 權重聯合搜索(同網格)與剪枝碼書(d=4/8 配對 trit)各比現行逐權重 greedy 多吸多少水?",
+   "platform": "A4 st54r + res58r1,train_res --smoke(2 窗 × 32 calib × 2 格)st63a 配置(asym r 開著,不關)",
+   "arms": {
+    "G": "現行 greedy_comp_grid(對照)",
+    "J4": "4 權重聯合搜索,全 3⁴=81 格(隔離『求解器變好』)",
+    "V4": "4 權重剪枝碼書 K=64(1.5 b/w 三元層),碼書由 H 加權 k-means on 配對 trit 格點初始化,固定後聯合選碼(隔離『格子變圓』)",
+    "V8": "8 權重剪枝碼書 K=4096(同 1.5 b/w),僅離線重算,若 V4 落 5–10% 帶才跑"
+   },
+   "metrics": "每 comp 事件後:held-out H 加權誤差 err_h(相對 G)、窗末水位 final_level、flips、事件耗時;不跑官方",
+   "judges": {
+    "J6": "V4 vs J4 的 err_h 相對改善:≥ 10% ⇒ B1 立案(整條排水以 VQ 求解器跑,另立 prereg,對 st63a 引擎裁官方);5–10% ⇒ 只允許 V8 離線重算一次;< 5% ⇒ B 封盤,碼本幾何無紅利(無旋轉條件下)",
+    "J7": "J4 vs G:≥ 5% ⇒ 聯合搜索作為免費求解器升級併入 A 路線引擎(需再過 2 窗煙測與整條排水官方);< 5% ⇒ greedy 已足",
+    "J8": "耗時護欄:V4/J4 每事件耗時 > 3× G ⇒ 記工程稅,B1 位元/時間帳重估"
+   },
+   "predictions": {
+    "P6": "J4 vs G ∈ [+3%, +8%](E59/E61 判例:解法器修正曾給 +0.053 ρ)",
+    "P7": "V4 vs J4 ∈ [+2%, +8%](D4 理論 8% 上限,無旋轉打折)⇒ 落 J6 的封盤或灰帶機率高;這正是為何 B 排在 S1/S2 之後",
+    "P8": "V8 vs J4 若跑:≤ 14%(E8 理論)"
+   },
+   "engineering": "comp.py 新增 joint_comp_grid(p, W0, R, H, d=4, codebook=None):以 4 列或 4 欄相鄰權重為向量(欄向量,與 g32 block 對齊),Δobj 用 H 的 4×4 子塊 + 殘差回饋;codebook=None 為全格;碼書建構 build_pt_codebook(W_t, T_init, H, K);train_res --comp-solver {greedy,joint4,vq4,vq8};checks:C4 joint4 在 d=1 退化逐位等於 greedy;C5 碼書含全格時 vq4 ≡ joint4;估 1.5–2 天(最大工程項,可與 S1/S2 GPU 期並行)"
+  }
+ },
+ "order_and_cost": {
+  "order": "S1(工程 0.5 天 → 探針 0.5 h → 官方 3 h)→ S2(工程 0.5 天,可在 S1 官方期間做 → 探針 0.5 h → 官方 1.5 h)→ S3(工程 1.5–2 天並行 → 煙測 4–6 h,無官方)",
+  "gpu_h": "≈ 13.5(S1 5.5 + S2 2 + S3 6)",
+  "wall": "≈ 3 天(工程主導)",
+  "disk": "states 3 × 7.5 G + exports 3 × 9.7 G ≈ 52 G;餘 632 G"
+ },
+ "decision_tree_after_e64": {
+  "S1_POS(asym ≥ 0.78)": "E65-DS 排水節奏臂改在『冠軍碼 + r』起點上跑(F 臂 = st63a 引擎排 res62s2),目標 B ≥ 0.80 可交付",
+  "S1_NEG(Δ ≤ 0.016 或 asym < 0.7388)": "r 為 A4 特有 ⇒ 回 A4 台做引擎研究,冠軍台改走 D 路線(task-aware 分配);北極星 0.90 @2.7 bpw 下修為 0.85 候選",
+  "S2_POS": "D 路線立案:task-loss 邊際效用 × knapsack 重配 3/5/9 tier(位元中性),先零訓練再排水",
+  "S3_J6_PASS": "B1:VQ 求解器整條排水 vs st63a 引擎(9 h + 1.5 h),同台官方裁",
+  "S3_J6_FAIL": "B 封盤;J7 若過則 joint4 併入引擎"
+ },
+ "not_doing": [
+  "旋轉/Hadamard(E60、Bielik MC-generation dissociation 雙重封盤)",
+  "β 第三中心(F8 已封)",
+  "M/L 常駐載體",
+  "任何臂在 prereg FROZEN 前點火;S3 不跑官方"
+ ],
+ "assets": {
+  "in": [
+   "data/qs_st51c_e2e",
+   "data/res_res62s2",
+   "data/qs_st54r",
+   "data/res_res58r1",
+   "calib_e58r1b_traj/len",
+   "verdict_e63_s0/t2(A4 對照數)"
+  ],
+  "out": [
+   "probe_asym_e64_champ.json",
+   "data/qs_pa64_ctrl / qs_pa64_asymblkq2",
+   "exports/e64_pa64_*",
+   "a1eval/*_e64_pa64_*",
+   "probe_t2_e64_readers.json",
+   "data/qs_pt64_t2beta_readers_asym",
+   "exports/e64_pt64_readers",
+   "a1eval/*_e64_pt64_readers",
+   "train_st64smk_{G,J4,V4[,V8]}.json",
+   "verdict_e64_pl.json"
+  ]
+ },
+ "decision_for_user": {
+  "resolved_2026-09-08": "Q1 核准;Q2 加 asymrefit;Q3 權重占比對齊;Q4 S3 工程先起"
+ }
+}

@@ -1,0 +1,155 @@
+{
+ "experiment": "E63 S0 非對稱三元 零訓練探針(局部段)",
+ "prereg": "prereg_e63_asym.json FROZEN S0 @54f07b2",
+ "date": "2026-09-06 00:4x",
+ "platform": "A4:st54r 碼 + res58r1 水;Σ 於 st54r 部署形態,128 calib_e58r1b × 16k;200 模組;各臂不前傳",
+ "summary_ratio_vs_ctrl": {
+  "asym": {
+   "all_med": 0.993,
+   "down_proj_med": 0.9989,
+   "others_med": 0.9923,
+   "absorb_mean": 0.6776,
+   "flips_mean": 0.0
+  },
+  "symrefit": {
+   "all_med": 0.9988,
+   "down_proj_med": 0.9995,
+   "others_med": 0.998,
+   "absorb_mean": 0.6763,
+   "flips_mean": 0.00011
+  },
+  "asymrefit": {
+   "all_med": 0.9902,
+   "down_proj_med": 0.9981,
+   "others_med": 0.9886,
+   "absorb_mean": 0.6786,
+   "flips_mean": 0.00011
+  },
+  "symgptq": {
+   "all_med": 1.0028,
+   "down_proj_med": 1.0099,
+   "others_med": 0.9951,
+   "absorb_mean": 0.6807,
+   "flips_mean": 0.0053
+  },
+  "asymgptq": {
+   "all_med": 0.9991,
+   "down_proj_med": 1.008,
+   "others_med": 0.9869,
+   "absorb_mean": 0.682,
+   "flips_mean": 0.00527
+  },
+  "asymblk": {
+   "all_med": 0.6978,
+   "down_proj_med": 0.7926,
+   "others_med": 0.6861,
+   "absorb_mean": 0.7617,
+   "flips_mean": 0.0
+  },
+  "asymblkrefit": {
+   "all_med": 0.677,
+   "down_proj_med": 0.7802,
+   "others_med": 0.6676,
+   "absorb_mean": 0.7672,
+   "flips_mean": 8e-05
+  },
+  "asymblkq1": {
+   "all_med": 0.8453,
+   "down_proj_med": 0.8764,
+   "others_med": 0.8373,
+   "absorb_mean": 0.7232,
+   "flips_mean": 0.0
+  },
+  "asymblkq2": {
+   "all_med": 0.75,
+   "down_proj_med": 0.8224,
+   "others_med": 0.74,
+   "absorb_mean": 0.747,
+   "flips_mean": 0.0
+  },
+  "asymblkq3": {
+   "all_med": 0.7148,
+   "down_proj_med": 0.803,
+   "others_med": 0.7049,
+   "absorb_mean": 0.7567,
+   "flips_mean": 0.0
+  },
+  "asymblkq4": {
+   "all_med": 0.7052,
+   "down_proj_med": 0.7972,
+   "others_med": 0.6959,
+   "absorb_mean": 0.7593,
+   "flips_mean": 0.0
+  }
+ },
+ "ctrl_absorb_mean": 0.6757,
+ "predictions_scored": {
+  "P1": "FAIL:逐列 asym 中位 0.993(帶 [0.93,0.99] 之外)",
+  "P2": "FAIL:asymrefit/symrefit 中位 0.992(−0.8% < 3%)",
+  "P3": "FAIL:down_proj 增益最小(asymblk 0.793 vs 其他 0.686);down_proj ctrl 吸水率本就最低",
+  "P4": "FAIL:asymgptq/symgptq 中位 0.999/1.003 ≈ 1",
+  "P5": "PASS:asymblk 中位 0.698 ∈ [0.60,0.75];深層 0.692 不劣於淺層 0.700",
+  "P6": "PASS(邊界):asymblkq2 0.750 ≤ 0.75、q1 0.845 ≤ 0.85;q3 vs blk 0.715/0.698 = 2.4% > 2% 該子項 FAIL",
+  "P7": "觸發:逐列 asym 中位 0.993 ≥ 0.99 且 asymrefit/symrefit 0.992 ≥ 0.99 ⇒ falsifier_local ⇒ 逐列 r 封盤,不上官方"
+ },
+ "verdict_local": "逐列 r(嚴格零位元版)封盤;逐 block r 有料(−30% Σ 誤差、吸水率 0.676→0.762);2 bit 碼書留 −25%(吸水率 0.747);粒度定律:非對稱的價值在 block 粒度,與 α 同粒度",
+ "mechanism_note": "逐列 r 無效因 α 逐 block 已吸尺度、列內正負不平衡跨 block 互相抵消;逐 block r 等價於每 block 正負兩尺度,r 分佈 p10/p90 ≈ 0.92/1.08、遠離率 2%、夾限 <0.3%",
+ "official_stage": "用戶裁 Q1 允許 ⇒ pa63_ctrl vs pa63_asymblkq2 官方配對排 S2 鏈後(chain_e63_s0.sh);P8 Δcomp ∈ [+0.01,+0.04];局部指標第 11 型前科,官方才裁 → 已裁 POS 見 official",
+ "caveats": [
+  "局部 Σ 度量,零訓練,各臂不前傳(逐窗鮮 H 差異未量)",
+  "Lloyd 碼書每模組獨立(4 值);S1 內 r 量化需在 comp 事件內完成",
+  "asymblk 全精度臂 +0.5 b/w 只作上界"
+ ],
+ "cleanup_candidates": [
+  "data/qs_pa63_asym、qs_pa63_asymrefit(逐列版封盤,各 7.1G)"
+ ],
+ "official": {
+  "date": "2026-09-06 17:0x",
+  "chain": "chain_e63_s0.sh(14:33 自動點火,S2 鏈後)",
+  "arms": {
+   "pa63_ctrl": {
+    "scores": {
+     "ifeval": 66.36,
+     "humaneval": 26.83,
+     "gsm8k": 54.59
+    },
+    "comp": 0.5235,
+    "rho_vs_A4": 0.744,
+    "empties": {
+     "ifeval": 53,
+     "humaneval": 43,
+     "gsm8k": 85
+    }
+   },
+   "pa63_asymblkq2": {
+    "scores": {
+     "ifeval": 69.69,
+     "humaneval": 34.15,
+     "gsm8k": 59.14
+    },
+    "comp": 0.5772,
+    "rho_vs_A4": 0.82,
+    "empties": {
+     "ifeval": 44,
+     "humaneval": 34,
+     "gsm8k": 93
+    }
+   }
+  },
+  "delta": {
+   "comp": 0.0537,
+   "by": {
+    "ifeval": 3.33,
+    "humaneval": 7.32,
+    "gsm8k": 4.55
+   },
+   "band": 0.011,
+   "multiple_of_band": 4.9
+  },
+  "verdict": "POS(Δcomp +0.0537 > +0.011;三科同向,he +7.32 最大)",
+  "P8": "PASS 且超上緣(預測 [+0.01,+0.04],實得 +0.054);局部 −25% Σ 誤差 → 官方 +0.076 ρ,第 11 型未觸發:尺度側 DOF 在固定碼、零訓練下即為官方可見",
+  "reading": "零訓練非對稱直投 ρ 0.820 已與訓練式純碼引擎 st61b 0.872 相距 0.05;ctrl 0.744 → asym 0.820 = +0.076 ρ 為固定碼下尺度側可吸之水;若此增益在 S1(訓練式排水 + (α,r_q) 閉式)上疊加,ρ 目標 0.872+0.05 ≈ 0.92 > 勝冠軍所需 0.909(S2 排水算術)",
+  "caveat": "S0 平台為 A4(st54r 碼 + res58r1),非冠軍台;增益疊加性(S1 是否 +0.05)未證,S1 prereg 的主判即此;he 空回應 43→34、gs 空回應 85→93 方向不一,空回應非主判",
+  "consequence": "S1 prereg DRAFT(prereg_e63_s1.json)呈用戶核准;排水段引擎候選由 st61b 純碼升級為 st61b+(α,r_q);不自主點火"
+ }
+}

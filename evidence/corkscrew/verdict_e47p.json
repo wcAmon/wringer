@@ -1,0 +1,28 @@
+{
+ "experiment": "E47-P A′ 軌跡鎖定臂:終裁",
+ "date": "2026-08-24",
+ "verdict": "FAIL 殺閘擊穿——triage IFEval w128 39.56 < 殺閘 55(vs 冠軍 st47d 71.35 Δ−31.79;vs 場+β 65.06 Δ−25.50;vs 標準排水 63.96 Δ−24.40);ρ_drain 0.502;A′ 軌跡鎖定路徑判死",
+ "numbers": {
+  "triage": 39.56, "instruction_level": 40.89, "rho_drain": 0.502,
+  "anchors": {"champion_st47d": 71.35, "field_beta": 65.06, "std": 63.96, "kill": 55, "A_point": 78.74},
+  "pin_r2_curve": {"L03": 0.376, "L07": 0.300, "L11": 0.337, "L15": 0.385, "L19": 0.463, "L23": 0.499, "L27": 0.519},
+  "pin_energy_med_range": [0.772, 0.816],
+  "export_verify": "200/200 bit-exact(匯出無罪)"
+ },
+ "attribution": {
+  "primary": "水庫置換劣化:pin 以閉式最小二乘重寫 res 旁路,R² 中位僅 0.30-0.52=重擬合只解釋一半漂移方差,且截秩 512 後能量僅存 0.77-0.82——每次 pin 都把 KD 訓練成形的水換成線性回歸近似水,7 次累積置換=水庫結構性劣化",
+  "family": "『排水中不可動水』家族第三案:E46 蓄排一體(端到端 KD 重蓄,−6.29)→ 本案閉式重擬合(−31.79,更重)——水庫在排水中途任何形式的重寫皆淨傷害,水只能在蓄水段成形",
+  "diagnosis_gap": "煙測診斷 R² 0.650(E46 終態素材)vs 實戰中停態 R² 0.30-0.52=『可預測 ≠ 可修復』:終態漂移的線性可預測度不轉移到中停態重擬合;R²/energy 全程 monitor-only 判準紀律再度自保",
+  "monitor_signal": "本案監測儀器方向正確(R² 遠低於煙測帶即預警)——非 proxy 反轉,列為診斷-干預落差型態"
+ },
+ "consequences": {
+  "water_side": "唯一水側活槓桿死亡:剩餘排水稅 −7.39 的漂移成分無現行解方",
+  "aperture_side": "口徑側(D×E 組合)成為排水軸唯一剩餘活路;E47-X 照發(交互項獨立於 A′ 裁決)",
+  "champion": "窗態冠軍 st47d 71.35 不變;甲冠軍 st47d_e2e 0.6982 不變"
+ },
+ "artifacts": {
+  "kept": "pin_pin47p_L*.json ×7 + pin_smk47p.json(讀數卷宗)、data/res_res47p 3.7G + data/qs_st47p 7.2G(法證暫留,下次盤點可清)",
+  "deleted": "exports/st47p_tri 9.9G(可由 state 重建)"
+ },
+ "prereg": "prereg_e47p.json FROZEN @27646f9;判準逐字執行,FAIL 照實"
+}

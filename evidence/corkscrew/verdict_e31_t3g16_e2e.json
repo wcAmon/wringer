@@ -1,0 +1,28 @@
+{
+ "name": "verdict_e31_t3g16_e2e",
+ "date": "2026-08-10",
+ "prereg": "prereg_e31_t3g16_e2e.json(GPU 前凍結)",
+ "arm_official_ifeval": {
+  "st3b16_zt": {"strict_prompt": 0.28651, "strict_inst": 0.37770, "loose_prompt": 0.34381, "generation_s": 1414.7},
+  "st3b16_e2e": {"strict_prompt": 0.35490, "strict_inst": 0.47002, "loose_prompt": 0.42329, "generation_s": 847.7}
+ },
+ "retention_e2e": 0.3902,
+ "monitor_only": {
+  "g3b16_zerotrain_ce": 2.494,
+  "window_ce": "2.8186(flip 8.40%;E30 st3 對照 2.8792/8.81%——g16 零訓練 CE 優勢被窗訓抹平)",
+  "e2e_ce": "2.8186 → 1.8449(穿透 bf16 錨 2.003;E30 已證重損傷 régime 穿透≠侵蝕)",
+  "e2e_kd": "soft 末段 0.185 / STE 末段 0.228(step500 單點 0.395 邊緣越線後收斂)"
+ },
+ "tests": {
+  "V1": {"verdict": "PASS", "evidence": "g3b16 zt CE 2.494 < g3@32 2.808;逐窗等價閘 rel≤1e-6 PASS"},
+  "V2": {"verdict": "PASS", "evidence": "st3b16_zt strict 28.65 > st3_zt 20.89(+7.76,g16 窗內增益顯著)"},
+  "V3": {"verdict": "FAIL", "evidence": "e2e flip_vs_input=0.0000 < 0.5%:全域 KD 梯度在 lora_lr 1e-4 下零翻轉,軟重指派未被使用。照實入帳:e2e 的有效成分=全域 α/θ 打磨(部署權重與 zt 僅差 α)"},
+  "V4": {"verdict": "PASS", "evidence": "st3b16_e2e strict 35.49 > max(28.65, lp300 30.68) = 30.68(+4.81 > +2 抖動線)——主命題成立:600 步全域 KD 打磨勝 300 步逐層 α-only 天花板,且僅靠 α/θ 通道達成"},
+  "V5": {"verdict": "PASS", "evidence": "保留 39.0% ∈ [35%, 70%]"},
+  "V6": {"verdict": "PASS", "evidence": "KD 全程有限;STE 段 0.228 < soft 末段 0.185×2=0.369(step500 0.395 單點越線,收斂後回落,照實揭露)"}
+ },
+ "mechanism_note": "V3 死 + V4 過的組合意義重大:e2e 勝出不是靠 T 重指派,而是全域目標下的 α/θ 微調——lp300 逐層對齊 300 步 30.68 < e2e 全域對齊 600 步 35.49。翻轉熵框架三重實證(E30 8.81%/窗段 8.40%/e2e 0.0000):本地預算+可用 LR 下 T 搜索不發生,3元恢復的增益全部來自連續參數(α/θ)與全域視野。生成時間 1414.7s(zt,病態)→ 847.7s(e2e,健康帶)為損傷探針同向印證。",
+ "branch_decision": "V4 過但保留 39% < 55% → 走「加碼或載體升級」分岔;V3 敗分岔(s0/γ 特調)由零翻轉證據判定無效路徑,改道 E32v3 穩定路線(檔位補斷崖+細窗錨定,prereg @2687db2):搜索旋鈕全剔,e2e 段條件保留(35.49 > 28.65 → E32 保留)。escape clause 不觸發(35.49 < 55)。",
+ "queue_next": "E32v3 鏈(gmix32 → win2/stride1 窗訓 → e2e 600 → 雙臂 IFEval)→ 四科錨定過夜(bf16/e28_qat/當日最佳 3元系臂/lp300)",
+ "runtime": {"wall": "quantize+窗訓+e2e ~4.3h + 雙臂裁判 ~1.7h,10:30→16:40 CST"}
+}

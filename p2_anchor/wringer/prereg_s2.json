@@ -1,0 +1,44 @@
+{
+ "experiment": "S2 — 冠軍 st51c_e2e 蓄水 r128(A 閘)→ 之後排水(st61c 引擎)",
+ "status": "FROZEN(用戶 2026-09-05「先診斷再S2」核准;前置=E62b 去 L 診斷)",
+ "date": "2026-09-05",
+ "north_star": "student(三元碼)單獨 官方 comp ≥ 0.90(用戶 2026-09-05 裁:M/L 壓不進三元=換形狀的 LoRA,同位元 LoRA 嚴格優勢,位置軸整體封盤);B ≈ A × ρ_codes",
+ "step1_fill": {
+  "tag": "res62s2",
+  "state": "st51c_e2e(冠軍碼,comp 0.7469)",
+  "ref_export": "exports/st51c_e2e_x",
+  "recipe": "鏡射 res58r1:r128、calib_e58r1(5741 條 16k 無截斷)、batch 2/mb 1、hidchunk KD、grad-ckpt、5741 步、plateau-eps 0.002",
+  "cost": "~14h 蓄水 + 1.5h 官方",
+  "judge": "A = 官方三科 comp;A 閘 > 0.7629(冠軍 +0.016);判帶 DRAIN_OK A≥0.90 / CEILING_SHORT 0.80–0.90(天花板不足→換蓄水配方或轉 QAT,不走常駐載體)/ PIVOT_QAT <0.80(純 QAT,不帶常駐載體)",
+  "predictions": {
+   "P1": "A ∈ [0.80, 0.88](E37 冠軍態 A 50.46 vs B 50.28 為小水;此為 r128 大水)",
+   "P2": "he 分科最先飽和(he/94.51 < 0.80)",
+   "falsifier": "A ≤ 0.7629 ⇒ 冠軍碼上蓄水無增量,排水典範封盤"
+  }
+ },
+ "step2_drain": {
+  "engine": "st61b 全配置(純碼:無 --mix-block / --lmix-block / --tail-ls;A4 上 ρ_codes 0.872)",
+  "upper_bound_diagnostic": "st61c 引擎(M int8)僅作上界診斷,不交付、不裁判",
+  "condition": "只在 DRAIN_OK 或用戶另裁時點火;CEILING_SHORT / PIVOT ⇒ 呈用戶",
+  "judge": "純碼 B vs 冠軍 0.7469(票帶 ±0.016);ρ_codes = B/A 另記"
+ },
+ "diagnostic_prefix": {
+  "name": "E62b 去 L(st62b 碼+M,L=I)",
+  "purpose": "分開 H_overfit(L 推論有害)/ H_lazy(碼被練弱)",
+  "predictions": "he ≥ 34 ⇒ H_overfit;31 ≤ he ≤ 32.5 ⇒ H_lazy;he < 31 ⇒ BOTH(L 在補碼的洞)",
+  "cost": "~1.5h;零訓練;export --strip-lmix"
+ },
+ "chain": "$SCRATCHPAD/diag_stripL_then_s2.sh → s2_fill_chain.sh(哨兵 NOL_* / S2_START / S2_FILL_DONE / S2_EVAL_DONE / S2_A / S2_A_DELTA / S2_A_VERDICT / S2_CHAIN_DONE)",
+ "evidence_out": [
+  "a1eval/*_e62_st62b_noL",
+  "fill_res62s2.json",
+  "a1eval/*_e62_s2_resA",
+  "verdict_s2.json"
+ ],
+ "not_doing": [
+  "L 共訓(E62b NEG)",
+  "M/L 任何常駐載體交付(用戶裁:壓不進三元、同位元 LoRA 優勢)",
+  "C 臂",
+  "自主點排水段"
+ ]
+}

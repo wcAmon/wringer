@@ -1,0 +1,21 @@
+{
+ "experiment": "E49-a stage_A 已裁:hec65 蓄水臂 FAIL(幫鏈尾、傷蓄水雙向實證)",
+ "date": "2026-08-25",
+ "run": "run2(run1 INVALID @ecb6daa plateau 事故;本輪 --plateau-every 1e9 滿劑量 7500,plateau 零觸發,P0 gate PASS 200 tensors)",
+ "scores_A": {"ifeval": 75.79, "humaneval": 52.44, "gsm8k": 82.71, "A_comp": 0.7458},
+ "judges": {
+  "primary_he": "52.44 vs e42a 59.15 = −6.71 → FAIL;三岔判『~0/負』分支 = E49-c 歸因路線(E49-b 不觸發、stage_rho 不接)",
+  "gate_if": "75.79 < 77.5 FAIL(vs e42a 78.74 = −2.95)",
+  "gate_gs": "82.71 ≥ 82.5 PASS 壓線(vs e42a 83.70 = −0.99)",
+  "A_comp": "0.7458 vs e42a 0.784 = −0.038"
+ },
+ "core_finding": "混料價值階段特異性首次雙向實證:hec65(code 65%)在鏈尾 e2e 為 IF 正增益(E48b +3.14 封冠),在蓄水 res_fill 為淨負(he −6.71/IF −2.95/gs −0.99,三科全負)。E48b 的『混比決定鏈尾稅符號』與本裁合併 → 混比的符號本身也是階段函數;蓄水段最佳已知混料仍為 res42(cal1 系)",
+ "dose_curve_pair1": {
+  "hec65@300(run1 遺產)": {"ifeval": 72.46, "humaneval": 38.41, "gsm8k": 78.77, "A_comp": 0.6706},
+  "hec65@7500(本輪)": {"ifeval": 75.79, "humaneval": 52.44, "gsm8k": 82.71, "A_comp": 0.7458},
+  "delta_300to7500": {"ifeval": 3.33, "humaneval": 14.03, "gsm8k": 3.94},
+  "note": "he 對劑量最敏感(+14.03)=蓄水劑量主要買 he;風洞保序驗證待 pair2(res42@300,cal300 鏈)"
+ },
+ "lineage_note": "冠軍 st47d_hec_e2e 甲 0.7055 不受影響(其 hec65 用在鏈尾,本裁不觸及);E49-c 歸因臂候選問題:code 重混料傷蓄水的機制(與 E38 raw-code 反傷 he/IFEval 稀釋稅、E42b 容量反噬同族?)——需 FROZEN prereg 待裁",
+ "next": "照已批三連排程:發射 cal300 風洞對(prereg_windtunnel300)→ E50 閉合鏈尾"
+}

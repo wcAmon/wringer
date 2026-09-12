@@ -1,0 +1,39 @@
+{
+ "experiment": "E32 v2 混合多元整合配方(Corkscrew-Mix,g32 基座)",
+ "preregistered": "2026-08-10",
+ "frozen_before_gpu": true,
+ "supersedes": "prereg_e32_tfreedom.json @3c0b6e2(三臂分散版;未上 GPU 即由用戶 08-10 裁定改整合式,乾淨取代)",
+ "user_directive": "把最關鍵路徑收進 E32 做整體實驗(整合式非分散);回到 g32(除非 E31 大幅打臉);判讀:窗 loss 斷崖(末窗 72× 首窗)= 表徵檔位不夠、數值亂跑、穩定度下降反傷恢復訓練 → 檔位補在斷崖處",
+ "hypothesis": "翻轉熵框架:3元恢復=指派搜索問題(BitNet 10^12 tokens vs 本地 10^6,LR 又被窗重建鎖死);9元證明檔位夠密→免搜索(E28 α-only 過帶)。混合多元把檔位加在敏感度斷崖處,同位元預算下應勝過均勻 3元+細粒 α(E31)",
+ "recipe": {
+  "quantize": "quantize --grid 3 --grid-map '0-15:3,16-27:5,28-31:9' --block 32 --tag gmix32(斷崖分配:窗 loss 於層16起爬升、層28-31爆炸)",
+  "train_st": "train_st --grid 3 --tag stmix --state-tag gmix32 --learn-theta --resume --n-calib 512 --calib calib_train_512.pt --gamma 0.9 --lora-r-deep 128 --deep-from 16(整合:慢退火+rank 階梯;grid 逐模組自 state 傳播;win4/stride2 不變)",
+  "e2e": "e2e_soft --tag stmix_e2e --state-tag stmix --steps 600 --batch 8(γ0.8/s0=30/teacher bf16,同 E31)",
+  "export": "export 雙臂 e32_zt / e32_e2e --verify(位面包 meta.grid=0 混合,逐 tensor .grid)",
+  "judge": "官方 IFEval strict prompt-level,vLLM 鏈,雙臂,錨 bf16 90.94"
+ },
+ "bit_budget": {
+  "e32v2": "T:(16×1.585+12×2.322+4×3.170)/32=2.06 + α g32 0.5 = 2.56 b/w",
+  "e31_ref": "T 1.585 + α g16 1.0 = 2.585 b/w",
+  "note": "同預算對決:檔位派 vs 粒度派;位面包實體儲存兩者同為 4b idx,此為理論表示位元"
+ },
+ "integrated_knobs_disclosure": "整合式=歸因讓位於最佳單發(用戶裁定);若勝,消融歸因(減法)另行實驗;γ0.9 與 r128@16+ 為收進的 T 自由度旋鈕,win 維持 4(e2e 已供全域視野,省 wall-clock)",
+ "criteria": {
+  "Y1_init": "gmix32 零訓練 val CE < 2.494(g3b16)——檔位在 init 即應勝細粒 α",
+  "Y2_cliff": "stmix 末窗(28-31)末 loss < 0.0351(E31 st3b16)的 1/5——檔位修斷崖的機制證據",
+  "Y3_zt": "e32_zt strict > E31 zt strict(開牌後回填,回填不改判準)",
+  "Y4_main": "e32_e2e strict > max(E31 e2e strict, 30.68) + 2.0(541 題,+2≈11 題超抖動)",
+  "Y5_honest_band": "最佳臂保留率 ∈ [40%, 80%](vs 90.94;檔位加持後期望上移)",
+  "Y6_stability": "訓練/KD loss 全程有限;無 V5 帶化連發;e2e STE 段 kd < soft 末段 ×2"
+ },
+ "escape_clause_g16": "E31 e2e strict ≥ 55.0(進帶=大幅打臉 g32 判斷)→ 起跑前 amend:3元段(層0-15)改 block 16(+0.25 b/w → 2.81),amend 入檔並揭露;其餘不變",
+ "branches": {
+  "Y4_pass_ge55": "Corkscrew-Mix 定為主配方 → 四科實評該臂 + IFBench;後續消融歸因與 5/9 邊界掃描",
+  "Y4_pass_lt55": "邊界上移掃描(16→12 或 28→24,位元預算重算揭露)",
+  "Y4_fail_Y1Y2_pass": "機制過但分數不動 → 補償/還原分析(冗餘假說),轉資料軸或全參",
+  "Y4_fail_Y1Y2_fail": "混合分配實作疑點,查 grid 傳播與 GPTQ 逐檔行為後單臂重跑"
+ },
+ "queue_order": "E31 收卷判 V1-V6(~16:30)→ E32v2 鏈(quantize ~5min + 冒煙 + 窗訓 ~2.6h + e2e ~1.5h + 雙裁判 ~1.5h ≈ 6h,~22:30 收卷)→ 四科錨定過夜(以當日最佳 3元系臂入列)",
+ "disclosure": "混合 grid 引擎(quantize --grid-map、train_st/e2e 逐模組 SoftGrid、export 混合 meta)於本 prereg 同 commit;CPU 單元冒煙已過(grid-map 解析、SoftGrid 3/5/7/9、STQParam roundtrip 逐 grid、idx 編碼域);鏈內另跑 2 窗 GPU 冒煙(獨立 tag 即刪,不裁決);E33(#34)併入本實驗,取消獨立立案",
+ "seed": 20260806
+}

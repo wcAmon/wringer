@@ -1,0 +1,42 @@
+{
+  "experiment": "E52 語料根因修復:code 閉合完整重生成 + 庫存補集閉合窗(fill 附加不替換)",
+  "status": "FROZEN",
+  "date": "2026-08-25",
+  "user_context": "用戶提出『不是量化動作傷停止能力,根本就是原料問題』;裁決式回應後合題為 H_corpus_ceiling,用戶指示重生成加大 max tokens;本臂兼判別實驗",
+  "hypothesis": {
+    "H_corpus_ceiling": "量化無差別砸毀;KD 修復範圍由教材決定;code 教材 98.5% 為 GEN_TOK=800 截斷的不終止思考示範(普查:code 1.5% vs agentic 52.5% 閉合密度,密度隨 GEN_TOK 單調於域內思考長度)→ 終止在 he 主域從未被教,修復天花板被原料鎖死",
+    "H_quant_residue": "對立面:殘餘空回應主體為量化偽影(loop 硬核類),語料修復收效平平",
+    "discriminator": "he 軸雙指標:he stable 空 ≤8(冠軍 16 之半)且 he 均值 ≥56.4(+3pp)→ H_corpus 支持;兩者皆未達 → H_quant_residue 回檔;中間帶照實記部分支持",
+    "prior_evidence": "E51 輕推即癒(4.7% loss 質量收復 64 題)=迴路未毀;指紋 REFUTED 壓低敘事;『agentic 幫 he』舊反常=agentic 為唯一閉合密集料"
+  },
+  "production": {
+    "gen": "gen_e52_codeclose.py:bf16 教師(釘定 revision)max_tokens 3072、temp 1.0/top_p 0.95、code 題池(MBPP×8+bleachers×10+starcoder×4);僅留含 </think> 軌跡;串接流上閉合錨定切窗(抖動 [1200,1900] 防位置偽影);8-gram 除汙列級切除;TARGET 3200 窗",
+    "fill": "gen_e52_fill.py:hec65 19385 底盤不動 + 各 part 補集(同 seed 重放)中的閉合窗 + codeclose;轉折佔比目標 ≤0.30(容差 0.32)",
+    "production_gates": "closure_yield 入卷(截斷假說驗收:預測 ≫1.5%,≥0.30 為 PASS);codeclose rows ≥2500(不足照實縮編入卷);fill transition_share ≤0.32"
+  },
+  "main_arm": {
+    "tag": "st52c_e2e",
+    "coords": "E51 座標逐項不動:state st47d、steps 1200、batch 8、gamma 0.8、s0 30、lora_r 64、lora_lr 1e-4、factor_lr 3e-4、clip 1.0、kd_dir fwd、λ_close 256/λ_post 16×8;唯一改動 --data calib_e52_fill.pt",
+    "single_variable": "vs E51(st47d+hec65+λ256)僅換語料;不從 st51c 疊第二劑(E43 劑量教訓+E33b 雙 e2e 教訓)"
+  },
+  "judges": {
+    "protocol": "雙跑均值制(churn 基線 @c2dc640:同態甲噪音 ±0.016、σ_mean≈0.006;儀器地板紀律)",
+    "primary": "mean 甲(兩跑)> 0.750(= 冠軍均值 0.7388 + 2σ_mean)→ 換防",
+    "milestone": "mean 甲 ≥ 0.80 = 平衡冠軍 = 計劃收官條件",
+    "mechanism_gate": "stable 空回應(兩跑交集)< 50 且 he stable < 16",
+    "kill_gate": "任一科 mean < 冠軍科 mean − 5pp(if<70.97 / he<48.36 / gs<74.57)→ 臂 FAIL,st51c 衛冕,照實入卷",
+    "judge_rules": "官方 benchmark 唯一裁判;訓練曲線/val CE/閉合率 monitor-only"
+  },
+  "baseline_champion": {
+    "tag": "st51c_e2e",
+    "runs": {"r1": 0.7469, "r2": 0.7306}, "mean": 0.7388,
+    "subject_means": {"ifeval": 75.97, "humaneval": 53.36, "gsm8k": 79.57},
+    "stable_empties": {"ifeval": 13, "humaneval": 16, "gsm8k": 21, "total": 50}
+  },
+  "consolidation": {
+    "if_win_but_below_080": "下一級 = cal7 全域閉合完整重生成(math 600→33%/ifshape 900→20% 同病)",
+    "if_corpus_refuted": "回量化殘留軸:迴圈硬核獨立小臂(33 題上限 ~0.02 甲)",
+    "not_scattered": "單矛;E52 裁決前不開平行臂"
+  },
+  "schedule_est": "gen ~40min(yield 未知,池充足)→ fill ~5min → e2e ~4h(11-12s/step)→ export ~10min → 雙跑 eval ~60min → 摘要;總 ~6h"
+}

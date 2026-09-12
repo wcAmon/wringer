@@ -1,0 +1,48 @@
+{
+ "experiment": "E35 形變降元第二級:7→3 單走廊 5×(prereg FROZEN @4f05cf3)",
+ "chain": "st7m → sweep 35窗×60ep(85.2min)→ e2e 600步(83.3min)→ export verify → 官方雙裁判;13:10–16:15 全鏈 ~3h05m(預算 7h)",
+ "scores": {
+  "ifeval_strict_prompt": 0.28650646950092423,
+  "ifeval_strict_instruction": 0.3800959232613909,
+  "humaneval": 0.109756,
+  "retention_vs_bf16": 0.315
+ },
+ "criteria_verdicts": {
+  "M1_survival": "FAIL——28.65 < 37.5 存續線;低於 E31 from-scratch 3元 e2e 35.49(−6.84pp),更遠低於 3元 歷史最佳 E32 e2e 44.55(−15.90pp);連線性律座標 ~35.5(39% 保留)都未守住(實得 31.5%)",
+  "M1plus_narrative": "FAIL(≥45.47 無懸念)",
+  "M2_record": "humaneval 10.98%(E34 7元 83.54 → 1/8;3元 容量 régime 誠實記錄)",
+  "M3_measurement_duty": "三件套全收(見 m3_findings)",
+  "M4_stability": "PASS——gdisc1 中位 0.1127 ≤ 0.1724,max 0.1638,nonfinite 0;gdisc3 全程 0"
+ },
+ "m3_findings": {
+  "flow": "ridge(±0.5α,46.1M 碼/窗)梯度分流 57.4% 歸零 / 42.6% 歸壹,沿深度穩定 [0.554,0.615];outer 100% 併 ±1 如代數;null_flip_frac 全體中位僅 3.69%(ridge 子群 9.05%)= 終碼 96.3% 可由靜態投影預測——走廊訓練在 T 碼層面幾乎沒有找到異於投影的解",
+  "logit_c_final": "200 模組 sigmoid 後 0.588–0.762,中位 0.728——自由 c 全體想長大(合併阻力實測),走廊逆梯度強拆",
+  "ridge_traj": "to_one 分率逐 epoch 單調爬升(w0 0.033→0.460),分流漸進非跳變;末值窗間 [0.402,0.468]",
+  "holdout": "hold/train 比值全程 0.98–1.12,無系統性擴口——cal3 觸發條件不成立,失敗非過擬合",
+  "e2e": "pre 2.6957 → post 1.9151(監控);T 翻轉 0.0000(e2e 三證再確認:只修 α/dθ/LoRA,不動 T)"
+ },
+ "failure_attribution": {
+  "primary": "容量軸不可修,且 7元 盆地繼承為負資產:E35 終碼 96% 即投影,e2e 後 28.65 恰等於 E31 零訓練投影臂的 28.65;而 E31 同容量 GPTQ-init 投影經同款 e2e 拉到 35.49——即『從 7元 走廊繼承的 α/dθ/盆地組合』做為 3元 e2e 起點,劣於 from-scratch GPTQ 投影起點 6.84pp。形變課程在 −0.36b(E34)成立、在 −1.22b(E35)反噬",
+  "boundary_confirmed": "E33b 排程軸可修證據的預註記邊界被實證:容量軸損失(檔位合併)不在 e2e 可修空間",
+  "speed_proxy_note": "生成耗時對損傷無單調關係(E35 28.65 分 1053s ≈ 健康 9/7元 1071/1105s;E32 44.55 反而最快 642s)——速度不得入裁決鏈"
+ },
+ "addendum_e35c": {
+  "date": "2026-08-12 晚,用戶裁「跑」;鏈:export st3m 免 e2e → 官方雙裁判(19:02–20:4x)",
+  "scores": {"ifeval_strict_prompt": 0.17375, "humaneval": 0.006098,
+             "generation_s_ifeval": 3188.9, "generation_s_humaneval": 1152.6},
+  "verdict": "預宣告分支『顯著更低』命中:e2e 零貢獻前提否證——e2e 對走廊態 IFEval +11.27pp、humaneval 0.61→10.98(18×),生成耗時 3188.9s→1053.4s(3.0× 亂展開簽名)= 走廊在 α/dθ 連續載體留下可修的行為損傷,e2e 修回",
+  "attribution_revisions": [
+   "①『28.65 恰等 E31 零訓練投影臂』從 e2e 零貢獻證據降級為碼天花板飽和:投影級碼 + 任意好的連續修復 ≈ 28.65 封頂(E32 44.55 證明更好的碼存在→分數主宰權在碼軸)",
+   "②負資產敘事更強:走廊態兩階段皆輸 GPTQ-init(免 e2e 17.38<28.65、+e2e 28.65<35.49)——走廊沒找到更好的碼,連續載體還劣於裸 GPTQ",
+   "③連結敘事原樣:e2e T 翻轉 0.0000 → C 的分數差定義上全落連續軸;碼層量測(null_flip 3.7%)先釘死『終碼≈投影』,分數歸因才唯一"
+  ],
+  "e36_implication": "利多:E36 補償機制(整格跳躍改 T₁)正是對碼軸下手;行為中途碎裂支持移動老師在 sweep 內錨定部署形態輸出"
+ },
+ "next_rung_candidates_await_user": [
+  "A. 7→5 中繼級(單級落差 −0.585b,介於 E34 成功與 E35 失敗之間,直接量測形變有效範圍的邊界)",
+  "B. 3元 放棄形變,回 E32 配方線(44.55 現任冠軍)做走廊外強化(語料/步數)",
+  "C. 歸因補測:st3m 不經 e2e 直接硬導出裁判,分離『走廊態 vs e2e 態』貢獻(~40min)"
+ ],
+ "anchors_restated": {"bf16": 0.90943, "e31_zt": 0.28651, "e31_e2e": 0.3549, "e32_e2e_3gon_best": 0.4455, "e34_7m": 0.86506},
+ "timestamp": "2026-08-12T16:30+08:00"
+}

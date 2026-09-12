@@ -1,0 +1,23 @@
+{
+ "state": "st7m(E34 morph 產物,7元 c=0.5)",
+ "n_weights": 3565158400,
+ "occupancy": {
+  "v0": 0.240835,
+  "v05": 0.413686,
+  "v1": 0.225554,
+  "v15": 0.119925
+ },
+ "ridge_mass": 0.413686,
+ "outer_mass": 0.119925,
+ "moving_mass": 0.533611,
+ "static_mass": 0.466389,
+ "blocks_outer_dominant_frac": 1.4e-05,
+ "ridge_top5_modules": {
+  "model.language_model.layers.11.self_attn.k_proj": 0.4409,
+  "model.language_model.layers.3.self_attn.k_proj": 0.4396,
+  "model.language_model.layers.7.self_attn.k_proj": 0.4392,
+  "model.language_model.layers.11.self_attn.o_proj": 0.4384,
+  "model.language_model.layers.15.self_attn.o_proj": 0.4375
+ },
+ "note": "moving_mass = 走廊必須搬運的質量比例(herding 工作量);blocks_outer_dominant = ±1.5 過半的 block 佔比(α 補償壓力)"
+}

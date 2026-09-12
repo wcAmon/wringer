@@ -1,0 +1,37 @@
+{
+ "purpose": "排水期 churn 儀器早警篩(E44 立案):用排水日誌內生指標在官方 triage 出分前凍結存亡預測,累積儀器戰績;預測必須在 triage 之前 commit,嚴禁事後改口",
+ "instrument": {
+  "metrics": "sum_flips=Σ窗 flips_vs_p0(主指標)、t_flip_rate_vs_p0(率)、max_window_flips、gdisc1_exit_rel 晚窗、holdout 是否擴口(loss_holdout 尾窗相對 loss 發散)、post_drain_val_ce(monitor-only)",
+  "field_regime_rule_prereg": "sum_flips > 1e8 → 預測 triage < 55(殺);低於線 → 預測存活;n=1 校準點:st44f 7.4e7 → 活(65.06)",
+  "regime_discipline": "階梯 régime 戰績(3中0誤)不得跨用到場/逐窗 régime;本檔場 régime 戰績獨立累積"
+ },
+ "retrodictions_field_regime": [
+  {"tag": "st44f", "sum_flips": 7.396e7, "tflip_rate": 0.010373, "max_window": 7.806e6, "rule_says": "alive", "official": 65.06, "hit": true, "note": "校準點本身,不計戰績"},
+  {"tag": "st44d", "sum_flips": 2.013e8, "tflip_rate": 0.028232, "max_window": 1.913e7, "rule_says": "kill", "official": 53.97, "hit": true, "note": "回溯檢驗(非前瞻),殺閘 55 下 53.97=殺 ✓"},
+  {"tag": "st42r", "sum_flips": 4.324e7, "tflip_rate": 0.006064, "max_window": 4.610e6, "rule_says": "alive", "official": 63.96, "hit": true, "note": "回溯檢驗(非前瞻)✓;w128 重錨值"}
+ ],
+ "forward_predictions": [
+  {
+   "tag": "st45fo",
+   "arm": "E45 C 案:γ-field 單桿(β=0)on st41g_e2e",
+   "metrics": {
+    "sum_flips": 2.5872e7,
+    "t_flip_rate_vs_p0": 0.003628,
+    "max_window_flips": 2.1741e6,
+    "gdisc1_exit_rel_late_windows": [0.075768, 0.035256, 0.046997, 0.03565],
+    "holdout_widening": false,
+    "post_drain_val_ce_monitor_only": 1.7188,
+    "equiv_gate_rel": 0.0,
+    "runtime_s": 16350.2
+   },
+   "reading": "全家族最低 churn:sum_flips 2.59e7 < st42r 4.3e7 < st44f 7.4e7 << 線 1e8;tflip 率 0.0036 亦全家族最低;晚窗 gdisc 平靜、holdout 無擴口 → 場阻尼在 β=0 下依然生效(低應力+阻尼首個樣本),塌縮動力學比標準排水更穩",
+   "prediction_frozen": "ALIVE(triage ≥ 55)",
+   "frozen_at": "2026-08-22 08:0x,E45_FO_DRAIN_DONE 後、E45_FO_TRIAGE 出分前;凍結 commit @7f8aa5e",
+   "outcome_official": 33.27,
+   "hit": false,
+   "miss_autopsy": "儀器首筆前瞻即誤判,照實記:全家族最低 churn(2.59e7)卻官方最慘(33.27,vs 同起點標準排水 63.96=−30.69)→ 『平靜塌縮≠好塌縮』,churn 低量可以是探索不足(翻轉=修正機會,阻尼在無 β 應力下過早鎖死壞碼)而非損傷少——第16種 proxy 反轉型態候選;field-régime 儀器戰績 0/1,低 churn 側單向失效(高 churn 側 st44d 回溯仍中,殺閘方向可能仍可用,存活方向不可用)"
+  }
+ ],
+ "pending_appends": "E45 總終裁時併記 B 案 A2/A3 對儀器的旁證(A2 tflip 2.1e-4 極低但官方崩塌=同型態:低 churn 不保證官方分;儀器只篩排水期塌縮損傷,不偵測 e2e 期梯度污染)",
+ "date": "2026-08-22"
+}

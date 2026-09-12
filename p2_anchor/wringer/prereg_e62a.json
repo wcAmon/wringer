@@ -1,0 +1,40 @@
+{
+  "experiment": "E62a — 窗尾 M 重解(tail-LS)+ holdout 回退閘;M 軸「時機」修正",
+  "status": "CLOSED FAIL_FALSIFIER(P3):27/27 窗回退閘全撤,用戶 2026-09-05 裁中止;見 verdict_e62a.json",
+  "date": "2026-09-05",
+  "strategy_doc": "p2_anchor/corkscrew/STRATEGY_e62.md",
+  "thesis": "st61c 的 (α,M) 閉式重解在 comp 事件解 M,之後翻碼與 14 ep 尾段又動了碼,M 對終態碼滯後(探針 @c892036:bd128 離線重解平均再吸 16%,down_proj +33%,L22 down_proj 現 M 劣於 I −27%,ridge 五檔同值=非求解器自限)。E62a 在每窗尾段後對終態碼再解一次 M(碼不動),以 holdout(hard)否決權防局部/前向背離。",
+  "arm": {
+    "tag": "st62a",
+    "engine": "st61c 全配置(--mix-block 128 --mix-lr 1e-4 --mix-ls)+ --tail-ls",
+    "tail_ls": {
+      "when": "tail_soft 10 + tail_ste 4 之後、G-disc1 量測與 extract 之前",
+      "what": "M-only(--tail-alpha-ls 關;α 重解會改碼,違反『碼不動』);鮮 H(hard 前向,train_bi 全批,lengths 遮罩);錨定目標 W_t = W0q + BA/r(γ=0);solve_mix_ls ridge 0.1 / cap 0.25 / iters 40 / sv_floor 0.3",
+      "gate": "holdout(hard) huber loss after > before×1.02 ⇒ 撤回該窗全部模組的 M(位元原樣);記 hold_before/after/ratio/reverted/gain/t 入 train json windows[].tail_ls",
+      "invariants": ["碼(T1/T2)與 α 不變 ⇒ flips 統計語義與 st61c 同", "撤回後 M 逐位等於重解前(clone 還原)"]
+    },
+    "single_difference_vs_st61c": "--tail-ls(其餘旗標、seed、語料、calib 128、hparams 逐字相同)"
+  },
+  "judges": {
+    "primary": "官方三科 → comp/A4 0.7038 = ρ;PASS ρ≥0.90 / NULL [0.873,0.90) / NEG <0.873",
+    "vote_vs_st61c": "Δρ vs 0.889,票帶 ±0.016(POS/NULL/NEG)",
+    "secondary": ["ρ_he ≥ 0.75", "he ≥ 33.5(不低於 st61b)", "empties ≤ A4 {30,35,65} 量級無擴口"],
+    "mechanism_diagnostics_not_judges": ["final_level 比 st61c(預期 <0.9)", "tailLS gain_mean(預期 ≥0.10)", "reverted 窗數(預期 <10%=≤3/31)", "hold_ratio 均值(預期 ≤1.0)", "val CE(第 13 型,僅記錄)"]
+  },
+  "predictions": {
+    "P1": "ρ ∈ [0.895, 0.910];POS 或至少 NULL 上半",
+    "P2": "final_level 比 st61c < 0.9(局部殘差 −10% 以上)",
+    "P3": "回退閘觸發 ≤ 3/31 窗;若 ≥ 8 窗觸發 ⇒ LS 解與前向系統性背離,歸因入卷(第 12 型候選)",
+    "P4": "he ≥ 35.37(不退)、IF 不退超過 1pp",
+    "falsifier": "ρ < 0.873(NEG)⇒ 撤 tail-LS;E62b 單獨對 st61c 裁(STRATEGY §2)"
+  },
+  "after": {
+    "PASS": "S2 以 st62a 引擎兌現(冠軍 st51c_e2e 蓄水 r128 → A 閘 >0.7469+0.016 → 排水 → B vs 0.7469);E62b 排 S2 後",
+    "NULL": "E62b(down_proj 輸出側 L)疊在 a 上,對 st61c 裁",
+    "NEG": "撤 a;E62b 單獨對 st61c 裁"
+  },
+  "smoke": "st62smk(--smoke:32 calib、2 窗)須:tail_ls 欄位存在、gain_mean>0、hold_ratio 有限、reverted 邏輯可觸發或不觸發皆記錄、碼不變(flips 與 st61smk3 同量級)",
+  "chain": "$SCRATCHPAD/e62a_chain.sh(哨兵 E62A_DRAIN_DONE / E62A_EXPORT_DONE / E62A_EVAL_DONE / E62A_LEVEL / E62A_B / E62A_RHO / E62A_DELTA / E62A_VERDICT / E62A_CHAIN_DONE)",
+  "evidence_out": ["evidence/p1_grouping/corkscrew/train_st62a.json", "a1eval/{ifeval,humaneval,gsm8k}_e62_st62a", "verdict_e62a.json"],
+  "not_done_here": ["α 尾段重解(改碼)", "輸出側 L(E62b)", "Monarch(§3 三條件)", "ridge/cap 掃(探針否決)"]
+}

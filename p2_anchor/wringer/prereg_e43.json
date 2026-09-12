@@ -1,0 +1,38 @@
+{
+ "experiment": "E43 域加權排水:方向分配主修——脆性軸(ifshape)加權 + 512 分層 calib 雙臂",
+ "status": "FROZEN",
+ "frozen_ruling": "用戶裁 2026-08-18:『估計st43的運作時間,發射st43』——草案照發;運行估算修正見 budget_estimate",
+ "design_provenance": "E42b 歸因鏈 @f2d5f3b:漏損全在排水段(D_split)、加力有效但邊際遞減(ρ_if 0.808→0.864 花 2.88× 預算)、容量反噬(r128 −8.50pp)→ 剩餘 4.25pp 缺口指向排水的方向分配;分域診斷 @789b8ce:三態 tilt≈1(吸力傾斜否證)+ 各軸殘差均勻但官方敏感度懸殊(IFEval 脆性/gs 遲鈍)→ 靶心=壓低脆性軸絕對殘差,用遲鈍軸(math/gs)的鬆弛去買",
+ "shared_base": {
+  "reservoir": "res42 不重蓄;state 起點 st41g_e2e;g16 帶不動;lora_r 64(E42b 裁定最優口徑)",
+  "drain_budget": "W_max 8 + gsteps 8(臂1 已證有效;不再加碼=邊際遞減已證)",
+  "calib": "calib_drain_e43.pt 512 列分層(if 192/code 160/math 96/agentic 64,sha 0337c60a…)+ domains json",
+  "baseline": "冠軍 e41_g16 72.27;best-non-champion qs_st42r_e2e 68.02(E42b 臂1);A 天花板 78.74/59.15/83.70"
+ },
+ "arm1_domweight": {
+  "levers": "512 分層 calib + 域加權 huber(--calib-domains --domain-weights ifshape:2.0,code:1.0,math:1.0,agentic:1.0)+ ifshape 出場閘(--dom-exit ifshape --tau-dom 0.5:γ 級前進需 ifshape 域 loss 同步達標,防脆性軸被預算趕走)",
+  "cmd": "train_res --tag st43w --state-tag st41g_e2e --res-tag res42 --calib calib_drain_e43.pt --calib-domains calib_drain_e43.domains.json --domain-weights ifshape:2.0 --dom-exit ifshape --tau-dom 0.5 --group-override 24-31:16 --gsteps 8 --tau 0.5 --w-max 8 --tail-soft 10 --tail-ste 4 --learn-theta --holdout-frac 0.05 --resume",
+  "then": "e2e FKL 1200(calib_e42_train)→ export e43_w --verify → B 三科(*_e43_w)"
+ },
+ "arm2_sizeonly": {
+  "levers": "同臂1 唯不加權不設域閘(--tag st43s,無 --domain-weights/--dom-exit)=512 calib 單變因;對 E42b 臂1(256)裁 calib 規模效應,對臂1 裁加權邊際貢獻",
+  "cmd": "同臂1 唯 --tag st43s 且去掉三個域參數",
+  "then": "e2e 1200 → export e43_s --verify → B 三科(*_e43_s)"
+ },
+ "judges": {
+  "G1_champion": "max(臂1,臂2) B-IFEval > 0.7227 → 新冠軍(A1 協定)",
+  "H_weight(主判)": "臂1 − 臂2 IFEval:>+1pp 域加權有效(方向分配軸成立);−1~+1 無效(方向軸關閉,回歸吞吐/蓄水軸);<−1 加權反噬照實",
+  "H_size": "臂2 − 68.02(E42b 臂1):>+1pp calib 規模續有效;−1~+1 規模飽和(256 足量)",
+  "R_he_tax": "he 帳單照記:臂1 he vs 44.51 參考高標;he < 34.98 地板則該臂不承接冠軍錨定",
+  "R6_stability": "gdisc ≤ 0.1724、31/31 窗定案、holdout 無擴口、e2e 碼凍結——逐字",
+  "dom_instrument": "train json 新增 dom_loss 逐事件——首度可在排水中直讀各域 loss 軌跡(monitor-only,不裁)"
+ },
+ "discipline": {
+  "official_only": "官方三科唯一判準;分域 gdisc 距離代理已證與分數反相關(@789b8ce),嚴禁用作裁決",
+  "no_pt_in_git": ".pt 不進 git;manifest sha 留痕(E43_DRAIN_MANIFEST @9afd259)",
+  "fail_honest": "FAIL 照實;frozen_gate:本檔經用戶 FROZEN 後才可開 GPU"
+ },
+ "budget_estimate": "凍結時修正:512 列使整個 epoch 成本 ≈2×(E42b 256 列實測 6.9h)→ 每臂 drain ~13h + e2e 3.6h + export/eval ~2h ≈ 18.6h;兩臂序跑 ≈ 37h(草案 25h 為低估)",
+ "next_ladder": "G1 PASS → guard 層 vendor(IFBench #28/LCB-V6 #49);H_weight 有效未封冠 → 權重掃描(ifshape 3.0/4.0)或蓄排一體化;全 FAIL → 回蓄水軸(res 加深或 O 系列優化)",
+ "date_draft": "2026-08-18"
+}

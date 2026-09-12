@@ -1,0 +1,80 @@
+{
+ "mode": "t2add",
+ "state": "pa64_asymrefitq2",
+ "hparams": {
+  "mode": "t2add",
+  "state_tag": "pa64_asymrefitq2",
+  "res_tag": "res62s2",
+  "target_state_tag": "st51c_e2e",
+  "fold_layers": "",
+  "no_refit_others": false,
+  "target": "cross",
+  "damp": 0.01,
+  "cross_mix": 1.0,
+  "r_bits": 2,
+  "fold_block": 0,
+  "prior_lam": 0.01,
+  "t2_spec": "down_proj:0-2",
+  "alpha_block": 0,
+  "alpha_bits": 0,
+  "drop_r": false,
+  "alt": 2,
+  "n_calib": 16,
+  "calib": "evidence/p1_grouping/calib_e58r1b_traj.pt",
+  "lengths": "evidence/p1_grouping/calib_e58r1b_len.pt",
+  "batch": 4,
+  "max_layer": 2,
+  "save_tag": "smoke_d_fix",
+  "out": "evidence/p1_grouping/corkscrew/ladder_smoke_d_fix.json",
+  "smoke": true
+ },
+ "modules": {
+  "model.language_model.layers.0.mlp.down_proj": {
+   "e_ctrl": 179.94578552246094,
+   "e": 24.75714874267578,
+   "ratio": 0.13758115351684955,
+   "t2_nz": 0.517486572265625,
+   "beta_over_alpha_p50": 0.0364,
+   "op": "t2add",
+   "family": "down_proj",
+   "layer": 0,
+   "base_rel_gap": 0.03980042040348053,
+   "dense_rel_change": 0.04184006527066231
+  },
+  "model.language_model.layers.1.mlp.down_proj": {
+   "e_ctrl": 322.4827575683594,
+   "e": 43.50944137573242,
+   "ratio": 0.13492021001001692,
+   "t2_nz": 0.5188058614730835,
+   "beta_over_alpha_p50": 0.0317,
+   "op": "t2add",
+   "family": "down_proj",
+   "layer": 1,
+   "base_rel_gap": 0.03350989893078804,
+   "dense_rel_change": 0.037571877241134644
+  },
+  "model.language_model.layers.2.mlp.down_proj": {
+   "e_ctrl": 412.3238220214844,
+   "e": 55.17900848388672,
+   "ratio": 0.13382444946635072,
+   "t2_nz": 0.5346540808677673,
+   "beta_over_alpha_p50": 0.0268,
+   "op": "t2add",
+   "family": "down_proj",
+   "layer": 2,
+   "base_rel_gap": 0.026077602058649063,
+   "dense_rel_change": 0.034220222383737564
+  }
+ },
+ "ledger": {
+  "code_fixed": 2.1068,
+  "code_entropy": 2.1351,
+  "alpha": 0.625,
+  "beta": 0.0099,
+  "r": 0.0781,
+  "weights": 3565158400,
+  "total_fixed": 2.8198,
+  "total_entropy": 2.8482
+ },
+ "runtime_s": 33.0
+}

@@ -1,0 +1,37 @@
+{
+ "experiment": "E54 起點重建(prereg FROZEN v3+am1+am2 @a8592a5)",
+ "date": "2026-08-27 22:55 +0800(date 實測)",
+ "verdict": "FAIL——falsifier 觸發:B2_mean 甲 0.3062 < 0.70;fresh-basin 單程配方封盤,st51c_e2e 衛冕(0.7388)",
+ "readings": {
+  "floor": {"if": 15.9, "he": 1.22, "gs": 1.97, "comp": 0.0683, "empties": {"ifeval": 89, "humaneval": 24, "gsm8k": 463}},
+  "A": {"if": 41.96, "he": 15.85, "gs": 35.1, "comp": 0.3291, "empties": {"ifeval": 90, "humaneval": 59, "gsm8k": 102}, "note": "A 閘過閘(閘線 0.0783,+0.2608)"},
+  "B1": {"if": 45.29, "he": 12.8, "gs": 33.36, "comp": 0.3242, "empties": {"ifeval": 63, "humaneval": 41, "gsm8k": 80}},
+  "B2_w128": {"if": 39.74, "he": 13.41, "gs": 35.03, "comp": 0.3123},
+  "B2_w128r2": {"if": 42.33, "he": 10.98, "gs": 31.31, "comp": 0.3},
+  "B2_mean": {"if": 41.03, "he": 12.2, "gs": 33.17, "comp": 0.3062},
+  "stable_empties": {"ifeval": 22, "humaneval": 15, "gsm8k": 4, "total": 41, "note": "冠軍帶 50;he 15 落 16-18 帶下緣"},
+  "rho": 0.912,
+  "rho_B1": 0.981,
+  "delta_anneal": -0.018
+ },
+ "fuse_disposition": "amendment_1 保險絲確定觸發(B2_mean 0.3062 < B1 0.3242);用戶裁免跑 e54_hot 補雙跑——所有候選座標距 falsifier 0.70 皆 >0.37,補跑不改判決;偏離凍結判準照實入卷(本條即該記錄)",
+ "attribution": {
+  "bottleneck": "蓄水天花板,非排水吞吐:ρ_B1≈0.98/ρ=0.912 近無損(E38 的 0.485 崩塌未重演),但 A=0.3291 本身太低",
+  "dose_unredeemed": "fill 1200 步無平台截停(val CE 每 300 步仍 −1.4~1.7%,3.5526→1.9675),僅抽 ~2400/7030 列=劑量未兌現;劑量軸移交 E56",
+  "token_starvation": "量體對勘:全鏈 ~42M 梯度 tokens vs BitNet Distillation 同款 Qwen3-4B 轉 1.58-bit 用 ~10B tokens 全參數續訓(arXiv 2510.13998)、LLM-QAT 4-bit 恢復 ~1e8 tokens(2305.17888)——差兩個數量級,0.33 帶更符合 token 饑荒而非 r128 飽和(判別留給 E56 A_2)",
+  "e31_echo": "E31 判例重演:from-scratch/fresh 起點在低預算下輸給血統繼承(35.49<44.55);本次工具鏈強化後 fresh 仍 0.306<0.7388",
+  "s4b_option_lost": "S4b 壓回段 Δ_anneal=−0.018(單雙跑噪音不對稱照實註記):mode-concentrated 教材期權敗訴;用戶裁壓回段自後續設計退場",
+  "morphology": "A 態驗屍:gsm8k 錯題 69% 正常形態答錯(能力洞)、he 錯題 54% 失律型(空 36%+迴圈+超長)=兩科病理分工;蓄水修掉大半不終止病(gs empties 463→102→50)"
+ },
+ "chain_receipts": {
+  "S2_fill": "1200 步滿程 69.7min,CE 3.5526→1.9675,kd 0.577→0.107,fill_res54.json",
+  "S3_drain": "31 窗 8.8h,post-drain CE 2.0231(換碼稅 +0.056),t_flip_vs_p0 0.03%,train_st54r.json",
+  "S4_e2e": "1200 步 1.63h,CE 2.0231→1.9958,t_flip 6e-06,train_st54r_e2e.json",
+  "S4b_anneal": "600 步 48.6min,e54an 料 sha 01e3f0ae,CE 1.9958→1.9849,train_st54lt_e2e.json"
+ },
+ "next": {
+  "E56": "迭代蓄排梯 DRAFT(prereg_e56_ladder.json)——用戶已裁:N_max=3、迭代基於未 e2e 態、壓回段退場、cal8 重複用;prereg 本體修改項用戶指明中,改定 FROZEN 後點火",
+  "E55": "on-policy 矯正段 DRAFT @fe9e14e 順延:入場點=E56 梯尾最強態(梯敗則回 st51c_e2e 血統);0.32 帶能力洞主宰,弱快照 on-policy 料價值低",
+  "disk": "e54_resA/e54_hot/e54_3g/e54_g3b32 exports 依磁碟政策候清(E56 需留 st54r state 與 e54_r ref export)"
+ }
+}

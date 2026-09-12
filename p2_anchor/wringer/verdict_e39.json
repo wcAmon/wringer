@@ -1,0 +1,37 @@
+{
+ "experiment": "E39 on-manifold 蒸餾(prereg_e39_onmanifold.json FROZEN @086b21e)",
+ "date": "2026-08-14",
+ "corpus": "cal4 = 三域 prompt bank + bf16 老師離線軌跡 1024×2048(sha256 f9428219…)",
+ "judge_A": {
+  "r256": {"ifeval": 0.58226, "humaneval": 0.27439, "gsm8k": 0.74223},
+  "r512": {"ifeval": 0.58226, "humaneval": 0.29878, "gsm8k": 0.75967},
+  "H_form": "PASS(r256 vs E38 a3:IFEval +8.32pp、gsm8k +9.32pp ≫ +2pp 判準)——老師軌跡流 > 自然語料",
+  "H_richcap": "FAIL 照實(IFEval +0.00pp < +1pp;humaneval +2.44pp < +3pp)——容量非 IFEval 瓶頸,規模化槓桿在語料不在 rank",
+  "humaneval_attribution": "rank 擁擠成立(事前分岔:r512 回 ≥0.28 ⇒ 擁擠)。r256 破地板為三域共擠 256 維、agentic 長軌跡吃梯度;r512 回 0.29878",
+  "winner": "r512(地板規則:r256 he<0.28 除名;IFEval 兩臂同分 0.58226)",
+  "gate": "PASS(0.58226 > 0.5028)"
+ },
+ "judge_B": {
+  "scores": {"ifeval": 0.54898, "humaneval": 0.26829, "gsm8k": 0.77104},
+  "R1_new_champion": "PASS——B-IFEval 54.90 > 50.28(E37),+4.62pp 封冠;冠軍軌跡 E32 44.55 → E37 50.28 → E39 54.90(bf16 錨 90.94)",
+  "R2_rho": {
+   "rho_if": 0.757,
+   "A_to_B_pp": {"ifeval": -3.33, "humaneval": -3.05, "gsm8k": 1.14},
+   "e38_profile_pp": {"ifeval": -3.14, "humaneval": -3.66, "gsm8k": -0.83},
+   "H_drain_manifold": "部分成立——ρ_if 0.485→0.757 上移、he 稅 −3.66→−3.05 微減、gs 稅 −0.83→+1.14 轉正(排水反漲分);但 IFEval 絕對稅 −3.33pp ≈ E38 −3.14pp 未減。歸因:on-manifold calib 改善的是『犧牲方向的分科分配』,IFEval 軸存在 ~3.2pp 固定轉寫稅候選 → O1 排空對照(B=0 水庫全鏈)升級為 E40 首選控制,裁稅是否與水內容無關"
+  },
+  "R3_measurements": "humaneval-B 26.83(vs e37_3g 29.88 −3.05pp,低於 0.28 地板,依用戶裁定 IFEval 首要、量測記錄不裁死);gsm8k-B 77.10 = 3元 史上最高(vs E38-B 56.33 +20.77pp、vs E32 46.32 +30.78pp)",
+  "R4_stability": "PASS——gdisc1_exit_rel max 0.0904 ≤ 0.1724;nonfinite 0;31/31 窗 finalized;holdout 0.0005 ≈ train 0.0005 無擴口(cal2/cal3 loss 尺度不可比,依 no_cross_corpus_loss 不作跨語料比較)"
+ },
+ "proxy_records": {
+  "type11_gain_no_primary_mapping": "r512 fill KD 尾段 0.068 vs r256 0.10、val CE 1.6003 vs 1.6237 雙優,官方 IFEval +0.00pp 同分——代理增益不映射首要判準(he/gs 有跟上,非全反轉,與九筆全反轉區分)",
+  "e2e_ce_inversion_replay": "e2e val CE 1.6132→1.6636(+0.050 惡化)而 B-IFEval 過冠軍線——第九筆(E37)同型重演,e2e CE 惡化為 on-manifold 訓練 vs 自然語料驗證的預期漂移"
+ },
+ "mechanics": {
+  "fill_r512": {"steps": 1200, "runtime_s": 5561.1, "kd_tail": "0.068–0.10 仍緩降無 plateau", "p0_gate": "PASS"},
+  "drain": {"t_flip_rate_vs_p0": 0.001485, "runtime_s": 5474.9, "note": "水走連續載體,與 E37 0.18% 同型"},
+  "e2e": {"steps": 600, "t_flip_rate_vs_input": 1e-06, "runtime_s": 6394.4}
+ },
+ "champion_assets": {"state": "data/qs_st39r_e2e", "export": "exports/e39_3g"},
+ "next": "E40 規模化 prereg(用戶已裁路線:IFEval 首要、大規模 teacher 產料+迭代排水):語料量級(QAD 外錨 0.3–6B tok)、rank 維持 512(H_richcap FAIL)、O1 排空對照裁固定稅、O5 accumulate 紀律、e2e reverse-KL 互補臂(fill=FKL 蓄廣度、e2e=RKL 抓主模式)、humaneval 降量測"
+}

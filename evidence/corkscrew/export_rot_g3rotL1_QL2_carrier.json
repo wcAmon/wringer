@@ -1,0 +1,13 @@
+{
+ "codes": "g3rotL1",
+ "Q": "evidence/p1_grouping/corkscrew/rot_Q_L2.pt",
+ "Q_step": 150,
+ "ce_ref_frozen": 2.102832615375519,
+ "ce_materialized": 2.1027311235666275,
+ "gate": 0.01,
+ "out": "exports/g3rotL1_QL2_carrier",
+ "readers": 136,
+ "writers": 64,
+ "note": "dense=W_q·Qᵀ(讀)/Q·W_q(寫);殘差原基底;γ 折歸零;lm_head 解綁",
+ "timestamp": "2026-09-03T01:01:00.710072"
+}

@@ -1,0 +1,61 @@
+{
+ "note": "he = 4 seeds (20260806,1,2,3) mean/sd; IF/GS single official run; comp_single uses seed-20260806 he vs anchor 94.51; comp_mean uses he means (anchor mean 93.75)",
+ "rows": {
+  "bf16_w128": {
+   "he_runs": [
+    94.51,
+    94.51,
+    91.46,
+    94.51
+   ],
+   "he_mean": 93.75,
+   "he_sd": 1.52,
+   "if": 92.79,
+   "gs": 95.53,
+   "comp_single": 1.0,
+   "comp_mean": 1.0
+  },
+  "p3b_w": {
+   "he_runs": [
+    84.15,
+    82.93,
+    89.02,
+    85.37
+   ],
+   "he_mean": 85.37,
+   "he_sd": 2.63,
+   "if": 87.8,
+   "gs": 92.95,
+   "comp_single": 0.9365,
+   "comp_mean": 0.9433
+  },
+  "p3b_w2": {
+   "he_runs": [
+    89.02,
+    85.37,
+    89.02,
+    83.54
+   ],
+   "he_mean": 86.74,
+   "he_sd": 2.74,
+   "if": 86.32,
+   "gs": 92.49,
+   "comp_single": 0.9468,
+   "comp_mean": 0.9412
+  },
+  "p3b_w2_pack": {
+   "he_runs": [
+    86.59,
+    85.37,
+    83.54,
+    85.98
+   ],
+   "he_mean": 85.37,
+   "he_sd": 1.32,
+   "if": 88.17,
+   "gs": 93.48,
+   "comp_single": 0.9483,
+   "comp_mean": 0.9465
+  }
+ }
+}

@@ -1,0 +1,103 @@
+{
+ "experiment": "E63 S1 — 純碼排水引擎內建 (α, r_q) 閉式(st63a);prereg_e63_s1.json FROZEN @46458e7,amendment_1 @d03c02d(結果前)",
+ "date": "2026-09-07 04:4x",
+ "platform": "A4(st54r 碼 + res58r1 水;ρ = comp/0.7038;票帶 ±0.016 ρ)",
+ "arm": "st63a = 甲 hparams + --asym-r-bits 2 --asym-alt 2;無 M/L;31 窗 32377 s;post-drain val CE 1.936;flip_vs_p0 0.0007",
+ "official": {
+  "scores": {
+   "ifeval": 75.6,
+   "humaneval": 33.54,
+   "gsm8k": 65.35
+  },
+  "comp": 0.6179,
+  "rho": 0.878,
+  "rho_he": 0.743,
+  "empties": {
+   "ifeval": 36,
+   "humaneval": 32,
+   "gsm8k": 60
+  },
+  "empties_form_A4": {
+   "ifeval": 30,
+   "humaneval": 35,
+   "gsm8k": 65
+  }
+ },
+ "verdict": "PARTIAL(ρ 0.878 ∈ [0.836, 0.90))",
+ "ladder_rho": {
+  "ctrl0_zero_train_sym": 0.744,
+  "jia_st58rb_trained_sym": 0.777,
+  "asym0_pa63_asymblkq2_zero_train": 0.82,
+  "st61b_stripM_pure_code": 0.706,
+  "st61b_codes_plus_M": 0.872,
+  "st61c_codes_plus_M_closed": 0.889,
+  "st63a": 0.878
+ },
+ "deltas_rho": {
+  "vs_ctrl0": "+0.134",
+  "vs_jia_0.777": "+0.101 POS(6× 帶)",
+  "vs_asym0_0.820": "+0.058 POS(3.6× 帶)= 訓練留住並放大 r 增益",
+  "vs_st61b_codes+M_0.872": "+0.006 無效差 = 純碼+r 追平碼+M",
+  "vs_st61c_0.889": "−0.011 無效差",
+  "vs_stripM_0.706": "+0.172"
+ },
+ "predictions": {
+  "P1 ρ∈[0.84,0.88]": "PASS(0.878,上緣);簡單相加 甲+S0Δ = 0.777+0.076 = 0.853,實得 +0.025 超帶 ⇒ 輕度超加",
+  "P2 ρ_he≥0.70": "PASS(0.743;he 33.54 與 st61b 逐字同分 55/164)",
+  "P3 frac_far≥0.3 & 碼書跨度≥1.5×": "字面 FAIL(frac_far 逐窗 0.001–0.036;碼書跨度 down_proj ~1.2×、qkv/gate ~1.6–1.8×);amendment_1 比較判準 PASS(st63a r 對 S0 spread 1.13×、block 相關 0.64、碼翻 ≤0.2%)——原門檻誤對未量化上界",
+  "P4 每事件閉式增益≥15%": "邊界 FAIL(全事件均 0.136;逐窗 0.089→0.241 單調上升,窗 ≥19 多數 ≥0.13、窗 26–30 0.157–0.241;淺層低深層高)",
+  "falsifier ρ<0.836": "未觸發"
+ },
+ "r_curve_per_window_gain": [
+  0.165,
+  0.096,
+  0.093,
+  0.114,
+  0.089,
+  0.093,
+  0.113,
+  0.121,
+  0.106,
+  0.114,
+  0.121,
+  0.121,
+  0.125,
+  0.114,
+  0.122,
+  0.132,
+  0.115,
+  0.117,
+  0.131,
+  0.144,
+  0.129,
+  0.122,
+  0.13,
+  0.147,
+  0.138,
+  0.137,
+  0.157,
+  0.17,
+  0.178,
+  0.188,
+  0.241
+ ],
+ "r_stats_summary": {
+  "frac_far_mean": 0.0119,
+  "p10_p50_p90_typical": "0.96/1.02/1.06",
+  "frac_clamped": 0.0,
+  "refit_flip": 0.0
+ },
+ "local_vs_jia": {
+  "window_end_loss": "st63a ≤1e-5–2e-5(前 12 窗)vs 甲 1.5e-5–5.3e-5 vs st61b 3e-6–1.6e-5",
+  "gdisc1": "st63a 0.005–0.03 vs 甲 0.05–0.16 vs st61b 0.004–0.03 = 與碼+M 引擎同級",
+  "flips": "同量級(晚窗 st63a 最高 496k)"
+ },
+ "reading": [
+  "r 在碼內取代了 M 的載體角色:純碼 + 每 block 2 bit r(+0.0625 b/w,無推論矩陣)= 0.878 ≈ 碼+M 0.872;純碼無載體紀錄由 0.820 → 0.878",
+  "訓練與 r 疊加且輕度超加:碼與 r 共適應沒有吃掉 r(amendment_1 已證 r 未拉回),反而放大 +0.058",
+  "he 33.54 = st61b 完全同分,gs 65.35 vs 66.57、if 75.6 vs 73.2:分科形態與碼+M 幾乎重合 ⇒ 兩者可能觸到同一個『閉式載體天花板』(Σ 主方向可解的那部分水)",
+  "S2 算術未改:冠軍台 A 0.8216 需 ρ ≥ 0.909 才勝 0.7469;0.878 差 0.031(超帶);S1 是引擎證明非封冠臂"
+ ],
+ "consequence": "S1 引擎 = 目前純碼最佳排水引擎(交付形態:三元碼 + α + 2 bit r);距 PASS 0.90 差 0.022、距封冠線 0.909 差 0.031。下一槓桿候選:T2 殘差平面(down_proj +0.435 b/w,局部 ratio 0.12,官方 3 臂運行中)疊 r;或 r 粒度/位元(3 bit)邊際;第四步(res62s2 排水引擎選擇)待 T2 官方後呈用戶裁,不自主點火",
+ "assets": "exports/e63_st63a、data/qs_st63a、a1eval/*_e63_st63a、train_st63a.json"
+}

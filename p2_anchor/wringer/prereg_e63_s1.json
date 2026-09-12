@@ -1,0 +1,114 @@
+{
+ "id": "E63-S1",
+ "title": "E63 S1 —— 純碼排水引擎內建非對稱 (α, r_q) 閉式:訓練式排水是否留住零訓練 +0.076 ρ",
+ "status": "CLOSED 2026-09-07 04:4x:PARTIAL ρ 0.878(見 verdict_e63_s1.json)",
+ "lineage": "E63 S0 局部 @01b43e0(2 bit/block r ratio 0.750)→ 用戶裁 Q1 允許尺度側 2 bit/block → S0 官方 POS @bda1395(A4 台 ctrl 0.744 → asymblkq2 0.820,Δcomp +0.0537 = 帶 4.9×,he +7.32)",
+ "erratum_baseline": {
+  "what": "過去卷宗(verdict_e62b、verdict_s2、記憶)把 st61b 標為『純碼引擎 ρ 0.872』。查 exports/e61_st61b 位面含 .mix(M 載體 72×128×128 fp32,偏離 I 均值 0.0013;train_st61b hparams mix_block 128),st61b = 碼 + M(Adam 訓,近單位陣)。",
+  "true_pure_code_trained_baseline": "甲 st58rb(train_st58rb.json:mix_block 0,無 M/L)ρ 0.777(if 68.39/he 25.61/gs 60.50,ρ_he 0.568)",
+  "ladder_A4_pure_code": {
+   "zero_train_sym(pa63_ctrl)": 0.744,
+   "trained_sym(甲 st58rb)": 0.777,
+   "zero_train_asym2bit(pa63_asymblkq2)": 0.82,
+   "trained_sym+M(st61b,非純碼)": 0.872,
+   "trained_(α,M)閉式(st61c,非純碼)": 0.889
+  },
+  "reading": "純碼上,訓練式排水只比零訓練直投多 +0.033;零訓練非對稱 +0.076 已超過整個訓練增益;M 載體 +0.095。S2 排水算術(verdict_s2)引用 0.872 為純碼引擎屬誤,純碼現況為 0.777/0.820。",
+  "optional_check": "export e61_st61b --strip-mix → 官方三科(零訓練,~1.5h):量 M 近單位陣時實際承載多少;若 ≈0.87 則純碼訓練基線上修,S1 預測改讀。屬新官方評測,呈用戶裁,不自主點火。",
+  "step1_result_2026-09-06_19:0x": {
+   "arm": "e63_st61b_stripm(st61b export --strip-mix,零訓練)",
+   "official": {
+    "ifeval": 61.0,
+    "humaneval": 25.0,
+    "gsm8k": 54.36,
+    "comp": 0.497,
+    "rho": 0.706,
+    "empties": {
+     "ifeval": 65,
+     "humaneval": 45,
+     "gsm8k": 91
+    }
+   },
+   "delta_rho": {
+    "vs_st61b(碼+M)": -0.166,
+    "vs_jia_st58rb": -0.071,
+    "vs_asym0": -0.114
+   },
+   "verdict": "M_CARRIES:M 偏離單位陣僅 0.0013 卻承載 0.166 ρ;去 M 後 0.706 低於從頭無 M 的甲 0.777 ⇒ 與 M 共訓的碼把功能外包給 M(E62b M_CARRIES_HARD 在 st61b 上復現,第二次觀測)。純碼訓練基線=甲 0.777 定案;S1 階梯不變(0.744/0.777/0.820/[0.872 碼+M])。",
+   "implication": "『近單位陣 = 幾乎沒承載』直覺錯:載體的作用量不在其範數,在碼對它的依賴;任何共訓載體事後皆不可拆。S1/T2 的純碼交付形態不掛 M 為正確設計。"
+  }
+ },
+ "thesis": "粒度定律:非對稱只在 α 粒度(block)有效;零訓練固定碼下已官方可見。S1 問:碼在訓練中與 r 共適應時,增益是疊加(ρ ≈ 0.777+0.076 ≈ 0.85)、超加(碼空間變大讓 greedy 找到更好落點,>0.87)、還是被訓練吃掉(≈0.80)。",
+ "platform": {
+  "choice": "A4(st54r 碼 + res58r1 水)——與甲/ctrl/asym0/st61b 同台,五點階梯可直接比;ρ = comp/0.7038",
+  "alt": "直接在冠軍台(st51c_e2e + res62s2,A 0.8216)排水:同成本、一次得 B vs 0.7469,但失去階梯可比性且引擎/轉移混雜;若用戶選此,判準改 B > 0.7629 主判、ρ=comp/0.8216 次判"
+ },
+ "arm": {
+  "tag": "st63a",
+  "base": "甲 st58rb 完全同 hparams 同 seed(mix_block 0、lmix 0:純碼)+ comp_event 內 (α, r_q) 閉式",
+  "engineering": [
+   "STQParam 加 buffer rneg (M,nB,1) 初值 1(非 Parameter,STE 不學);hard 路 v→where(v<0, v·rneg, v);soft 路同式(soft_staircase 輸出 v∈[−1,1] 連續,負側乘 rneg);extract 回傳 rneg;state 存 rneg (M,nB)+rneg_cb;export 走既有 rneg_idx+cb 路(A2b/A3b 已 PASS)",
+   "comp_event 順序:鮮 H → greedy_comp_grid(負格落點值改 −rneg·α,delta 用逐元 vals_eff)→ 閉式:r_blk ← asym.solve_r_blk(W_t, T, α, H) → quantize_r(r_blk, 2)(每模組 log 域 Lloyd 碼書)→ α ← refit_alpha(q, W_t, asym_V(T, r_q), H)(現有 mixls.refit_alpha,V3 換非對稱)→ 寫回 rneg=r_q、rneg_cb、logit",
+   "r_q 在事件間凍結;水位 level 以 V(r_q) 計;checks:C1 rneg≡1 時 comp_event 逐位 == 甲;C2 一次事件後 err_h 不增(閉式單調);C3 extract→state→export→decode bit-exact;C4 煙測 --smoke 2 窗 PASS"
+  ],
+  "cost": "工程 ~半天 + 煙測 0.5h + 排水 ~8.5h(甲 30396s)+ 官方 1.5h"
+ },
+ "judges": {
+  "primary": "ρ = comp(st63a)/0.7038;PASS ≥ 0.90(北極星帶);PARTIAL [0.836, 0.90)(0.836 = 零訓練 asym 0.820 + 帶 0.016:訓練必須贏過零訓練直投才算引擎有價值);FAIL < 0.836",
+  "vs_ladder": "vs 甲 0.777:Δρ > +0.016 POS;vs asym0 0.820:Δρ > +0.016 才記『訓練留住並疊加』",
+  "secondary": "ρ_he ≥ 0.70(甲 0.568、asym0 he 34.15/45.12 = 0.757);empties ≤ A4 {30,35,65} 形態票",
+  "mechanism_diag_only": "solver flips、r_q 分佈(frac_far)、碼書值、每事件 err_h 閉式增益、水位曲線——診斷不裁"
+ },
+ "predictions_written_before_run": {
+  "P1": "ρ ∈ [0.84, 0.88](疊加帶:甲 +0.076 ± 訓練互動)",
+  "P2": "ρ_he ≥ 0.70(非對稱主增益在 he,S0 he +7.32)",
+  "P3": "r_q frac_far(|r−1| 超 0.8–1.25)≥ 0.3,碼書跨度 ≥ 1.5×(r 真的被用)",
+  "P4": "每 comp 事件閉式段 err_h 相對降 ≥ 15%(S0 局部 −25% 的訓練中版本)",
+  "falsifier": "ρ < 0.836 ⇒ 訓練式排水未留住零訓練增益(碼共適應吃掉 r)⇒ 純碼+非對稱交付形態=零訓練直投(0.820),S1 引擎封盤",
+  "S2_arithmetic": "即使 PASS 上緣 0.90 仍 < 勝冠軍所需 0.909(冠軍台 A 0.8216);S1 是引擎證明,非封冠臂;封冠需再疊碼空間槓桿(down_proj 開 T2 / 欄重排),另立 prereg"
+ },
+ "not_doing": [
+  "以梯度學 r(r 只閉式)",
+  "M/L 載體(北極星封)",
+  "C1/C2 統計臂",
+  "自主點火"
+ ],
+ "assets": {
+  "in": [
+   "data/qs_st54r",
+   "data/res_res58r1",
+   "calib_e58r1b_traj/len",
+   "train_st58rb.json(hparams 對照)"
+  ],
+  "out": [
+   "train_st63a.json",
+   "data/qs_st63a(含 rneg/rneg_cb)",
+   "exports/e63_st63a",
+   "a1eval/*_e63_st63a",
+   "verdict_e63_s1.json"
+  ]
+ },
+ "decision_for_user": {
+  "Q1": "核准 S1 st63a(A4 台)開工?(工程半天 + 排水 ~9h + 官方 1.5h)",
+  "Q2": "平台:A4(推薦,階梯可比)或直接冠軍台(省一輪,混雜)",
+  "Q3": "是否先做 st61b --strip-mix 零訓練官方(1.5h,GPU 現閒置)修正純碼基線?",
+  "Q4": "S2 排水段引擎:等 S1 裁後再定(推薦)/ 現以甲配置純碼排水 res62s2(預測 B ≈ 0.64,只為量 ρ 轉移)"
+ },
+ "engineering_as_built": {
+  "stq": "STQParam.register_buffer('rneg', None) + set_rneg(r, cb);_apply_rneg 於 hard/soft/extract 三路;None=逐位舊行為(C1b)",
+  "comp": "greedy_comp_grid(rneg=):部署位移 delta=a2(f(vals[tgt])−f(u2)) 打分/更新 R,潛位移 delta_lat 落格點寫 comp;rneg=None 同物件(C1);既有近似(潛離格 → 內部 obj 與真部署誤差差 ~5%)對稱/非對稱同量級",
+  "train_res": "--asym-r-bits 2 --asym-alt 2:greedy 後 (α,r_blk) 交替 → quantize_r → refit_alpha(V(r_q)) → set_rneg;ev.asym_ls={gain(碼固定),gain_dep(重擬合後重取碼),refit_flip,r 統計,cb,alpha_rel_change,alpha_clip_frac};水位 level 改記閉式後殘差(旗標關則不變)",
+  "known_property": "α 重擬合會改碼(refit_flip 合成 ~3%;st61c 同性質 --tail-alpha-ls 註明『會改碼』),r_q 與新碼輕微失配,下一事件重解;為診斷量,非判準",
+  "state_export": "entry 加 rneg (M,nB) + rneg_cb;export rneg_idx uint8 + cb;C3 bit-exact"
+ },
+ "chain": "chain_e63_s1.sh:等 STRIPM_CHAIN_DONE + 無 vllm/train_res + 無 $S/S1_HOLD → 煙測閘(asym_ls 事件存在且 gain ≥ 0)→ st63a(甲 hparams + --asym-r-bits 2,--resume)→ export --verify → 三科 → S1_VERDICT(對階梯含 stripM 讀數)",
+ "amendment_1_before_official_2026-09-06_22:4x": {
+  "trigger": "用戶問「蓄水 LoRA 基於對稱三元訓練,基底改非對稱會不會排水成功但拉回對稱」;以已訓 11 層(qs_st63a layer00–10)對 S0 零訓練 qs_pa63_asymblkq2 逐模組對比",
+  "finding": "無拉回:st63a r_q 的 mean|log r| / S0 = 1.13(min 0.87 max 1.46;down_proj 1.19)、碼書四值逐模組同型(例 L05 down_proj S0 [0.91,0.978,1.018,1.082] vs st63a [0.91,0.975,1.023,1.093])、逐 block log r 相關 0.64(down_proj 0.72);碼翻動 vs st54r 僅 0.000–0.002(負碼翻動 ≤0.001)⇒ 既非撤銷亦非碼替代,r 在訓練中原樣保留且略擴",
+  "correction_of_earlier_reading": "煙測「r 逐事件收攏→1(碼書 [0.76..1.21]→[0.90..1.09])」是窗內第一事件起點偏寬、收斂到 S0 水準的過程,不是被訓練抹除;先前把它對比 S0 未量化上界(0.86/1.15)是張冠李戴",
+  "P3_recalibration": "P3 原文 frac_far ≥ 0.3 是對未量化煙測上界定的;S0 asymblkq2 自身 frac_far 逐模組僅 0.00–0.17(down_proj 0)。改為比較判準:st63a 與 S0 的 mean|log r| 比 ≥ 0.8 且逐 block 相關 ≥ 0.5 = r 保留(已於 11 層 PASS);原 0.3 門檻保留為字面紀錄、預期 FAIL 但不作為裁決",
+  "sigma_I_proxy_note": "Σ=I 代理下 st54r 碼的 r_ls ≈ 1.00±0.014(far 0)且 r_q 使 Frobenius 誤差升 1.3–3×:r 的增益純屬 Σ 加權(單趟 128 calib Σ 的主方向),Frobenius 度量看不到;S0 官方 +0.054 已證其函數級真實,但提示 r 對 Σ 估計的依賴為第 13 型風險候選",
+  "decision_matrix_update": "S1 官方讀法簡化為:ρ vs 甲 0.777 與 S0 0.820——ρ ≥ 0.836 PASS-ish 帶=r 與訓練疊加;ρ ≈ 0.820 = r 增益不隨訓練放大;ρ ≈ 0.777 = r 局部保留但函數級被抵銷(第 13 型)",
+  "script": "scratchpad diag_r_pullback.py(Σ=I 代理,作廢)+ 碼書對比片段(內嵌於 session)"
+ }
+}

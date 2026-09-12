@@ -1,0 +1,47 @@
+{
+  "id": "E58R1B",
+  "date": "2026-09-02",
+  "prereg": "prereg_e58r1b.json (FROZEN)",
+  "question": "R1 ρ 0.748 崩塌歸因拆解:卷面覆蓋(甲)×排水劑量(乙)兩臂單變因",
+  "fixed": {"base": "st54r", "reservoir": "res58r1", "A4": {"comp": 0.7038, "if": 81.52, "he": 45.12, "gs": 72.18, "empties": {"ifeval": 30, "humaneval": 35, "gsm8k": 65}}},
+  "arms": {
+    "R1_reference": {
+      "calib": "頭取 128 = 100% ifshape(儀器缺陷)", "dose": "1x",
+      "B": 0.5263, "by": {"if": 63.22, "he": 28.05, "gs": 57.39},
+      "rho": 0.748, "rho_by": {"if": 0.776, "he": 0.622, "gs": 0.795},
+      "empties": {"ifeval": 64, "humaneval": 31, "gsm8k": 59}, "net_flip": 0.0012
+    },
+    "jia_coverage": {
+      "state": "st58rb", "calib": "分層 128(code 66/if 33/math 29)", "dose": "1x",
+      "B": 0.5471, "by": {"if": 68.39, "he": 25.61, "gs": 60.5},
+      "rho": 0.777, "rho_by": {"if": 0.839, "he": 0.568, "gs": 0.838},
+      "empties": {"ifeval": 36, "humaneval": 24, "gsm8k": 35}
+    },
+    "yi_dose": {
+      "state": "st58rc", "calib": "分層 384(code 198/if 98/math 88)", "dose": "3x",
+      "B": 0.4959, "by": {"if": 64.88, "he": 21.95, "gs": 53.15},
+      "rho": 0.705, "rho_by": {"if": 0.796, "he": 0.487, "gs": 0.736},
+      "empties": {"ifeval": 79, "humaneval": 43, "gsm8k": 72},
+      "net_flip": 0.0027, "post_drain_val_ce": 2.001441,
+      "infra": "--x-cpu X 駐 CPU @62da346 + run_layers 就地置換;GPU 峰 ~78G/RAM 34G,零故障 25.6h"
+    }
+  },
+  "judges": {
+    "coverage_vote": "PARTIAL——甲 vs R1:ρ +0.029;if +.063/gs +.043 修復有效、empties 減半;he −.054 反降=he 非覆蓋問題(第一票)",
+    "dose_vote": "FAIL 反向——乙 vs 甲:ρ −0.072 全科齊跌(if −.043/he −.081/gs −.102),empties 倍增;3× 劑量淨傷害=劑量軸否證(第二票)",
+    "falsifier": "觸發——雙臂 ρ<0.78(甲 0.777/乙 0.705)⇒ prereg 條款:碼軸第一選擇,E59 提前呈議",
+    "he_monotone": "he ρ 隨排水活動量單調降:.622(R1 淨翻 0.12%)→.568(甲)→.487(乙 淨翻 0.27%)——排水翻碼越多 he 傷越重,與『貪婪翻碼在繼承盆地打轉』(E35 阻力判例)互證"
+  },
+  "morphology": {
+    "tail_saturation": "乙臂末段窗損失帶破壞:窗 28-31 起始 loss 2.7e-3→1.4e-2(早段 2e-5 帶的 100-700×),單窗 flips 破百萬(窗 30-31=1.37M)=深層吞吐飽和現場直播,與 final_level 分診(L25-31 殘水最重)互證",
+    "dose_response_inverted": "固定載荷下劑量反應倒掛:更多排水步=更差保留——R1 劑量線(E54/E57/R1 ρ 隨 ΔA/dose 單調)補全:分母不足是必要條件,但補劑量到 3× 反而過排",
+    "termination_damage": "乙 empties {79,43,72} vs A₄ {30,35,65}=重翻碼破壞終止行為(E51 失律同構)",
+    "throughput_ceiling": "三臂 B 均遠低於冠軍 0.7388;本鏈裁 ρ 機制,冠軍不受影響"
+  },
+  "route": {
+    "verdict": "falsifier 路線:薦 E59 碼軸手術提前(規劃已完 @c36ccee;he 兩票已齊=覆蓋票+劑量票皆反對,壓力票不再是入場必要條件)",
+    "user_options": ["(a) E59 先行:重解 L25-31+L0-1 後再議 R2 疊梯", "(b) R2 照原序先走:A_he 壓力票仍有資訊價值,E59 隨後", "(c) 排序權在用戶,絕不自主點火"],
+    "assets": "R2 語料就緒(bleachers-e58r2 11236 題+gen_agentic 呈議)+O6 條款已裁入 R2 prereg;int2/BitBLAS kernel 支線候排"
+  },
+  "states": {"keep": ["st58r", "st58rb", "st58rc", "res58r1"], "exports_cleanup_candidates": ["e58_rb", "e58_rc"]}
+}

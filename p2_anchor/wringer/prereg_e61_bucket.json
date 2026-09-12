@@ -1,0 +1,261 @@
+{
+ "id": "E61",
+ "title": "擴桶:逐窗排水目標加入逐模組 128 塊混合矩陣(不加元的在線連續載體)",
+ "status": "FROZEN(用戶 2026-09-03「預估排程時間,發射E61」;S0→S1 自主串行;S2 點火前呈用戶)",
+ "date": "2026-09-03",
+ "lineage": "E37 水庫烘焙(ρ 0.969)→E38 r256 ρ₂ 0.485→E54 ρ 0.912→E58R1b 甲 0.777/乙 0.705、he ρ .622→.568→.487 隨翻碼量單調降",
+ "thesis": {
+  "H_bucket": "逐窗排水的上限不在逐窗機制,而在承接水的連續載體容量(α 每模組 in_dim/32×out 個標量)。水庫愈大、要翻的碼愈多,ρ 愈低,是桶溢出的劑量曲線。在部署形態加入逐模組輸入側 128 塊混合矩陣 M(4 個 α 組共用一塊,不進碼、不摺入權重、在線執行),排水時以梯度吸收 α 裝不下的殘水,ρ 應顯著回升、淨翻碼應下降。",
+  "H_alt": "殘水需要的是碼空間(離散格點的另一種擺法),連續載體再大也接不住:ρ 不變、翻碼不減、he 仍最先崩。",
+  "user_rulings": [
+   "逐窗當投影器保留(E37 分工:全局 KD 找方向、逐窗只做壓縮),當搜索器已定罪(E35/E59),不再用走廊搜碼",
+   "128 跨組交換優先於 32 組內旋轉(承接殘差需要跨 α 組的自由度);32 留作對照臂列入 S3 可選",
+   "在線轉換不摺入殘差流,故正交約束非必要;主臂用一般線性 M,正交版作部署省位元的備選",
+   "9→5→3 分段走廊降為備援"
+  ]
+ },
+ "deployment_form": {
+  "current": "W = (2σ(logit)·α₀) ⊙ (T₁ + c·T₂),LoRA/θ 排水時全數吸收進碼與 α",
+  "new": "W_eff = W_hard @ blockdiag(M_1..M_k),M_j ∈ R^{128×128} 沿輸入維,初始化 I;M 不被吸收,隨 export 以 bf16 帶出;vLLM 評測用稠密實體化 W_hard@M(export_rot 同型精確等價)",
+  "divisibility": "in_dim 2560/4096/9216 皆為 128 倍數(讀端 2560、o_proj/out_proj 4096、down_proj 9216)",
+  "bit_account": {
+   "codes_3元": "1.58 b/w",
+   "alpha_bf16_g32": "0.50 b/w(現有)",
+   "M128_linear_bf16": "≈99M 參數≈198MB≈+0.40 b/w",
+   "M128_cayley_or_int8": "≈+0.20 b/w",
+   "M64_linear_bf16": "≈+0.20 b/w",
+   "M32_linear_bf16": "≈+0.10 b/w",
+   "note": "碼不加元、α 不變;M128 的位元帳與一個 α 同量級。對照 5元 碼 2.32 b/w(+α 0.50)。機制 PASS 後再裁 64/int8 收帳。"
+  },
+  "online_cost": "每模組前置 x@blockdiag(M) = in_dim×128 MAC/token,對模組本體 in_dim×out 為 128/out ≈ 5%"
+ },
+ "engineering_S0": {
+  "stq.STQParam": "新增 mix 參數 (k,128,128) 初始 I、mix_lr 獨立參數組;forward 尾端 W_hard@blockdiag(mix);hard/STE 路徑同樣右乘;不參與 greedy_comp_grid 翻碼",
+  "train_res": "--mix-block 128 --mix-lr 1e-4;吸收步梯度組加入 mix;R_eff 定義改為 W_target − W_hard@M;新增儀器 absorb_share:每格記錄 ‖R‖_H 下降中歸於 mix / α / 翻碼的份額",
+  "export": "state 帶 mix;export 材化 W_hard@M(bf16);等價閘:M=I 時對現行 export 逐 tensor 位元一致;隨機 M 時對 train_res 前傳 val CE |Δ|<1e-3",
+  "gates_before_S1": [
+   "M=I 等價閘 PASS",
+   "smoke(--smoke, 2 窗)無 nonfinite、mix 有非零梯度、absorb_share 儀器有輸出",
+   "export 等價閘 PASS"
+  ],
+  "may_run_ahead": true
+ },
+ "stages": {
+  "S1_paired_redrain_falsifier": {
+   "purpose": "同一 A 態配對:桶是唯一變因",
+   "fixed": {
+    "base": "st54r",
+    "reservoir": "res58r1",
+    "A4": {
+     "comp": 0.7038,
+     "if": 81.52,
+     "he": 45.12,
+     "gs": 72.18
+    }
+   },
+   "control": "甲 st58rb(hparams 原樣:calib_e58r1b_traj 分層 128、batch 4、win2/stride1、gsteps 5、τ 0.5、W_max 4、lora_r 64/lr 6e-4、factor_lr 3e-3、learn_theta、holdout 0.05、x-cpu)ρ 0.777、ρ_he 0.568、net_flip 0.125%、B 0.5471",
+   "arm": "st61a = 甲 hparams + --mix-block 128 --mix-lr 1e-4(一般線性)",
+   "judges": {
+    "primary_rho": "ρ = comp(B)/0.7038;PASS ≥ 0.90;PARTIAL 0.82–0.90;FAIL < 0.82(甲 0.777 + 雙跑噪音帶 2×0.016 ≈ 0.81)",
+    "secondary_rho_he": "ρ_he ≥ 0.75 才算 he 軸被桶承接(甲 0.568)",
+    "mechanism": "net_flip 相對甲下降 ≥ 30% 且 absorb_share(mix) 為三載體之首,才記 H_bucket 機制成立;ρ 升但 flips 不降=增益來源另議",
+    "morphology": "empties 不高於 A4 {30,35,65};末段窗 loss 不出現乙臂式 100× 帶破壞"
+   },
+   "kill": "FAIL ⇒ H_bucket 於排水層級否證,鏈停;S2 不點火;連續載體擴容路線封盤,回到用戶三選項",
+   "cost": "排水 ≈ 8.5h(甲 30396s)+ 官方三科 ≈ 1h"
+  },
+  "S2_champion_reservoir_and_drain": {
+   "gate": "S1 PASS 或 PARTIAL 且機制票成立",
+   "fill": "res_fill r128 於冠軍 st51c_e2e(E37/E39 配方,語料 calib_e42_train_hec65 或 E39 on-manifold 梯次,KD 對 bf16、閉合權重 256/16/K8),1200 步;裁判點 A 官方三科",
+   "A_gate": "comp(A) > 0.7469 + 0.016 才有水可排;否則報 A 天花板,S2 停",
+   "drain": "train_res 甲 hparams + mix 128,起點冠軍態,水庫 res61",
+   "judges": {
+    "champion": "comp(B) > 0.7469 + 0.016 ⇒ 新冠軍 st61c;",
+    "rho": "ρ ≥ 0.90",
+    "by_subject": "he 不低於冠軍 54.88 − 1.0"
+   },
+   "cost": "蓄水 ≈ 4h + A 評 1h + 排水 ≈ 8.5h + B 評 1h"
+  },
+  "S3_optional": {
+   "e2e_polish": "冠軍 e2e KD 配方(1200 步、batch 8、γ0.8、閉合權重)於 S2 B 態,mix 可訓 lr 1e-5;官方對 S2 B",
+   "block32_control": "S1 同構、--mix-block 32,分離『跨組交換』與『塊內混合』",
+   "cayley_control": "正交 M 同塊,量正交約束是保護還是稅",
+   "kd_probe_1h": "rot_learn v3 同構:冠軍凍碼凍 α 只學 mix,held-out r_KL + 閉合探針;旁證,不裁決"
+  },
+  "S4_compress_M": {
+   "gate": "S2 封冠後",
+   "steps": "L1 共用 → L2 int8 → L3 三元化,每級官方三科量 ρ 保留",
+   "judges": {
+    "L2": "ρ ≥ 0.98",
+    "L3": "ρ ≥ 0.95"
+   },
+   "cost": "每級 1h 官方,無訓練"
+  }
+ },
+ "predictions_written_before_run": {
+  "H_bucket": "S1 ρ ≥ 0.90、ρ_he ≥ 0.75、net_flip < 0.09%、absorb_share(mix) > 0.5",
+  "H_alt": "S1 ρ 0.75–0.80、ρ_he ≈ 0.57、net_flip ≈ 0.125%、absorb_share(mix) < 0.2",
+  "proxy_discipline": "post_drain_val_ce 與窗 loss 僅診斷;裁決只用官方三科 comp 與 ρ"
+ },
+ "instruments": [
+  "ρ 總分與分科",
+  "net_flip_vs_p0",
+  "absorb_share {mix, alpha, flips} 逐格",
+  "empties 三科",
+  "末段窗 loss 帶",
+  "M 譜:每塊奇異值分佈與離 I 的 Frobenius 距離(診斷 M 是否退化成縮放=與 α 冗餘)"
+ ],
+ "not_in_scope": [
+  "改碼盆地(E59 三選項)",
+  "9→5→3 走廊",
+  "全局旋轉 Q(E60 已封)"
+ ],
+ "assets": {
+  "states": [
+   "st54r",
+   "res58r1",
+   "st51c_e2e"
+  ],
+  "exports": [
+   "e58_resA4(A4 官方已測,可不重評)",
+   "st51c_e2e_x"
+  ],
+  "tools": [
+   "train_res",
+   "res_fill",
+   "stq",
+   "export",
+   "kl_ref/rot_learn v3(S3 旁證)"
+  ]
+ },
+ "addition_path_plan": {
+  "why_M_cannot_fold": "逐模組/逐層的 M 無法摺入殘差流(摺入要求全網共用同一基底=E60 全局 Q,已證太弱);也不能摺入 RMSNorm(對角)。M 在線是『局部自由度』的價,與 QuaRot/SpinQuant 在低位元部署中保留在線 Hadamard 同類。",
+  "cost_reality": {
+   "compute": "M128 密集 bf16:每模組 in_dim×128 MAC/token(對本體 5%);乘法數與現行 α(每 32 次加法一次乘)同量級:M/α 乘法比 = 4096/out ≈ 1.6×(out 2560)或 0.44×(out 9216)",
+   "decode_bytes": "解碼為記憶體受限,真正成本是 M 的位元組:bf16 198MB ≈ 碼 0.79GB 的 25%;int8 99MB;三元 M ≈ 20MB(+0.04 b/w)",
+   "fwht_reference": "同塊 Hadamard 用 FWHT 每通道 log2(128)=7 次加法;三元 M 每通道 128 次加法(18×)但仍為純加法路徑"
+  },
+  "ladder": [
+   {
+    "L0": "訓練/裁決形態:M128 一般線性 bf16(本 prereg S1/S2 用此形態裁 ρ;先證機制再收帳)"
+   },
+   {
+    "L1": "同輸入共用:q/k/v、gate/up、in_proj_qkv/in_proj_z 各共用一個 M(同一 x 只變換一次);參數與位元組約減半;可作 S2 起的預設形態,S1 不動以保配對純度"
+   },
+   {
+    "L2": "M 後量化 int8(每列尺度):純訓後動作,ρ 保留閘 ≥ 0.98"
+   },
+   {
+    "L3": "M 三元化(每列 α_M,M = α_M ⊙ T_M):x@M 變成 128 加法/通道,回到加法路徑;M 的 α_M 與現行 α 同一類 epilogue/prologue 尺度;ρ 保留閘 ≥ 0.95;若不過,退 L2"
+   },
+   {
+    "L4": "結構化備選:蝶形/塊 Hadamard 固定符號 + 可學對角(參數 O(in·log in)),DoF 遠少於 M128,只在 L3 失敗且 S1 機制票成立時才試"
+   }
+  ],
+  "verdict_rule": "本輪只裁 L0 的 ρ 機制;L1–L3 列為 S4『收帳』階段,S2 封冠後執行,逐級量 ρ 保留;加法路徑最終形態 = 碼三元 + α + 三元 M(或 int8 M),不重解碼、不動 α。"
+ },
+ "schedule_estimate": {
+  "S0": "1.5h",
+  "S1_drain": "8.5h(甲 30396s)",
+  "S1_official": "1h",
+  "S1_total": "≈11h",
+  "S2_if_pass": "≈14.5h(另呈)"
+ },
+ "amendment_0_pre_launch": {
+  "when": "S0 smoke 後、S1 點火前(2026-09-03)",
+  "what": "機制票的 absorb_share(mix) 操作化改為『逐窗 final_level 對甲 st58rb 配對比值』+ net_flip;mix_gain 仍記錄但只作診斷",
+  "why": "smoke 顯示 mix_gain(同碼下有 M vs 無 M 的 ‖R‖_H 比)為負(−0.02…−5.8):起點 W0q≡w_hard 使無 M 殘差極小,且碼/α/LoRA 已與 M 共適應,拔掉 M 不是公平反事實;公平的機制量測是同窗同事件對甲的水位(Σ‖R_eff‖_H)比值",
+  "mechanism_vote_now": "net_flip ≤ 0.7×甲 0.125% 且 mean_w(final_level_st61a/final_level_甲) < 1.0",
+  "smoke": "st61smk 2 窗 PASS:無 nonfinite、mix 梯度非零(dist_I 0.05–0.13、sv 0.90–1.08)、M 隨態落盤 (20,128,128) fp32、resume-skip 含 mix 材化"
+ },
+ "amendment_1_post_drain_pre_official": {
+  "when": "2026-09-03 22:5x,S1 排水收官後、官方三科讀出前(export 進行中);在讀到任何官方分數之前落筆",
+  "defect": "comp_event 殘差座標錯:W0q(parametrization original)為碼座標(前向先量化再右乘 Bd),水 BA 在部署座標(mix 之外相加);舊式 R=W_t·Bd⁻¹−w_hard 把 W0q 也拉回,製造偽殘差 W0q(Bd⁻¹−I)。實測(qs_st54r/qs_st61a/res58r1,Frobenius)偽殘差/水 = 0.66–2.0(15 模組五層抽樣),即 greedy comp 解法器在 S1 全程對『約半數為偽』的目標打分;G3 恆等式數學成立但前提(W_t 為部署座標)不成立",
+  "affects": "(1) comp 解法器逐事件翻碼目標偏置(方向=令碼『抵銷』M,與梯度方向相抗);(2) level/final_level 儀器含偽項→機制票第二判準(final_level 比值<1)作廢,S1 讀得 1.137 不採信;(3) mix_gain 為負的主因是此偏差(G6:W0q≡w_hard 起點下偽殘差/真殘差≈400×),amendment_0『不公平反事實』只是次因",
+  "not_affected": "前向/軟硬前傳、STE、α/M/LoRA 梯度、finalize 材化 w_hard@Bd、export/位面包 bit-exact、vLLM 評測;官方 B 量的是部署模型本體",
+  "how_to_read_S1": "S1 為『帶偏置 comp 解法器』下的擴桶測試=對 H_bucket 不利的手銬;ρ 判帶不改。若 PASS/PARTIAL 則論題在手銬下成立、修正後預期只升不降;若 FAIL 則本缺陷為混淆,需修正版重跑(prereg 修正,呈用戶)。net_flip 判準保留但註記含偏置解法器的翻碼",
+  "fix": "train_res.comp_event:R = W0q + water·Bd⁻¹ − w_hard(只把水拉回碼座標),obj_mix = ‖(W0q−w_hard)Bd + water‖_H;checks_e61 新增 G6(零水殘差對 M 不變,bit-exact PASS)。修正不作用於已完成的 st61a,適用 S2 起",
+  "drain_readout_pre_official": {
+   "net_flip": 0.000674,
+   "jia_net_flip": 0.001249,
+   "ratio": 0.54,
+   "post_drain_val_ce": 1.971954,
+   "jia_val_ce": 1.985153,
+   "holdout_loss_ratio_mean": 0.483,
+   "gdisc1_ratio_mean": 0.455,
+   "flips_total": 4808329,
+   "jia_flips_total": 8908857,
+   "M_profile": "‖M−I‖/‖I‖ 0.028–0.047 深度持平;極分解主旋轉角均 0.7–1.4°、旋轉占比 0.47(≈無結構擾動);層 0 in_proj_z sv_min 0.217/最大角 30° 唯一異常;M 偏離量不隨深層翻碼十倍上升=Adam 定步長節流(bucket 被 mix_lr 節流,非 DoF 上限)"
+  }
+ },
+ "amendment_2_S1b": {
+  "status": "FROZEN(用戶 2026-09-04 00:0x 裁「1 可刪」=選項 1 st61b 修正配對重跑,並核准刪 exports/e61_st61a)",
+  "arm": "st61b = st61a 完全同配置(st54r+res58r1、n-calib 128、win 2/stride 1、gsteps 5、τ 0.5、w_max 4、comp 3×0.03、tail 10/4、s0 30、lora r64 6e-4、factor 3e-3、mix-block 128、mix-lr 1e-4、seed 同),唯一差異=amendment_1 修正版 comp_event(R = W0q + water·Bd⁻¹ − w_hard;obj_mix 同座標)",
+  "reads": "st61a→st61b = 解法器單獨貢獻(同 A 態同 M 設定);st61b→甲 st58rb = 無手銬擴桶效果;st61b 對 A4 0.7038 的 ρ 沿用 S1 判帶 PASS≥0.90/PARTIAL[0.82,0.90)/FAIL<0.82;ρ_he≥0.75 次判;機制票=net_flip≤0.7×甲 且 final_level 比值<1(修正版水位無偽項,判準恢復有效);形態 empties≤A4",
+  "solver_contrib_vote": "ρ_st61b − ρ_st61a > +0.016(甲噪音帶)=POS;< −0.016=NEG;其間=NULL",
+  "predictions": {
+   "P1": "ρ_st61b ≥ ρ_st61a(0.819);修正解法器加分,幅度預期 0–0.03",
+   "P2": "mix_gain 均值轉正(修正版比較同座標)",
+   "P3": "solver_flips 與 st61a/甲 同量級(comp-cap 卡死)但 net_flip 不高於 st61a",
+   "P4": "final_level 比值 <1(偽項移除後)",
+   "falsifier": "ρ_st61b < 0.82 且 solver_contrib NULL/NEG → 解法器非混淆主因,擴桶在 S1 設定下確定未達線;連續載體擴容進入『M 節流/儀器』討論而非再點火"
+  },
+  "after": "PASS/PARTIAL → S2 呈用戶(冠軍蓄水→A 閘→修正解法器+mix128 排水),點火前呈;FAIL → 呈用戶三選項(M 節流實驗/關閉/回 E59)。不自主點火下一臂",
+  "smoke": "st61smk2(--smoke 2 窗,修正版 comp_event+mix128)須 PASS 才點火",
+  "assets_removed": "exports/e61_st61a(10G)已刪(用戶核准)",
+  "drain_readout_pre_official": {
+   "when": "2026-09-04 08:39 排水收官,官方讀出前落筆",
+   "post_drain_val_ce": {
+    "st61b": 1.942188,
+    "st61a": 1.971954,
+    "jia": 1.985153
+   },
+   "net_flip": {
+    "st61b": 0.000767,
+    "st61a": 0.000674,
+    "jia": 0.001249,
+    "vs_0.7jia": "0.000767 ≤ 0.000874 PASS"
+   },
+   "solver_flips": {
+    "st61b": 1434765,
+    "st61a": 1223690,
+    "jia": 1228298,
+    "note": "修正版對真目標多翻 17%,cap 非完全綁定"
+   },
+   "final_level_ratio_vs_jia": {
+    "mean": 0.904,
+    "below_1": "29/31",
+    "note": "偽項移除後判準恢復,P4 PASS"
+   },
+   "gdisc1_ratio_vs_jia": 0.418,
+   "holdout_ratio": {
+    "vs_jia": 0.47,
+    "vs_st61a": 0.95
+   },
+   "mix_gain_mean": 0.007,
+   "predictions_check": {
+    "P2 mix_gain>0": "PASS",
+    "P3 net_flip≤st61a": "FAIL 邊緣(+14%,仍 ≤0.7×甲)",
+    "P4 level<1": "PASS",
+    "P1 ρ≥0.819": "待官方"
+   }
+  }
+ },
+ "amendment_3_S1c": {
+  "status": "FROZEN;點火 2026-09-04 10:4x(smoke PASS 後)",
+  "correction_to_amendment_1": "amendment_1 把解法器問題推導成『W0q 碼座標被 Bd⁻¹ 拉回=座標錯』,此推導不成立:W0q 為凍結參數、排水 loss 錨定固定 Y,錨定目標 W_t=W0q+(1−γ)BA 在部署座標下正確,原式 R=W_t·Bd⁻¹−w_hard 在錨定語義下無誤。正確歸因=分工錯:錨定殘差含全秩項 W0q(I−Bd)(M 離 I 造成,量級≈水),三元碼翻不動小於碼階的密集項、cap 又卡住預算,greedy 在此項上空轉(cos≈0 實證);amendment_1 的『修正式』R=W0q+water·Bd⁻¹−w_hard 讓解法器只認水、把 W0q(I−Bd) 留給能吸收全秩項的連續路徑(梯度/M)=更好的分工。經驗結論(st61b +0.053 官方、val CE/holdout/level 全優)不變;G6 由『正確性不變量』改讀為『分工設計不變量』。此更正於 st61c 點火前落筆",
+  "arm": "st61c = st61b 完全同配置(含修正式 greedy)+ --mix-ls:每 comp 事件 greedy 後,對錨定目標 W_t(部署座標)閉式重解 M(塊對角限制、全 H 度量、CG 25 迭代、ridge λ=1×算子尺度、信賴域每事件每塊 ‖ΔM_b‖_F/√b ≤ 0.05、sv_floor 0.3 逐塊回退),再固定 (V,Bd) 以 Σ'=BdHBdᵀ scale_joint 重解 α 寫回 logit(夾 (0.02,0.98));Adam mix_lr 1e-4 保留(單一變數=加 LS)",
+  "why": "S1/S1b 皆量到 M 偏離量落在 √步數·lr 隨機遊走尺度(dist_I 0.02–0.06、旋轉 ~1°)=Adam 定步長節流;M 在給定碼下是線性問題,閉式解一步到最優。G7 顯示 LS 想走的步長 0.33–0.56(≫ Adam 一窗 0.03),cap 0.05/事件 × 25 事件容許逐步抵達",
+  "reads": "st61b→st61c = M 解綁單獨貢獻(ls_contrib 票:ρ 差 > +0.016 POS / < −0.016 NEG / 其間 NULL);st61c 對 A4 ρ 判帶沿用(PASS≥0.90/PARTIAL[0.82,0.90)/FAIL<0.82);ρ_he≥0.75;機制票 net_flip≤0.7×甲 且 final_level<1;形態 empties≤A4",
+  "predictions": {
+   "P1": "ρ_st61c > 0.872+0.016(POS);目標 PASS 帶 ≥0.90",
+   "P2": "M 剖面離開噪音尺度:dist_I 中位 ≥0.10、旋轉占比偏離 0.5",
+   "P3": "ls_gain 每事件 >0、sv_floor 命中率 <5%、α clip <5%",
+   "P4": "net_flip 不高於 st61b(LS 吸水→碼翻更少)",
+   "falsifier": "ρ_st61c ≤ 0.872−0.016 或 he 崩(ρ_he<0.60)⇒ LS 過擬合校準 H / 信賴域過寬,M 解綁在此設定反傷;回退候選=cap 0.02、只在 released 事件解、或 λ=3"
+  },
+  "gates": "checks_e61 G1–G9 PASS(G7 目標單調+大 ridge 不動、G8 法方程殘差 rel 7e-6/1e-6、G9 α 往返 1e-7);smoke st61smk3 須 PASS(無 nonfinite、ls_gain>0、sv_floor 命中<5%、alpha_clip<5%)",
+  "after": "PASS ⇒ S2 呈用戶(冠軍蓄水→A 閘→st61c 版引擎排水);PARTIAL/FAIL ⇒ 三點表呈用戶裁;不自主點火下一臂",
+  "smoke": "st61smk3 PASS:無 nonfinite;ls_gain 每事件 >0(min 0.03/0.07、mean 0.27/0.45);步長皆 ≤cap(t=1.0);sv_floor 命中 0、sv_min 0.59;α clip ≈0(max 3e-4)、Δα 均 0.02;mix_gain 0.023/0.031(無 LS 0.004/0.002);val CE 1.9758 < 無 LS 1.9972 < 舊 1.9995;M 四 epoch 即離噪音尺度(dist_I 0.14–0.75);翻碼 15625 vs 無 LS 28462(P4 方向)"
+ }
+}

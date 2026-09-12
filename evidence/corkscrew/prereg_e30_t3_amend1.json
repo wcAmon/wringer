@@ -1,0 +1,11 @@
+{
+ "name": "e30_t3_amend1",
+ "date": "2026-08-09",
+ "applies_to": "prereg_e30_t3.json(凍結原文不改)",
+ "trigger_evidence": "a1eval/ifeval_t9:t9 官方 strict 58.04(保留 63.8% vs bf16 錨 90.94),lm_eval 保留 95.8% 不轉移官方協定",
+ "amendments": {
+  "branch short(<80) teacher 候選": "t9 → e28_qat(exports/e28_qat,官方 strict 88.54 / 保留 97.4%;t9 官方認證未過,不能當官方軸 teacher)",
+  "T3 預期註記": "t9 一筆提示 50 步語料 KD 打磨可能侵蝕官方軸行為(L1 漂移 × proxy #5 同機理);st3_pol50 臂官方分低於 st3_zt 的可能性升高——若發生,照實入帳,打磨語料/步數轉入 Phase 4 消融,不改本輪配方"
+ },
+ "disclosure": "本檔於 E30 chain 任何 GPU 執行前寫死(t9 認證完成、chain 未啟動之窗口)。"
+}

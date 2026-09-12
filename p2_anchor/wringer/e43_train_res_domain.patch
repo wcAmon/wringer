@@ -1,0 +1,115 @@
+--- a/p2_anchor/corkscrew/train_res.py
++++ b/p2_anchor/corkscrew/train_res.py
+@@ -20,6 +20,7 @@
+ import datetime
+ import json
+ import time
++from collections import defaultdict
+ from pathlib import Path
+ 
+ import numpy as np
+@@ -106,6 +107,16 @@
+     ap.add_argument("--strain-wmax", action="store_true",
+                     help="E41-2 應變導引:逐窗 W_max 按零逃逸剖面加權"
+                          "(diag_zero_overlap @40be701;τ 不動)")
++    ap.add_argument("--calib-domains", default=None,
++                    help="E43 桿2/3:calib 逐列域標籤 json(與 --calib 列序對齊)")
++    ap.add_argument("--domain-weights", default=None,
++                    help="梯度路吸力再平衡:'ifshape:2.0,code:1.0'(未列=1;"
++                         "solver 路 H 由 calib 成分掌管,兩桿正交)")
++    ap.add_argument("--dom-exit", default=None,
++                    help="分域水位退出:'ifshape'=該域 epoch loss 未達 "
++                         "τ_dom×放格基準前不進下一格(τ 閉環 AND 條件)")
++    ap.add_argument("--tau-dom", type=float, default=None,
++                    help="分域退出比(預設沿用 --tau)")
+     ap.add_argument("--smoke", action="store_true",
+                     help="2 窗×32 calib×2 格,驗接線/事件/γ=0 斷言/resume")
+     args = ap.parse_args()
+@@ -153,6 +164,15 @@
+         print("res-zero:水庫 B 已歸零(O1 排空對照)", flush=True)
+ 
+     calib = torch.load(args.calib, weights_only=False)[:args.n_calib]
++    doms = wvec = None                            # E43 桿2:逐列域標籤+權重
++    if args.calib_domains:
++        doms = json.load(open(args.calib_domains))[:calib.shape[0]]
++        assert len(doms) == calib.shape[0], "域標籤與 calib 列數不齊"
++        wmap = {}
++        if args.domain_weights:
++            wmap = {k: float(v) for k, v in
++                    (kv.split(":") for kv in args.domain_weights.split(","))}
++        wvec = torch.tensor([wmap.get(d, 1.0) for d in doms]).cuda()
+     val = torch.load(EV / "calib_val.pt", weights_only=False)
+     from p1_grouping.e3_runner import eval_ce
+ 
+@@ -243,18 +263,31 @@
+         g_rng = torch.Generator().manual_seed(SEED + lo)
+         ep_log, ep_hold, drain_events = [], [], []
+ 
++        dom_ep = {}                               # E43:本 epoch 分域 loss
++
+         def train_epoch(s, hard=False):
+             if hard:
+                 set_mode(wp, "hard")
+             else:
+                 set_mode(wp, "soft", s=s)
+             tot = 0.0
++            dsum, dcnt = defaultdict(float), defaultdict(int)
+             for oi in torch.randperm(len(train_bi),
+                                      generator=g_rng).tolist():
+                 bi = train_bi[oi]
+                 opt.zero_grad(set_to_none=True)
+                 yh = fwd_chain(wlayers, X[bi], kw)
+-                loss = F.huber_loss(yh.float(), Y[bi].float())
++                if doms is None:
++                    loss = F.huber_loss(yh.float(), Y[bi].float())
++                else:                             # 桿2:梯度路逐列加權
++                    per = F.huber_loss(yh.float(), Y[bi].float(),
++                                       reduction="none").mean(dim=(1, 2))
++                    r0 = bi * args.batch
++                    wb = wvec[r0:r0 + per.shape[0]]
++                    loss = (per * wb).sum() / wb.sum()
++                    for j in range(per.shape[0]):
++                        dsum[doms[r0 + j]] += float(per[j])
++                        dcnt[doms[r0 + j]] += 1
+                 loss.backward()
+                 torch.nn.utils.clip_grad_norm_(
+                     [q for g in opt.param_groups for q in g["params"]],
+@@ -263,6 +296,9 @@
+                 tot += float(loss)
+             m_loss = tot / len(train_bi)
+             ep_log.append(round(m_loss, 6))
++            if doms is not None:
++                dom_ep.clear()
++                dom_ep.update({d: dsum[d] / dcnt[d] for d in dsum})
+             if not np.isfinite(m_loss):
+                 raise RuntimeError(f"警報:窗 {lo} loss {m_loss}")
+             if hold_bi:
+@@ -310,6 +346,10 @@
+             return level, ev
+ 
+         # ---- 排水段:γ 階梯 + 水位閉環(每 epoch 一事件 + 一訓練輪) ----
++        exit_doms = ([d for d in args.dom_exit.split(",") if d]
++                     if (args.dom_exit and doms is not None) else [])
++        tau_dom = args.tau_dom if args.tau_dom is not None else args.tau
++        dom_post = {}
+         gi, wait, n_post = 0, 0, None
+         ep = 0
+         while gi < args.gsteps:
+@@ -327,8 +367,16 @@
+                        "gamma_now": round(stq[ftgt[0]].gamma, 2)})
+             drain_events.append(ev)
+             train_epoch(args.s_plateau)
++            if doms is not None:               # 分域儀表入事件流
++                ev["dom_loss"] = {d: round(v, 6) for d, v in dom_ep.items()}
++            if released and exit_doms:         # 桿3:放格基準(同 n_post 語義)
++                dom_post = {d: max(dom_ep.get(d, 0.0), 1e-30)
++                            for d in exit_doms}
+             ep += 1
+-            if level <= args.tau * n_post or wait >= w_max_here:
++            dom_ok = (all(dom_ep.get(d, 0.0) <= tau_dom * dom_post[d]
++                          for d in exit_doms) if exit_doms else True)
++            if (level <= args.tau * n_post and dom_ok) \
++                    or wait >= w_max_here:
+                 gi += 1
+                 n_post = None                  # 觸發下一格釋放
+         for n in ftgt:                         # γ≡0 斷言(D6④ 前哨)

@@ -1,0 +1,21 @@
+{
+ "name": "e30b_longpolish",
+ "date": "2026-08-10",
+ "parent": "verdict_e30_t3.json short(<80) 分岔(保留 30.3%);teacher 依 amend1 = e28_qat(官方 strict 88.54,t9 已除名)",
+ "frozen_recipe": "polish --tag st3_lp300 --state-tag st3 --steps 300 --lr 3e-5 --batch 8 --teacher-dir exports/e28_qat --data calib_train_512.pt(起點 = alphas_st3 退火零打磨態,非 pol50 續打;α-only 200 張量)→ export exports/e30_lp300 → 官方 IFEval",
+ "confound_disclosure": "本臂 vs st3_pol50 同時改兩變數(teacher bf16→e28_qat、steps 50→300),不可歸因單因;歸因消融(bf16 teacher 300 步)僅在本臂結果異常時另立。比較對象 = st3_pol50 27.54(打磨配方整體升級是否有淨益)。",
+ "judge": "官方 A1 框架 IFEval strict prompt-level,同機 bf16 錨 90.94;val CE / KD loss 全程 monitor-only",
+ "predictions": {
+  "U1": "KD loss 有限且下降(對 e28_qat teacher 的 KL)",
+  "U2": "官方 strict > st3_pol50 27.54(長打磨+部署域 teacher 淨增益)",
+  "U3": "保留帶 ∈ [33%, 60%](誠實寬帶;α-only 容量天花板,90% 線不預期)",
+  "U4": "生成時間 < 968.8s(停止行為續恢復,損傷粗探針同向)"
+ },
+ "branches": {
+  "into_T3_band(≥55%)": "打磨升為主槓桿,另立 steps/lr 掃描 prereg",
+  "gain_but_short(U2 過,<55%)": "α-only 天花板實錘 → 持續訓練戰役另立(agentic 混合 + KD 錨,LoRA/全參,防 proxy #5)",
+  "no_gain(U2 敗)": "e28_qat teacher 域/容量歸因 → bf16 teacher 300 步消融一臂裁定"
+ },
+ "runtime_estimate": "polish ~25min + export ~3min + judge ~30min ≈ 1h",
+ "disclosure": "本檔於 e30b 任何 GPU 執行前寫死。"
+}

@@ -1,0 +1,75 @@
+{
+  "experiment": "E61 S1c — st61c (α,M) 閉式重解(mixls.py;amendment_3_S1c FROZEN)",
+  "date": "2026-09-04",
+  "chain": "drain 31 窗 8.6h(12:17→20:53)→ export bit-exact 200/200 → vLLM 官方三科 → 21:4x 收",
+  "verdict": {
+    "band": "PARTIAL",
+    "rho": 0.889,
+    "rho_band": "PASS≥0.90 / PARTIAL [0.82,0.90) / FAIL<0.82",
+    "rho_he": "PASS(0.784 ≥ 0.75)",
+    "mechanism": "PASS(net_flip 0.000491 = 0.39×甲 ≤ 0.7×甲;final_level 比 st61b 均 0.55、逐窗全 <1)",
+    "ls_contrib": "POS(邊界:Δρ +0.0177 vs 票帶 ±0.016,超帶僅 0.0017;與 st61a FAIL 差 0.001 同級的邊緣讀數)",
+    "note": "距 PASS 線 0.011;三科官方全高於甲,IF/he 高於 st61b、gs −0.38 持平"
+  },
+  "three_point_official": {
+    "anchors_bf16": {"ifeval": 92.79, "humaneval": 94.51, "gsm8k": 95.53},
+    "A4_pre_drain": {"comp": 0.7038, "ifeval": 81.52, "humaneval": 45.12, "gsm8k": 72.18},
+    "jia_st58rb":  {"ifeval": 68.39, "humaneval": 25.61, "gsm8k": 60.50, "comp": 0.5471, "rho": 0.777, "net_flip": 0.001249},
+    "st61a":       {"ifeval": 71.16, "humaneval": 31.71, "gsm8k": 63.53, "rho": 0.819, "net_flip": 0.000674, "solver": "原式(分工錯,amendment_3)"},
+    "st61b":       {"ifeval": 73.20, "humaneval": 33.54, "gsm8k": 66.57, "comp": 0.6135, "rho": 0.872, "net_flip": 0.000767, "solver": "修正分工 + Adam M"},
+    "st61c":       {"ifeval": 75.23, "humaneval": 35.37, "gsm8k": 66.19, "comp": 0.6260, "rho": 0.889,
+                    "rho_by": {"ifeval": 0.923, "humaneval": 0.784, "gsm8k": 0.917},
+                    "net_flip": 0.000491, "empties": {"ifeval": 38, "humaneval": 36, "gsm8k": 64},
+                    "solver": "修正分工 + (α,M) 閉式 LS 每事件 + Adam M 事件間"},
+    "delta_st61c": {"vs_st61b": {"ifeval": 2.03, "humaneval": 1.83, "gsm8k": -0.38}, "vs_jia": {"ifeval": 6.84, "humaneval": 9.76, "gsm8k": 5.69}},
+    "morphology": "empties {38,36,64} vs A4 {30,35,65}:IF +8 微增、he/gs 持平,無擴口"
+  },
+  "drain_readout_diagnostic_only": {
+    "post_drain_val_ce": {"jia": 1.9852, "st61a": 1.9720, "st61b": 1.9422, "st61c": 1.9312, "note": "第 13 型儀器,僅記錄;本次與官方同向"},
+    "final_level_mean": {"jia": 3.2e8, "st61a": 4.1e8, "st61b": 3.1e8, "st61c": 1.6e8},
+    "level_ratio_c_over_b_per_window": "0.46–0.71,均 0.55,31/31 <1",
+    "gdisc1_ratio_vs_jia": 0.233,
+    "drain_epochs": {"jia/st61a/st61b": 775, "st61c": 718, "note": "τ 閘門首次活化:19/31 窗提前放行 3 ep(前兩臂 τ 零觸發、W_max 主導);每窗時間 956s vs 1010s(LS 開銷 ~3%)"},
+    "solver_flips_total": {"st61b": 1434765, "st61c": 1301321},
+    "flip_suppression_by_depth": "窗 0–11 −20%;窗 12–17 翻碼反超 st61b 但 gdisc1 壓至 1/3–1/4;窗 18–30 洪峰段穩定 −35%~−60%(st61b 峰 515k → 230k)"
+  },
+  "ls_instrument": {
+    "n_events": 4640,
+    "ls_gain": {"mean": 0.2718, "min": 0.0038, "max": 0.9929},
+    "trust_region": {"t": "恆 1.0", "step_max_mean": 0.0058, "cap": 0.05, "note": "cap 從未束縛"},
+    "sv_min": {"min": 0.389, "floor": 0.3, "hits": 0},
+    "cg_iters": "恆 25(未達 tol 1e-5;G8 殘差 1e-6 量級可接受)",
+    "alpha": {"rel_change_mean": 0.0059, "max": 0.0326, "clip_frac": "≈0(max 0.0009)"}
+  },
+  "M_profile_polar": {
+    "st61b": {"dist_I_blk": 0.032, "max": 0.059, "rot_deg": 1.26, "rot_energy_share": 0.474, "offdiag_rms": 0.0028, "sv_min": 0.757},
+    "st61c": {"dist_I_blk": 0.0361, "max": 0.0709, "rot_deg": 1.35, "rot_energy_share": 0.426, "offdiag_rms": 0.0031, "sv_min": 0.396},
+    "reading": "M 幅度僅 +13%、旋轉份額反降(0.47→0.43 更偏拉伸);sv_min 0.76→0.40=少數塊被 LS 拉成強各向異性。增益來自 M 的『方向』(H-加權最小平方落點)而非『大小』;Adam 節流假說(off-diag rms ≈ 隨機走)未被 LS 版推翻——LS 也停在同量級,說明 M 的自然尺度就是 ~0.03/塊,不是步長受限"
+  },
+  "predictions_check_amendment_3": {
+    "P1_rho_gt_st61b": "PASS(0.889 > 0.872)",
+    "P2_flip_down": "PASS(0.000491 < 0.000767)",
+    "P3_ls_gain_pos_no_cap_bind": "PASS(0.27 均;t 恆 1)",
+    "P4_he_not_worse": "PASS(35.37 > 33.54)",
+    "falsifier_rho_lt_st61b_minus_0.016": "未觸發"
+  },
+  "attribution": {
+    "closed_form_over_adam": "邊界 POS +0.0177:LS 把水吸進 (α,M) 的『去向』有效(level 減半、翻碼 −36%、τ 活化),官方增益集中 IF/he,gs 飽和",
+    "two_step_ladder_on_A4": "甲 0.777 → 修分工 0.872(+0.095)→ LS 0.889(+0.017):解法器分工是主效應,閉式重解是次效應",
+    "gap_to_PASS": "0.011;gs 0.917 已接近 A4 上限、IF 0.923;he 0.784 是唯一有空間的科(A4 45.12 vs 35.37)",
+    "proxy_note": "本臂 val CE / level / gdisc1 全與官方同向,是第一次三個局部儀器未反轉;不改判準"
+  },
+  "candidates_for_user": {
+    "S2_champion_reservoir": "prereg 原定 PASS 才開 S2;PARTIAL 距線 0.011,是否放行由用戶裁(擴桶引擎 st61c 已是本 A 上最佳排水態)",
+    "he_axis": "he 0.784 唯一可擴科:候選 = he 域餵料排水(E38 分科解耦定律)或 cap/ridge 放寬(cap 未束縛→放寬無效;ridge 1.0→0.3 讓 LS 走更遠)",
+    "ablation_mix_lr_0": "純 LS 無 Adam:切分 M 事件間共適應貢獻(預期 ≈0,若反升則 Adam 在傷)",
+    "cg_tol": "CG 25 步未收斂;40 步或預條件(塊對角 Jacobi)可測殘差對 ls_gain 的邊際",
+    "export_cleanup": "exports/e61_st61b(10G)可刪(st61c 取代為本 A 最佳態);待用戶裁"
+  },
+  "evidence": {
+    "train": "evidence/p1_grouping/corkscrew/train_st61c.json",
+    "official": ["evidence/p1_grouping/a1eval/ifeval_e61_st61c", "evidence/p1_grouping/a1eval/humaneval_e61_st61c", "evidence/p1_grouping/a1eval/gsm8k_e61_st61c"],
+    "state": "data/qs_st61c", "export": "exports/e61_st61c",
+    "code": ["p2_anchor/corkscrew/mixls.py", "p2_anchor/corkscrew/train_res.py(--mix-ls)", "p2_anchor/corkscrew/checks_e61.py G7–G9"]
+  }
+}

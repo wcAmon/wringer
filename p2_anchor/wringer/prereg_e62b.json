@@ -1,0 +1,74 @@
+{
+ "experiment": "E62b — down_proj 輸出側 L 桶(列塊 128)進 comp 事件 + 梯度共訓;M 軸「位置」修正",
+ "status": "CLOSED NEG(falsifier):ρ 0.869<0.873、he 31.71<33.5;L 撤、位置軸封盤;見 verdict_e62b.json",
+ "date": "2026-09-05",
+ "strategy_doc": "p2_anchor/corkscrew/STRATEGY_e62.md §1.5 / §2′",
+ "prior": {
+  "E62a": "FAIL_FALSIFIER(P3):27/27 窗尾 LS 撤回;歸因=共適應稅(零漂移模組亦惡化)+ W 空間帳在漂移模組是幻象(第 12 型)+ in-run 夥伴層狀態放大(窗 11 夥伴=理想 1.421 復現 1.575)",
+  "probe_e62b_win": "六窗零訓練窗級裁判:L_H 0.60–0.88 全改善(均 0.710;夥伴=理想 0.54–0.79 均 0.670);X_H 均 0.927 但 in-run 情境 1.12;L_G≈L_H;LX 交替不優於 L;理想下界均 0.424"
+ },
+ "thesis": "down_proj 是唯一輸入比輸出寬 3.6× 的模組;輸出側列塊 L 以 0.11 b/w(int8)在零訓練下已拿到窗誤差 12–40% 改善且對夥伴層狀態穩健。放進 comp 事件(閉式 LS)並由梯度共訓修補共適應,預期在 A4 台上把 ρ 由 0.889 推過 0.90。",
+ "arm": {
+  "tag": "st62b",
+  "engine": "st61c 全配置(--mix-block 128 --mix-lr 1e-4 --mix-ls)+ --lmix-block 128 --lmix-targets mlp.down_proj",
+  "L": {
+   "form": "W_eff = blockdiag(L) · W_hard · blockdiag(M),L (20,128,128) fp32,初值 I;只掛 down_proj(32 個)",
+   "gradient": "L 進 optimizer(lr = mix_lr 1e-4),soft/STE 全程共訓",
+   "comp_event": "碼 greedy(殘差拉回 L 內側:R = W0q + L⁻¹·water·Bd⁻¹ − w_hard)→ X LS(載體 L·C)→ L LS(Z = C·Bd(X),solve_left_ls,ridge 0 / cap 0.25 / iters 25 / sv_floor 0.3)→ α refit(目標 L⁻¹ W_t Bd⁻¹)",
+   "target": "H 目標(W_t·H),與 st61c 同;不用 G(探針 L_G≈L_H)",
+   "storage": "qs 條目 lmix;export 位面包 .lmix fp32;bit 帳 int8 +0.11 b/w(down_proj 專用攤全模型);探針 int8 存 L 零損(@555428f)"
+  },
+  "single_difference_vs_st61c": "--lmix-block 128(其餘旗標、seed、語料、calib 128、hparams 逐字相同);不開 --tail-ls"
+ },
+ "judges": {
+  "primary": "官方三科 → comp/A4 0.7038 = ρ;PASS ρ≥0.90 / NULL [0.873,0.90) / NEG <0.873",
+  "vote_vs_st61c": "Δρ vs 0.889,票帶 ±0.016(POS/NULL/NEG)",
+  "secondary": [
+   "ρ_he ≥ 0.75",
+   "he ≥ 35.37(不低於 st61c)",
+   "empties ≤ A4 {30,35,65} 量級無擴口"
+  ],
+  "mechanism_diagnostics_not_judges": [
+   "final_level 比 st61c(預期 <0.85:down_proj 水位為窗水位主項)",
+   "lmix_ls gain 均值(預期 ≥0.15;t 不長期束縛)",
+   "L 的 sv_min/dist_I 剖面(預期 dist_I 0.1–0.4,深層大)",
+   "τ 閘活化窗數(st61c 19/31;預期 ≥ 22)",
+   "val CE(第 13 型,僅記錄)"
+  ]
+ },
+ "predictions": {
+  "P1": "ρ ∈ [0.895, 0.915];POS(≥0.905)或 NULL 上半",
+  "P2": "final_level 比 st61c < 0.85;down_proj 事件 mix_gain 上升",
+  "P3": "he ≥ 36(+0.6 以上);IF 不退超過 1pp",
+  "P4": "lmix_ls gain 均 ≥ 0.15、sv_floor_hits 稀少(<5%)",
+  "falsifier": "ρ < 0.873(NEG)或 he < 33.5 ⇒ L 撤;位置軸封盤(STRATEGY §2 E62b NEG 分支)"
+ },
+ "after": {
+  "PASS": "S2 用 st62b 引擎:冠軍 st51c_e2e 蓄水 r128 → 先讀 A 閘(A≥0.90 排水可行;0.80–0.90 天花板不足→M/L 常駐容量從蓄水段共訓;<0.80 轉 QAT with 常駐載體)→ 排水 → B vs 0.7469",
+  "NULL": "位置軸封盤,S2 用 st61c 引擎(不加位元);同樣先讀 A 閘",
+  "NEG": "L 撤;同 NULL",
+  "not_doing": "C1 鏈尾裁決 / C2 配對複製(用戶裁專注;小於噪音的效果視同無效)"
+ },
+ "smoke": {
+  "checks_e62b": "H1–H5b 全 PASS(L=I 逐位、隨機 L/M 材化 0 ulp、位面包逐位、L 梯度非零含塊外、solve_left_ls gain>0 塊外恆零)",
+  "st62bsmk": "PASS(--smoke 2 窗):只有 down_proj 掛 L (20,128,128);每事件 lmix_ls gain 0.03–0.21、t=1、sv_min>0.91、sv_hits 0;L dist_I 0.21–0.27;flips 15741/33954(st61smk3 15625/32120 同量級);final_level 略低於 st61smk3;post-drain val CE 1.975",
+  "st62a_w0": "決定論復現 E62a 窗 0:gain 0.107、hold×1.410、flips 35476 逐字相同;per-module gain 3–19%、t=1(cap 未束縛)、sv_min 0.58–0.83;hold_before 2.4e-6 → after 3.5e-6;歸因鏈(共適應稅)由探針承接"
+ },
+ "cost": "31 窗 ~9h(L LS 每事件 +~2%)+ export/官方 ~1.5h",
+ "chain": "$SCRATCHPAD/e62b_chain.sh(哨兵 E62B_DRAIN_DONE / E62B_EXPORT_DONE / E62B_EVAL_DONE / E62B_LEVEL / E62B_B / E62B_RHO / E62B_DELTA / E62B_VERDICT / E62B_CHAIN_DONE)",
+ "evidence_out": [
+  "evidence/p1_grouping/corkscrew/train_st62b.json",
+  "a1eval/{ifeval,humaneval,gsm8k}_e62_st62b",
+  "verdict_e62b.json"
+ ],
+ "not_done_here": [
+  "尾段重解(E62a 已否決)",
+  "G 漂移感知目標(探針:對 L 無增益;對 X 在 in-run 情境仍有害)",
+  "L/X 交替",
+  "qkv 的 L(0.8 b/w)",
+  "Monarch(§3 三條件)",
+  "int8 量化 L 於 export(位元帳先記,量化落地列 S2 後)"
+ ],
+ "north_star": "student(三元碼)+M+L(int8 常駐)官方 comp ≥ 0.90;A4 上的 ρ 只是引擎閘;B≈A×ρ,0.90 的勝負在冠軍天花板 A",
+ "instruments_kept_identical_to_st61c": "未加事件級 holdout 儀器,工具與 st61c 逐字同,單變因純淨"
+}

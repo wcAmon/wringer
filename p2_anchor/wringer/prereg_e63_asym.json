@@ -1,0 +1,91 @@
+{
+ "experiment": "E63 — 非對稱三元(逐列負尺度 r):S0 零訓練探針 → (POS 則)S1 純碼排水引擎內建 (α, r) 閉式",
+ "status": "FROZEN S0(2026-09-06 00:5x 用戶裁 Q1「允許」尺度側 2 bit/block):S0 官方配對 ctrl vs asymblkq2 排 S2 鏈後自動點火(chain_e63_s0.sh,hold 檔 E63_HOLD);S1 待 S0 官方裁後另 FROZEN",
+ "date": "2026-09-06",
+ "context": {
+  "north_star": "三元碼單獨 官方 comp ≥ 0.90;常駐載體(M/L)封盤(E62b 純碼診斷:M 為真載體不可拆 ρ 0.686、L 為鷹架可拆 0.916)",
+  "user_thesis": "9元≈q4 保留 >90%、三元需大量 token 重訓 ⇒ 三元 vs 9元 差距是搜索距離(聯合換碼位)非容量;任何『增加可學表徵、不增推論位元』的自由度都該考慮,尤在 down_proj",
+  "why_r": "r 是目前唯一擴大碼空間而不加推論位元的自由度:碼仍 3 符號(1.58 b/w),每列 +1 fp16(down_proj +0.0017 b/w、全模型均 ~0.004 b/w;α 本身已 0.5 b/w),雙累加器核 y_i = Σ_g α_ig(x·T⁺) − r_i Σ_g α_ig(x·T⁻),r 在列外提出。與 M 的差別:r 留在碼內(推論不掛載體),不重演 M 外包問題",
+  "literature": "TTQ(Zhu, Han, Mao, Dally ICLR 2017)逐層 (W_p, W_n) 學習尺度,ResNet-18 ImageNet TWN 61.8 → 66.6 top-1;TWN(Li & Liu 2016)對稱單尺度;Fine-Grained Ternary(Mellempudi 2017)分群尺度;本臂=逐列(比 TTQ 細)零訓練閉式,再進排水引擎"
+ },
+ "platform": "A4:st54r 碼 + res58r1 水(W_t = W(st54r) + BA/128),Σ 於 st54r 部署形態單趟量測(128 calib_e58r1b × 16k,lengths 遮罩);各臂不前傳(純局部配對,與逐窗鮮 H 的差異列限制)",
+ "s0_probe": {
+  "script": "p2_anchor/corkscrew/probe_asym.py(核心 asym.py;閘 checks_asym.py A1–A7 全 PASS 2026-09-06 00:0x)",
+  "arms_per_module": {
+   "base": "W_cur 不動;e0 = ‖water‖²_Σ",
+   "ctrl": "T 固定,α scale_joint 閉式(對稱直投基線)",
+   "asym": "T 固定,(α, r) 交替閉式 ×3 —— 主臂:純 DOF",
+   "symrefit": "T 逐元重投影 ↔ α 閉式 ×3(對稱,無誤差回饋)",
+   "asymrefit": "T 逐元非對稱投影 ↔ (α, r) ×3 —— DOF + 局部換碼",
+   "symgptq": "GPTQ 列序直解(E59 解法器)+ α 閉式",
+   "asymgptq": "GPTQ 非對稱門檻(r 取 asym 解)+ (α, r) ×3 —— DOF + 搜索",
+   "asymblk": "T 固定,逐 (row, block) r_g 交替閉式 —— 診斷上界(每 block +16 bit = +0.5 b/w,不可交付)",
+   "asymblkrefit": "逐 block r + 逐元非對稱重投影 —— 診斷上界",
+   "asymblkq{1,2,3,4}": "逐 block r 量化 b 位元(每模組 log 域 Lloyd 碼書)+ α 閉式重擬合 —— 位元帳 +b/32 b/w(1 bit 0.031、2 bit 0.0625、4 bit 0.125),與 α 同屬尺度側位元,非載體"
+  },
+  "instruments": [
+   "ratio = e_arm/e_ctrl(Σ 度量;<1 好)",
+   "absorb = 1 − e_arm/e0(吸水率)",
+   "flips vs st54r",
+   "r 分佈(p10/p50/p90、|r−1| 遠離率、夾限率)",
+   "分家族:down_proj vs 其他"
+  ],
+  "predictions_declared_before_result": {
+   "note": "P1–P4 於 2 層煙測前宣告(原文保留於 git 歷史 @prereg 首版);P5–P7 於煙測後、全模型(128 calib × 32 層)結果前宣告",
+   "P1": "asym(固定 T)ratio 中位 ∈ [0.93, 0.99]:小而系統 —— 煙測讀數 0.995 ⇒ 預期 FAIL",
+   "P2": "asymrefit ratio 比 symrefit 低 ≥ 3% —— 煙測 0.5% ⇒ 預期 FAIL",
+   "P3": "down_proj 增益 ≥ 其他家族 —— 煙測反向(down_proj 0.77 vs 其他 0.66)⇒ 預期 FAIL;down_proj 水吸收率本就最低(ctrl absorb 0.48 vs 0.85)",
+   "P4": "asymgptq/symgptq ≤ 0.95 —— 煙測 0.998 ⇒ 預期 FAIL",
+   "P5": "全模型 asymblk ratio 中位 ∈ [0.60, 0.75];深層(≥16)不劣於淺層",
+   "P6": "asymblkq2 ratio 中位 ≤ 0.75,asymblkq1 ≤ 0.85;q3 與 asymblk 差 < 2%",
+   "P7": "逐列 asym 全模型中位 ≥ 0.99 ⇒ falsifier_local 觸發 → 逐列版封盤,不上官方",
+   "falsifier_local": "asym ratio 中位 ≥ 0.99 且 asymrefit/symrefit ≥ 0.99 ⇒ 逐列 r 封盤;逐 block 版另裁:asymblkq2 中位 ≥ 0.90 ⇒ 尺度側 2 bit 亦封盤"
+  },
+  "official_stage_requires_approval": {
+   "approved": "用戶 2026-09-06 裁允許 ⇒ 排程自動點火(等 S2_CHAIN_DONE + GPU 空 + 兩臂 qs 態就緒)",
+   "chain": "p2_anchor/corkscrew/chain_e63_s0.sh(哨兵 E63S0_WAIT/START/EXPORT_DONE/EVAL_DONE/B/DELTA/VERDICT/CHAIN_DONE;hold 檔 $S/E63_HOLD)",
+   "arms": "pa63_ctrl(st54r 碼固定 + 對稱 α 閉式)vs pa63_asymblkq2(同碼 + 逐 block 2 bit r + α 閉式);兩臂零訓練、同 Σ、同碼",
+   "judge": "Δcomp = asymblkq2 − ctrl;噪音帶 ±0.011 comp(=ρ ±0.016 × 0.7038);POS > +0.011 / NEG < −0.011 / NULL 其間",
+   "prediction_official": "P8:Δcomp ∈ [+0.01, +0.04](局部 −29% 誤差對應水吸收率 +0.05–0.08;固定碼、不跳盆地,官方應同向);falsifier:Δcomp ≤ 0 ⇒ 尺度側 DOF 第 11 型(局部好官方不動)入卷封盤,不做 S1",
+   "cost": "2 臂 × (export 10 min + vLLM + 三科 ~1.3h) ≈ 3h,S2 鏈後(~09-06 17:30 起)",
+   "note": "若用戶在此窗口裁排水段點火,先停 S0 鏈(E63_HOLD)"
+  },
+  "smoke_2layers_16calib_2026-09-06_00:3x": {
+   "asym(逐列 r)": "ratio 中位 0.995(−0.5%);r p10/p90 ≈ 0.99/1.01 = 每列一個純量太粗,α 逐 block 已吃掉尺度 ⇒ 逐列 r 局部近無效(falsifier_local 幾乎觸發)",
+   "asymblk(逐 block r,上界)": "ratio 中位 0.666(−33%);down_proj 0.77、其他 0.66;r p10/p90 ≈ 0.86/1.15",
+   "asymblkq": "1 bit 0.83 / 2 bit 0.71 / 3 bit 0.67 / 4 bit 0.66 ⇒ 2 bit 留住 ~85% 上界增益",
+   "gptq(sym vs asym,逐列 r)": "0.7205 vs 0.7194 = 逐列 r 在搜索臂也無差",
+   "reading": "非對稱有料但粒度在 block 不在 row;『不加位元』嚴格版(逐列)死、尺度側 +0.06 b/w 版活。決策交用戶:位元帳是否允許尺度側 2 bit/block(與 α 0.5 b/w 同類)"
+  }
+ },
+ "s1_if_pos": {
+  "engine": "st61b 純碼引擎(train_res,無 M/L)+ comp 事件內 (α, r_q) 閉式:α ↔ 逐 block r 交替 → r 量化 2 bit 碼書 → α 重擬合;r 進 STQParam 逐 block buffer(hard/soft 路皆用 V = T⁺ − r T⁻,STE 不學 r);export 帶 rneg_idx+cb;推論純碼 + α + 2 bit r",
+  "judge": "A4 上 ρ vs st61b 0.872,票帶 ±0.016;PASS ≥ 0.90(北極星帶);he ≥ 33.54",
+  "then": "S2 排水段以此引擎對冠軍蓄水態 A 排水,裁 B vs 0.7469"
+ },
+ "not_doing": [
+  "逐 (row, block) 全精度 (a⁺, a⁻)(+0.5 b/w)作交付;只作上界診斷",
+  "S0 內以梯度學 r(零訓練探針只用閉式)",
+  "C1/C2 統計臂",
+  "自主點火官方三科或 S1"
+ ],
+ "cost": "S0 局部:GPU 前向 only 約 0.5–1h(與 res_fill 共存,峰值 ~12 GB);S0 官方:2–4 臂 × 1.5h(S2 鏈後);S1:31 窗 ~9h + 官方 1.5h",
+ "evidence_out": [
+  "evidence/p1_grouping/corkscrew/probe_asym.json",
+  "data/qs_pa63_{ctrl,asym,asymrefit,asymblkq2}(不進 git)",
+  "a1eval/{ifeval,humaneval,gsm8k}_e63_pa63_{ctrl,asymblkq2}",
+  "verdict_e63_s0.json"
+ ],
+ "decision_for_user": {
+  "Q1": "位元帳:嚴格『推論位元零增』⇒ 只有逐列 r(局部 −0.5%,預期封盤);允許尺度側 +0.0625 b/w(2 bit/block,與 α 0.5 b/w 同類、非載體)⇒ 逐 block 量化 r 進入官方與 S1",
+  "Q2": "若 Q1 允許:S0 官方先 ctrl + asymblkq2 兩臂(3h,S2 鏈後);S1 = st61b 純碼引擎 comp 事件內 (α, r_q) 閉式,r 量化在事件內完成(STE 不學 r)",
+  "Q3": "若 Q1 不允許:E63 以局部診斷入卷封盤,回到『搜索軸』(e2e 聯合翻碼的 token 預算)"
+ },
+ "user_ruling_q1": "允許(2026-09-06 00:5x):位元帳允許尺度側 +0.0625 b/w(逐 block 2 bit r 碼書,與 α 0.5 b/w 同類、非載體);逐列 r 版封盤候選(待全模型探針 P7 確認)",
+ "deliverable_format": {
+  "state": "qs 條目 rneg (M,nB) fp32 值 + rneg_cb (4,) 碼書(每模組 log 域 Lloyd)",
+  "planes": "export 存 rneg_idx uint8 (M,nB) + rneg_cb fp32 (4,);decode r=cb[idx];verify bit-exact(checks_asym A2b/A3b PASS)",
+  "bits": "log2(4)/32 = 0.0625 b/w + 每模組 4 個 fp16",
+  "kernel": "雙累加器可推廣:y_i = Σ_g α_ig[(x·T⁺_ig) − r_ig (x·T⁻_ig)],r_ig 由 2 bit 查表"
+ }
+}

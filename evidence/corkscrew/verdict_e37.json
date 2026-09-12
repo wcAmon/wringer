@@ -1,0 +1,77 @@
+{
+ "experiment": "E37 水庫烘焙(reservoir bake-in):旁路蓄水 → 裁判點 A → γ 五格水位閉環排水 → 裁判點 B",
+ "prereg": "p2_anchor/corkscrew/prereg_e37_reservoir.json(FROZEN @3004fba;分岔表預註冊於 @42a2fef,先於任何 E37 結果)",
+ "date": "2026-08-13",
+ "chain": "res_fill(P0 gate+KD r128)→ ifeval_e37_resA(A)→ A 硬閘 0.4555 → train_res 排水 31 窗 → e2e 600 → export --verify → ifeval_e37_3g + humaneval_e37_3g(B)",
+ "scores": {
+  "judge_A_ceiling": {
+   "ifeval_strict_prompt": 0.5046210720887245,
+   "ifeval_strict_instruction": 0.5851318944844125,
+   "ifeval_loose_prompt": 0.5452865064695009,
+   "generation_s": 631.2,
+   "meaning": "冠軍碼凍結+滿水庫(γ=1)= r128/cal2-KD 儲存軸天花板"
+  },
+  "judge_B_final": {
+   "ifeval_strict_prompt": 0.5027726432532348,
+   "ifeval_strict_instruction": 0.6019184652278178,
+   "ifeval_loose_prompt": 0.5656192236598891,
+   "humaneval": 0.29878,
+   "generation_s_ifeval": 701.6,
+   "generation_s_humaneval": 458.0,
+   "meaning": "排空後(γ≡0)純碼+連續載體 = 轉換軸終判"
+  },
+  "champion_prev": 0.4455,
+  "bf16_anchor": 0.9094
+ },
+ "criteria_verdicts": {
+  "A_gate": "PASS(0.50462 ≥ 0.4555;排水段放行)",
+  "N1_new_champion": "PASS(B=0.50277 > 0.4455;+5.73pp,E32→E37 冠軍交接)",
+  "N2_retention_rho": "0.96873(=(B−0.4455)/(A−0.4455)=5.7273/5.9121;排水保留天花板 97%,A−B 僅 0.18pp)",
+  "N3_measurement": "已收(見 n3_findings)",
+  "N4_stability": "PASS(gdisc1 中位 0.0190 最大 0.1175 ≤ 0.1724;nonfinite=0;holdout exit 比中位 1.000 最大 1.200)"
+ },
+ "branch_table_applied": {
+  "branch": "solver_acquittal(B > 0.4455)",
+  "ruling": "S3(solver)無罪開釋 + 新冠軍;E36 三嫌疑中唯一可傳染 E37 的嫌疑被官方裁判排除——solver 在平穩厚板法庭上無害且排水近無損;E36 定罪對象收斂至 S1(老師混合梯度場)×S2(非平穩靶)交互",
+  "note": "排水近無損但翻碼極少(t_flip_vs_p0 0.18%),無罪判決的機制面貌=『連續載體轉寫』而非『離散碼吸收』,見 mechanism_reading"
+ },
+ "n3_findings": {
+  "fill": {
+   "stop": "plateau@900/1200",
+   "val_ce": "1.7753(冠軍錨)→1.6826(−5.2%;@600 後僅餘 0.36% 改善=r128 容量邊際)",
+   "kd": "0.459(首10均)→0.228(末50均)",
+   "runtime_s": 3241.7
+  },
+  "drain": {
+   "windows": 31,
+   "events": 775,
+   "total_flips": 1364338,
+   "t_flip_vs_p0": 0.001806,
+   "tau_loop": "τ=0.5 觸發 0 次;155 格全由 W_max=4 固定節奏放行(smoke 預警成真)",
+   "levels": "每次放水水位跳升一級(w0: 2.4e6→1.1e7→2.2e7→3.3e7→4.3e7),格內僅緩降 5–17%,終端水位 ~84% 峰值=H 意義下未排空",
+   "absorb_per_event": "~1–2%(薄靶同 E36 量級;吸收主力=D5 累積+訓練 epochs 的連續載體)",
+   "post_drain_val_ce": 1.6853,
+   "runtime_s": 5388.8
+  },
+  "e2e": {
+   "val_ce": "1.6852→1.7156(+0.030,proxy 惡化)",
+   "t_flip": 1e-06,
+   "runtime_s": 6393.9,
+   "proxy_inversion_9": "第九筆(方向:proxy 說壞、官方說好):e2e 讓 val CE 升 +0.030,官方卻收新冠軍 50.28——與第六筆(E33)同型反向,再證 val CE 對官方分數無裁決力"
+  },
+  "gamma_zero_assert": "PASS(extract 全窗通過=殘水為零後才轉錄)",
+  "humaneval_context": "29.88 vs E35(3元)10.98、E36 4.27、E35-C 免e2e 0.61;E32 冠軍未測 humaneval(E33 D3 裁撤先例),無同台對照——29.88 為低元系歷史最高,列量測非判準"
+ },
+ "mechanism_reading": {
+  "where_did_water_go": "碼只翻 0.18%、H-水位餘 84%,但 A→B 僅損 0.18pp:水的主要去向是連續載體(α/LoRA/θ)在厚板靶上的轉寫,而非離散碼翻轉——與 E35-C『分數主宰權在連續軸』互證",
+  "storage_axis": "可修已證:r128+cal2-KD 在碼全凍下裝進 +5.91pp(44.55→50.46);天花板離 bf16 錨仍 40pp=儲存容量僅覆蓋缺口 ~13%,rank/語料為 E38 擴容軸",
+  "tau_design": "水位閉環設計失效(τ 零觸發),但 W_max 固定節奏+D5 累積已足;E38 若沿用排水法應改判準(如相對降幅)或直接砍 τ 簡化為固定節奏"
+ },
+ "route_disposition": "排水路線存活且封冠;下一步候選:(a) 擴儲存軸(rank↑/語料多樣性)拉 A 再排水,(b) A−B 近零→蓄排一體化簡化管線,(c) humaneval 恢復軸(29.88 仍離 7元 83.54 遠)。候選裁決權在用戶",
+ "artifacts": {
+  "state": "data/qs_st37r_e2e(新冠軍態;.pt 不進 git)",
+  "export": "exports/e37_3g(--verify PASS)",
+  "reservoir": "data/res_res37(凍結資產)",
+  "evidence": ["fill_res37.json", "train_st37r.json", "train_st37r_e2e.json", "a1eval/ifeval_e37_resA", "a1eval/ifeval_e37_3g", "a1eval/humaneval_e37_3g"]
+ }
+}

@@ -1,0 +1,101 @@
+{
+ "id": "E65-DS",
+ "title": "E65-DS —— 非對稱三元排水引擎 × 排程軸:逐窗全排(F)vs 低劑量全排(L)vs 兩段半排(P),冠軍台 res62s2",
+ "status": "作廢 2026-09-08(用戶裁):E64-PL S1 證明冠軍台零訓練閉式吸收 0.8235 > 水庫天花板 0.8216,排水節奏軸失去對象;本卷歸檔不點火,E65 改為蓄水閉式迭代(E65-R2,待 prereg)",
+ "naming_note": "codex 分支的 E64 = F8/free3 直接窗+E2E(prereg_e64_f8.json,鏈 e64_f8_recovery_20260907_r1);本卷 E65-DS 為 p2-datadiv-spike 線的蓄排水臂,tag 前綴 st64*,互不覆蓋。",
+ "lineage": {
+  "engine": "E63 S1 st63a(純碼+尺度側 2 bit/block r,無載體)A4 台 ρ 0.878 @8c52d35;零訓練非對稱 pa63_asymblkq2 0.820;甲 st58rb 0.777",
+  "reservoir": "S2 res62s2(冠軍 st51c_e2e 碼凍結 + r128 fresh,calib_e58r1_traj 5741 步)A 閘 0.8216 @verdict_s2 = 排水典範天花板",
+  "pending_decision_superseded": "verdict_e63_t2 第四步選項 A(st63a 引擎排 res62s2)= 本卷 F 臂;選項 B(+T2β)/C(冠軍台零訓練)不入本卷",
+  "user_hypothesis_2026-09-08": "窗內直接把 γ 排到 0 再前進,對整體數值有害(下游窗的 X/Y 建立在已全排的上游上,誤差逐窗複利);改為全模型先排一半 → 官方讀數 → 再排一半,可能更接近 A"
+ },
+ "thesis": "排水段的損失 A→B 有兩個候選來源:(i) 劑量(每格 epoch 數,W_max)不足;(ii) 排程(逐窗全排的次序耦合)。三臂同引擎同料同 calib,只改排程/劑量,一次分離兩者;F 臂同時回答 ρ 是否從 A4(0.7038)轉移到冠軍台(0.8216)。",
+ "platform": {
+  "choice": "冠軍台:碼 qs_st51c_e2e(comp 0.7469)+ 水 res_res62s2(A 0.8216);蓄水段不重跑(已付 14h);ρ = B/0.8216",
+  "why_not_A4": "A4 上 F 臂已存在(st63a 0.878,免 9h),但 B 無法對冠軍裁;用戶目標=B 逼近 A 並換防,故上冠軍台。若用戶只要排程機制答案,可改 A4 只跑 L+P(見 decision Q2)",
+  "calib": "calib_e58r1b_traj/len,n-calib 128,batch 4(與 st63a 同)"
+ },
+ "arms": {
+  "common": "train_res --state-tag st51c_e2e --res-tag res62s2 --asym-r-bits 2 --asym-alt 2 --gsteps 5 --tau 0.5 --comp-rounds 3 --comp-cap 0.03 --tail-soft 10 --tail-ste 4 --s0 30 --s-plateau 2 --lora-r 64 --lora-lr 6e-4 --factor-lr 3e-3 --clip 1.0 --learn-theta --holdout-frac 0.05 --x-cpu --n-calib 128 --batch 4 --win 2 --stride 1(甲/st63a 同 hparams)",
+  "F_full": {
+   "tag": "st64f",
+   "schedule": "逐窗 γ 1→0 五格,W_max 4(= st63a 原配置;st63a 實錄 τ 從未觸發,每窗排水 25 epoch + 尾 14)",
+   "role": "對照臂 + 遷移性試驗(第四步 A)",
+   "cost_h": "排水 ~9.0(st63a 32377 s 換算 1044 s/窗)+ 官方 1.5"
+  },
+  "L_lowdose": {
+   "tag": "st64l",
+   "schedule": "逐窗 γ 1→0 五格,W_max 2(每窗排水 15 epoch + 尾 14;劑量 −40%,時間 −26%)",
+   "role": "劑量軸:低 epoch 一次排完",
+   "cost_h": "排水 ~6.7 + 官方 1.5"
+  },
+  "P_twopass": {
+   "tag": "st64p1 → st64p2",
+   "pass1": "--gsteps 4 --gamma-floor 0.5 --w-max 4:γ 1→0.75→0.5 後停(每窗排水 10 epoch + 尾 14);定案碼 W_hard(½),殘水 0.5·BA 仍在前向;前進 X 用 W_hard(½)+0.5·BA(res62s2 不動)",
+   "mid_export": "export --state-tag st64p1 --res-tag res62s2 --res-scale 0.5 → exports/e64_st64p1_half(HF 材化,碼+半水;非交付形態,只作官方讀數 B_½)",
+   "pass2": "train_res --state-tag st64p1 --res-tag res62s2 --res-scale 0.5 --gsteps 4 --w-max 3:對半水再走 γ 1→0(絕對水位 0.375/0.25/0.125/0;每窗排水 16 epoch + 尾 14)",
+   "dose_match": "P 總排水 epoch/窗 = 10+16 = 26 ≈ F 25(劑量對齊 ±4%);尾段 STE 走兩次(28 vs 14)為已知混雜,記入 P4",
+   "role": "排程軸:用戶假說主臂",
+   "cost_h": "pass1 ~5.5 + 半水官方 1.5 + pass2 ~7.8 + 官方 1.5"
+  },
+  "order": "F → P(pass1 → 半水官方 → pass2 → 官方)→ L;三臂串行 ~35 h GPU;每臂收卷即 verdict 增量入卷",
+  "total_gpu_h": "≈ 35(不含 F8 鏈)"
+ },
+ "engineering_before_ignition": {
+  "train_res.py": [
+   "--gamma-floor f(default 0):gammas 只取 ≥ f 的格;γ≡0 斷言改 γ≡f;extract 加 allow_residual(殘水不入碼,照舊丟棄載體 LoRA);定案後 m.weight += f·BA(res_st,凍結)再前進 X;resume-skip 路同樣 += f·BA;rec 記 gamma_floor",
+   "--res-scale s(default 1):load_reservoir 前 B ← s·B;resume-skip 的 XT 路同 s;rec 記 res_scale",
+   "smoke:C1 f=0,s=1 兩窗 vs st63smk 逐位同(drain_events level/flips 相同);C2 f=0.5 兩窗:定案後前向(W_hard+0.5·BA)vs 訓練期 γ=0.5 hard 前向 rel ≤ 1e-3;C3 pass2 起點(s=0.5,γ=1)首事件 level ≈ pass1 末事件 level(連續性,rel ≤ 5%)"
+  ],
+  "export.py": [
+   "--res-tag/--res-scale:HF 材化加 s·BA(dense_weight + s·B@A/r);位面包不寫殘水(rneg/α 照舊);manifest 記 residual_water=s·res_tag,標 non_deliverable"
+  ],
+  "chain": "chain_e64_ad.sh 仿 chain_e63_s1.sh:哨兵 E64_F_TRAIN_DONE/E64_F_VERDICT/E64_P1_.../E64_P_HALF_VERDICT/E64_P2_.../E64_L_...;等 GPU 空(pgrep train_res/vllm/free3)才起;hold 檔 $S/E64_HOLD",
+  "estimate": "工程 ~2-3 h + 煙測 1 h"
+ },
+ "judges": {
+  "band": "官方 comp 帶 ±0.011(E63 配對帶);冠軍雙跑噪音 ±0.016 甲 ⇒ 臂間 Δ 用 ±0.016",
+  "J1_schedule(主判)": "Δ_P = B_P − B_F:> +0.016 POS(逐窗全排有害,用戶假說成立;兩段制成引擎標配);|Δ| ≤ 0.016 NULL;< −0.016 NEG(兩次尾段/半水混雜或排程無益)",
+  "J2_dose": "Δ_L = B_L − B_F:≥ −0.016 劑量不敏感(低劑量成標配,省 26%);< −0.016 劑量綁定(W_max 4 保留)",
+  "J3_half_curve": "B_½ 相對 (A, B_F) 的位置:m = (B_½ − B_F)/(A − B_F);m ≈ 0.5 線性;m ≥ 0.65 後半段損失集中(支持『最後一半最傷』);m ≤ 0.35 前半段已傷(排水一開始就傷,排程無救)",
+  "J4_transfer": "ρ_F = B_F/0.8216 對 A4 st63a 0.878:|Δρ| ≤ 0.02 轉移;ρ_F < 0.85 不轉移(E38 型吞吐綁定)",
+  "J5_champion": "任一 B > 0.7629(0.7469+0.016)換防;≥ 0.80 收官帶;所有 B ≤ 0.7469 冠軍衛冕照實",
+  "secondary": "ρ_he 分科、empties 形態票(A 台 {20,17,34});水位曲線/flips/asym_ls gain 只診斷不裁"
+ },
+ "predictions_written_before_run": {
+  "P1": "ρ_F ∈ [0.85, 0.90] ⇒ B_F ∈ [0.698, 0.739](低於冠軍;與 verdict_e63_t2 預期 ≈0.72 一致)",
+  "P2": "Δ_L ∈ [−0.02, 0](st63a τ 從未觸發但 level 逐 epoch 仍降,W_max 2 略虧)",
+  "P3": "m ∈ [0.55, 0.75](半水態高於線性中點:殘水對碼的補償是凸的)",
+  "P4": "Δ_P ∈ [0, +0.02](排程正效應存在但小;若 > +0.03 則逐窗全排是主病灶,E37 以來所有 ρ 可上修)",
+  "falsifier_engine": "ρ_F < 0.85 且 Δ_P ≤ 0.016 且 Δ_L ≤ −0.016 ⇒ 排水損失非排程非劑量,歸碼軸容量(北極星 0.90 純碼在冠軍台不可達,回 T2β/擴碼空間)"
+ },
+ "not_doing": [
+  "重跑蓄水(res62s2 已付;『降 epoch 蓄水』不在本卷,若要另立)",
+  "T2β 疊加(位元帳未裁)",
+  "M/L 載體",
+  "自主點火;F8 鏈不由本卷停止(用戶裁)"
+ ],
+ "assets": {
+  "in": [
+   "data/qs_st51c_e2e",
+   "data/res_res62s2",
+   "calib_e58r1b_traj/len",
+   "train_st63a.json(hparams 對照)"
+  ],
+  "out": [
+   "train_st64f/l/p1/p2.json",
+   "data/qs_st64f/l/p1/p2",
+   "exports/e64_st64f/l/p1_half/p2",
+   "a1eval/*_e64_*",
+   "verdict_e64_ad.json"
+  ],
+  "disk_need_gib": "states 4×7.5 + exports 4×9.7 ≈ 70;現餘 503 GiB 足夠"
+ },
+ "decision_for_user": {
+  "Q1": "核准 E65-DS 工程(gamma-floor/res-scale/export 殘水)+ 三臂串行(~35 h)?",
+  "Q2": "平台:冠軍台 res62s2(推薦,B 對冠軍可裁、F 兼遷移試驗)或 A4(F=st63a 已有,只跑 L+P 省 10.5 h,但不裁冠軍)",
+  "Q3": "臂序 F→P→L(推薦)或 P 先(最快回答用戶假說,但 P 無同台對照要等 F)",
+  "Q4": "F8 鏈(e64_f8_recovery_20260907_r1)初態官方 IF 13.7/he 1.8:是否中止讓出 GPU?本卷不自主停",
+  "Q5": "L 臂劑量:W_max 2(推薦)或 W_max 1 / gsteps 3"
+ }
+}

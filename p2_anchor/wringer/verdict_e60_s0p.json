@@ -1,0 +1,57 @@
+{
+ "experiment": "E60 S0′ 修正案:KD 儀器重做旋轉載體探針(codes g3rotL1、Q0=Q_L1;KD 對 bf16 老師+閉合加權 λ 256/16/K8,150 步;量測 held-out KL-to-bf16 於 calib_val)",
+ "verdict": "FAIL(探針閘):r_KL 0.227→0.272(<0.50);官方跳過;prereg falsifier 觸發=正確目標下全局旋轉載體收不回半個 KL 缺口 → H_carrier 探針級 FAIL,旋轉走廊封盤",
+ "r_KL_table": {
+  "definition": "r_KL = 1 − KL/KL_ctl;KL_ctl = g3ctl 直投 2.2157;bf16 = 0",
+  "g3ctl_direct": {
+   "kl": 2.2157,
+   "r": 0.0
+  },
+  "g3rot_random": {
+   "kl": 1.6907,
+   "r": 0.237,
+   "note": "CE 版 r 0.388 → KL 版 0.237:CE 連隨機旋轉都高估"
+  },
+  "g3rotL1_QL1(K1 起點)": {
+   "kl": 1.7134,
+   "r": 0.227
+  },
+  "carrier_CE_QL2(S0 態)": {
+   "kl": 1.5909,
+   "r": 0.282,
+   "note": "CE 版 r 0.876 → KL 版 0.282:第 13 型反轉在 KL 儀器下消失"
+  },
+  "K1_KD_best": {
+   "kl": 1.6123,
+   "r": 0.272,
+   "ce": 2.2026,
+   "angle_rms": 0.0898,
+   "closure": {
+    "n_close": 27,
+    "logp_close_mean": -0.14350735998469746,
+    "logp_close_med": -0.0005408254801295698,
+    "rank_med": 0,
+    "pre64_mass_mean": 0.24323067641661408
+   }
+  }
+ },
+ "readings": [
+  "R1 旋轉載體真實期望值 = 隨機旋轉 +0.035 r_KL(0.237→0.272),與 E60-L 重解前處理的 +0.08(CE)同量級:旋轉自由度小而正,無論當前處理或當共適應載體。",
+  "R2 CE 儀器對整條旋轉軸系統性高估:隨機 0.388→0.237、CE 載體 0.876→0.282。第 13 型反轉的量化:CE r 中約 0.6 是分佈擬合。",
+  "R3 KD+閉合加權下閉合 logP 中位 −0.0005(bf16 級)= 閉合加權有效;但 pre64 過早閉合質量 0.243(隨機旋轉 0.066)升,KD 拉 </think> 質量上去時有前溢;官方未跑故無失律讀數。",
+  "R4 K1 軌跡 step 50 KL 2.08 尖峰後回落(L1/L2 也有同型 step 75 震盪)= lr 1e-4 對 Cayley 參數偏大;但 best 已至 step 150 平台,劑量不是主因。",
+  "R5 用戶假說「一樓轉向接二樓」在全局單 Q(3.3M 參數)量級下不成立:三元缺口 73% 留在容量/碼軸。逐層 Q_l(32× 參數)探針因 lr 發散無讀數,若要再試需 lr 1e-5,但期望值上限亦受 R1 壓制。"
+ ],
+ "closure_of_axis": "旋轉軸封盤:部署上僅保留固定 Hadamard 作位元帳配件(E59 deferred 檔2),不配走廊預算;S2/S3 不點火;S1 工具(rot_carrier/export_rot/t2drain --grid 5/a1_fold_bf16/g9f)保留供他臂復用(t2drain grid 5 分段與折 γ 底模與旋轉無關)。",
+ "next_candidates": [
+  "E59 verdict 三選項回到桌上:(a) 9元 上訓練式單平面化 (b) 全局目標盆地搜索 (c) 回防凍碼修連續軸(E37 系,KD 儀器)",
+  "9→5→3 分段走廊(無旋轉)作 E35 劑量律測試:S1 工具已就緒(t2drain --grid 5 煙測 PASS),可獨立成臂",
+  "冠軍 st51c_e2e 甲 0.7469 衛冕"
+ ],
+ "assets": {
+  "kl_ref": "kl_ref_e60.json",
+  "K1": "rot_learn_K1.json/rot_Q_K1.pt",
+  "Ksmk": "rot_learn_Ksmk.json"
+ },
+ "timestamp": "2026-09-03T06:36:26.204943"
+}

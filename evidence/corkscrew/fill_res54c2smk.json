@@ -1,0 +1,64 @@
+{
+ "tag": "res54c2smk",
+ "state_tag": "st54r",
+ "ref_export": "exports/e54_r",
+ "p0_gate": "PASS",
+ "r_res": 128,
+ "data": "evidence/p1_grouping/calib_e54_traj.pt",
+ "data_sha256": "62223d970184d1f5fecfd14972a6badca0e005d13c1c142f8492de054ba220a1",
+ "hparams": {
+  "tag": "res54c2smk",
+  "state_tag": "st54r",
+  "ref_export": "exports/e54_r",
+  "out": "exports/e37_resA",
+  "r_res": 128,
+  "data": "evidence/p1_grouping/calib_e54_traj.pt",
+  "lengths": "evidence/p1_grouping/calib_e54_len.pt",
+  "steps": 20,
+  "batch": 2,
+  "lr": 0.0002,
+  "clip": 1.0,
+  "plateau_every": 1000000000,
+  "smoke": true,
+  "microbatch": 1,
+  "kd_impl": "hidchunk"
+ },
+ "seed": 20260806,
+ "pre_fill_val_ce": 2.0230942368507385,
+ "post_fill_val_ce": 2.0184768587350845,
+ "val_ce_curve": [
+  [
+   0,
+   2.023094
+  ],
+  [
+   "final",
+   2.018477
+  ]
+ ],
+ "stop_reason": "steps",
+ "kd_log": [
+  0.171307,
+  0.32948,
+  0.285449,
+  0.503186,
+  0.183527,
+  0.242077,
+  0.170652,
+  0.191288,
+  0.211097,
+  0.281929,
+  0.199937,
+  0.507275,
+  0.161387,
+  0.188083,
+  0.300354,
+  0.176841,
+  0.185998,
+  0.177511,
+  0.255976,
+  0.164299
+ ],
+ "runtime_s": 83.7,
+ "timestamp": "2026-08-28T00:55:05.620580"
+}

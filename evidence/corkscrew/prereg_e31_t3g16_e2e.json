@@ -1,0 +1,29 @@
+{
+ "name": "e31_t3g16_e2e",
+ "date": "2026-08-10",
+ "parent": "verdict_e30b(α-only 天花板實錘)→ 用戶 2026-08-10 裁定:逐窗全自由度(α+T+θ+LoRA r64,現狀已具)+ group 32→16 + 端到端軟打磨(α+T 可訓、T 軟階梯可重指派,前 80% 軟後 20% STE)取代 α-only polish",
+ "frozen_recipe": {
+  "quantize": "--grid 3 --block 16 --tag g3b16(GPTQ+joint α,calib 128;α 開銷 0.5→1.0 b/w,總 2.58 b/w)",
+  "train_st": "--grid 3 --tag st3b16 --state-tag g3b16 --learn-theta --resume(512×30ep/窗,win4/stride2,γ.8/s0 30,LoRA r64 lr 6e-4,δ_α/θ lr 3e-3,huber,clip 1.0,seed 20260806——E30 凍結配方不動,僅 group 改 16)",
+  "e2e_soft": "--tag st3b16_e2e --state-tag st3b16 --grid 3 --steps 600 --batch 8 --gamma 0.8 --s0 30(soft 480 步線性升 s、STE 120 步;LoRA lr 1e-4、δ_α/θ lr 3e-4、clip 1.0;teacher bf16;語料 calib_train_512)",
+  "arms": {"st3b16_zt": "逐窗收卷零 e2e(隔離 g16 窗內效應)", "st3b16_e2e": "主臂"}
+ },
+ "judge": "官方 A1 框架 IFEval strict prompt-level,同機 bf16 錨 90.94;val CE / KD loss monitor-only。另:四科官方協定 runner(gsm8k/mmlu/humaneval/ifeval,A1 採樣+chat template)本輪建成後補評 bf16 錨、e28_qat、3 元臂——四科首評為錨定性質,不設過/不過帶",
+ "predictions": {
+  "V1": "接線:g3b16 zerotrain val CE < g3@32 的 2.808(α 解析度×2 助 GPTQ);逐窗等價閘 rel≤1e-6 PASS",
+  "V2": "st3b16_zt 官方 strict > st3_zt 20.89(g16 窗內增益)",
+  "V3": "e2e T 重指派實際發生:flip_vs_input ≥ 0.5%(否則軟重指派未被使用,照實入帳轉消融)",
+  "V4": "st3b16_e2e 官方 strict > max(st3b16_zt, lp300 30.68)——本輪主命題:e2e 軟打磨勝 α-only 天花板",
+  "V5": "誠實保留帶:st3b16_e2e ∈ [35%, 70%](90% try-line 繼續掛,不預期)",
+  "V6": "警報:KD loss 全程有限;STE 段 KD 均值 < soft 末段均值×2(硬化不崩)"
+ },
+ "branches": {
+  "≥80%": "貼近可用 → IFBench 第二科 + 發佈預備",
+  "55-80%": "e2e 主槓桿確立 → steps/語料量/s0 掃描另立 prereg",
+  "<55% 且 V4 過": "加碼 e2e(步數/語料)或載體升級全參,另立",
+  "V4 敗": "e2e 無益 → α-only 同步數對照臂歸因(600 步 α-only vs 600 步全自由)",
+  "V3 敗": "軟重指派未觸發 → s0/γ e2e 特調掃描"
+ },
+ "runtime_estimate": "quantize ~5min + 窗訓 ~2.6h + e2e ~1.6h(9.3s/step×600)+ export + 雙臂裁判 ~1h ≈ 全鏈 ~6h,約 16:30 CST 收卷",
+ "disclosure": "本檔於 E31 任何正式 GPU 執行前寫死(e2e 接線煙測 4 步/10 步已跑、已刪產物,不裁決)。g16 代碼路徑(ktier set_block + shape 推導化)同 commit 入 git。"
+}

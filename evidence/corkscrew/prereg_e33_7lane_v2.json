@@ -1,0 +1,29 @@
+{
+ "experiment": "E33 純 7元 90% 路徑 v2(+AOQ 探索平台;+E33-pre-2 自生語料 e2e A/B)",
+ "preregistered": "2026-08-11",
+ "frozen_before_gpu": true,
+ "supersedes": "prereg_e33_7lane.json @d5ec0c5(未上 GPU 即 amend,乾淨取代)",
+ "amend_reason": "用戶 08-11:『挑選可用策略進入 E33』+『自生語料放 E33-pre-2 做』。收入兩項:(1) AOQ 探索平台(窗訓段前 20% epoch 鎖 s=2.0 高翻轉自由度,再線性升至 s0;E32 flip 15.77% 證窗段搜索活躍,此旋鈕直接放大之;train_st 新旗標 --plateau-frac/--s-plateau,預設 0=關閉行為全同舊版,鏈內冒煙先行)。(2) E33-pre-2:復用 st9s2,e2e 換 bf16 自生語料(LLM-QAT 路線),與 E33-pre 形成唯一變因 A/B(e2e 語料 cal2 vs 自生),增量 ~2.2h。揀選揭露:GJSD/TesseraQ 分批定案/通道級混配不進 E33——e2e 配方是冠軍製造段留作對照組,改碼項延 E34(#36)",
+ "user_directive": "同 v1;追加:e2e=飄移域,自生語料對齊行為分佈為根治候選,先在 9元 pre 驗證",
+ "corpora": {
+  "cal1": "calib_train_512.pt(sweep1)",
+  "cal2": "calib_train_512_v2.pt(sweep2 與 pre/main e2e;五源檔案級不相交)",
+  "selfgen": "calib_selfgen_512.pt(pre-2 e2e;bf16 對 cal2 前 256-token 種子續寫,temp 1.0/top_p 0.95,鏈內生成 ~15-25min;IFEval prompts 不進種子防污染;生成失敗則 pre-2 跳過不擋鏈)"
+ },
+ "recipe_delta_vs_v1": {
+  "all_train_st": "追加 --plateau-frac 0.2 --s-plateau 2.0(探索平台;γ0.9 不變)",
+  "pre2_insert": "PRE 裁判後:e2e_soft --tag st9s2_e2e_sg --state-tag st9s2 --steps 600 --batch 8 --data selfgen → export e33pre2_9e --verify → 官方 IFEval → 再接 MAIN",
+  "chain_head": "接駁後先 serve bf16 生成 selfgen 再開 PRE"
+ },
+ "criteria": {
+  "Z1_pre_ceiling": "e33pre_9e strict > 88.54(同 v1)",
+  "Z2_main": "e33_7e strict ≥ 81.85(90%;同 v1)",
+  "Z3_sweep2_value": "sweep2 各窗末 loss < sweep1 同窗(中位;同 v1)",
+  "Z4_stability": "同 v1;探索平台段(前 20% epoch)窗 loss 允許高原不判帶化,判準只看平台後段",
+  "Z5_honest_band": "同 v1([55%,95%])",
+  "Z6_selfgen": "e33pre2_9e strict > e33pre_9e strict + 1.0(541 題,+1≈5 題;自生語料在 e2e 段優於 cal2)——過則 MAIN 之後的降元階梯 e2e 語料改自生,並回饋 #36"
+ },
+ "branches_delta": "Z6 過 → 語料軸升級為降元階梯標配;Z6 敗 → 自生語料退回 #36 待 GJSD 疊加再試;其餘分岔同 v1",
+ "queue": "四科三臂收卷 → selfgen 生成(~25min)→ PRE(~8h)→ PRE-2(~2.2h)→ MAIN(~8h);總 ~18.5h",
+ "seed": 20260811
+}

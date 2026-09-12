@@ -1,0 +1,24 @@
+{
+ "experiment": "E48b 臂A he 加重混料鏈尾:終裁——hec65 封新冠",
+ "date": "2026-08-24",
+ "verdicts": {
+  "primary_PASS_封冠": "st47d_hec_e2e 甲 composite 0.7055 vs 現任 0.6982 = +0.0073 新冠軍;IF 73.01/he 48.17/gs 78.32(recovery 0.787/0.510/0.820)",
+  "he_axis_FAIL": "he 48.17 < 48.78(−0.61)——code 加重鏈尾沒補 he,照實記;分科餵料反直覺第四案(E38 raw code 反傷 he 同族)",
+  "no_regress_PASS": "IF 73.01 ≥ 67、gs 78.32 ≥ 76",
+  "pattern_break": "史上首個 IF 正增益鏈尾(+3.14 vs 窗態 71.35 亦 +1.66)——打破三連『鏈尾必繳 IF 稅』型態;e42 混料鏈尾 −1.48 vs hec65 +3.14=混比決定鏈尾稅正負號",
+  "mechanism": "空回應 78 案不動=hec65 未治思考失律;+3.14 全來自有作答題(作答通過率 80.6%→85.3%)=真指令遵循改善;思考閉合軸 +11.5pp 頭寸原封留給 E49"
+ },
+ "numbers": {
+  "champion_new": {"state": "st47d_hec_e2e", "comp": 0.7055, "if": 73.01, "he": 48.17, "gs": 78.32, "export": "exports/st47d_hec_e2e_x"},
+  "champion_old": {"comp": 0.6982, "if": 69.87, "he": 48.78, "gs": 78.85},
+  "bf16": [92.79, 94.51, 95.53], "empty_if": 78
+ },
+ "scorer_hotfix": {
+  "bug": "score_gsm8k norm_num 對超長數字串(float→inf)int() 溢位崩潰(OverflowError)",
+  "fix": "math.isfinite 守衛+OverflowError 捕捉,非有限數退回原字串比對(inf 永不等於有限 gold=語義不變)",
+  "regression": "gsm8k_st47d_e2e_w128 0.788476 / gsm8k_e39_3g 0.771039 修後重評逐位 MATCH=量尺無動",
+  "rescue": "gsm8k 生成已落盤(1690s),--skip-gen 離線重評,零 GPU 重跑"
+ },
+ "slots": "E49 槽位 2 填入:鏈尾配方=e2e_soft 1200×8 data=hec65(sha 0d792995);槽位 1(排水)=st47d 已填",
+ "prereg": "prereg_e48b.json FROZEN;判準逐字執行"
+}

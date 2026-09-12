@@ -1,0 +1,24 @@
+{
+ "n_prompts": 541,
+ "seed": 20260806,
+ "sampling": {
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "presence_penalty": 1.5,
+  "top_k": 20,
+  "min_p": 0.0,
+  "repetition_penalty": 1.0
+ },
+ "max_tokens": 16384,
+ "generation_s": 1031.0,
+ "workers": 128,
+ "vendor": "vendored from google-research @ 015539128d9a7dbe14b5f5308a198a15da808949 (2026-08-08), Apache-2.0",
+ "strict": {
+  "prompt_level": 0.609981515711645,
+  "instruction_level": 0.6594724220623501
+ },
+ "loose": {
+  "prompt_level": 0.6266173752310537,
+  "instruction_level": 0.6714628297362111
+ }
+}

@@ -1,0 +1,30 @@
+{
+ "tag": "p0gptq",
+ "grid": 8,
+ "grid_map": null,
+ "c": 0.6,
+ "solver": "gptq",
+ "alpha_init": "auto",
+ "prior_lam": 0.01,
+ "module_map": "",
+ "ledger": {
+  "code_fixed": 3.0,
+  "code_entropy": 2.7621,
+  "code_entropy_joint": 2.7621,
+  "alpha": 0.125,
+  "beta": 0.0,
+  "r": 0.0,
+  "weights": 3565158400,
+  "total_fixed": 3.125,
+  "total_entropy": 2.8871,
+  "total_entropy_joint": 2.8871
+ },
+ "block": 128,
+ "n_calib": 128,
+ "seed": 20260806,
+ "zerotrain_val_ce": 1.7043775618076324,
+ "t1_nonzero": 0.7672,
+ "t2_nonzero": 0.0,
+ "runtime_s": 1704.6,
+ "timestamp": "2026-09-09T19:06:56.008440"
+}

@@ -1,0 +1,39 @@
+{
+ "experiment": "E58 R1(第一梯):v4 真模板語料規模化×梯級複利——gen 80M 打包 16k→fill warm-start res57→A₄/斜率→drain→B/ρ",
+ "closed": "2026-08-31 15:3x CST(E58_R1_CHAIN_DONE;全鏈零故障零 resume)",
+ "prereg": "FROZEN @c5a99ab(用戶四裁:配比 code50/if30/math20、kroll 探針先行、API 補位開、精簡禮儀=免 e2e/B 單跑)+ 整集打包 16k 窗",
+ "readings": {
+  "kroll_probe": {"jaccard_median": 0.0169, "frac_over_0.5": 0.0, "verdict": "k=2 生效,R2 新題需求 22k→11k 減半"},
+  "corpus": {"rows": 5741, "tokens": 76800000, "sha": "af1778d8", "code_natural_stop": 0.934,
+             "gate": "PASS(門檻 0.70;cal10 對照 0.535=偽模板修正產線兌現)",
+             "pack_16k": {"mask_efficiency": 0.817, "full_rows": 3}},
+  "fill": {"warm_start": "res57", "steps": 5741, "post_fill_val_ce": 1.892662,
+           "note": "val CE 鋸齒帶 1.881-1.897,plateau-min-steps 全程保護未誤停;8.6s/步 ~13.7h"},
+  "A4": {"if": 81.52, "he": 45.12, "gs": 72.18, "comp": 0.7038,
+         "empties": {"ifeval": 30, "humaneval": 35, "gsm8k": 65}},
+  "slope": {"dA": 0.2480, "tokens_M": 76.8, "slope_per_M": 0.00323,
+            "baseline": 0.0013, "gate": 0.001, "kill": 0.0006},
+  "drain": {"windows": 32, "post_drain_val_ce": 1.983702, "flip_vs_p0": 0.0012, "wall_s": 30384,
+            "morphology": "窗序 flips 衰減、gdisc1 0.02-0.08 低位=E37/E54/E57 同構連續載體"},
+  "B": {"if": 63.22, "he": 28.05, "gs": 57.39, "comp": 0.5263,
+        "empties": {"ifeval": 64, "humaneval": 31, "gsm8k": 59}},
+  "rho": {"overall": 0.748, "by_science": {"if": 0.776, "he": 0.622, "gs": 0.795},
+          "gate": 0.80, "anchors": {"E57": 0.870, "E54": 0.912, "E38_collapse": 0.485}}
+ },
+ "judges": {
+  "corpus_gate": "PASS:code natural_stop 93.4% ≫ 70%;EOS 饑荒(cal4 以來產線通性 76-79% 頂格)在 v4 真模板+考場採樣下根治",
+  "A4_kill_gate": "PASS:0.7038 ≫ 0.4358",
+  "slope": "PASS 大幅超帶:3.23e-3/M=基線 1.3e-3 的 2.5×、過閘線的 3.2×——線性律不只保帶且斜率被抬升;teacher chat template 乘數假說首次量化兌現(乘數 ≈2.5,v4 bundle 整體歸因:真模板+考場採樣+16k 打包不可分)",
+  "packing_natural_experiment": "斜率保帶(遠超)→依凍結判讀:尾段增益吃位置本身,非整軌自然列;R2 產料可沿用打包",
+  "he_dose_response": "he +21.95pp(23.17→45.12)=E56『he 劑量不敏感』僵局被閉合語料打穿;分科閉合率×增益單調律最強一筆",
+  "rho": "FAIL(falsifier 觸發):0.748 < 0.80;中間帶=E57 0.870 與 E38 崩塌 0.485 之間;分科不均(he 0.622 最傷、if 0.776/gs 0.795 近線)=排水吞吐對新增天花板接不住的輕度 E38 形態;天花板增量傳導率 52%(B−B₃ +0.1297 vs A₄−A₃ +0.2480,對照 E57 近乎完整傳導)",
+  "champion_parallel": "B 0.5263 vs 冠軍 st51c_e2e 0.7388:冠軍衛冕;但 B−B₃ +0.1297 仍為本帶史上最大單梯 B 側增量,離冠軍 0.2125"
+ },
+ "morphology": {
+  "termination_axis_regression": "if 空回應 A₄ 30→B 64 排水後倒退(E57 gs 同構);R1 精簡禮儀免 e2e=無 λ_close 拉回段,倒退裸露可見;e2e 補跑=候選期權(E57 判例:e2e 修 empties 不修 comp,但該判例取自低天花板 régime)",
+  "rho_binding_shift": "路線分流器讀數翻轉:E57 ρ 0.870 裁『瓶頸在天花板』;本梯天花板大漲後 ρ 0.748=瓶頸開始移向排水吞吐——規模化把綁定約束從天花板軸推到吞吐軸(E38 警告帶 r256 排水稅在案)",
+  "linear_regime_update": "斜率序列:cycle-2 0.0011→cycle-3 0.0013→R1 0.00323/M;外推追冠軍(需 B +0.2125):若 ρ 修回 0.87 帶,需 ΔA ≈0.244 ≈ 76M tokens=一梯;ρ 不修則吞吐軸先斷"
+ },
+ "route": "斜率 PASS+ρ FAIL=不同構複製;依凍結案回用戶裁 R2。候選:(a) 吞吐軸修理(drain 劑量/窗數/n-calib 加碼;r256 需帶 E38 排水稅警告)(b) e2e 鏈尾補跑裁中性判例是否限於低天花板 régime(~3.4h)(c) 碼軸 contingency(E37 式局部重解碼)(d) 照常 R2 疊梯(賭天花板傳導率 52% 仍夠)。R2 API 補位語料近全收(code 3358/math ~5550/ifshape 跑中,$18.4/cap $30)",
+ "exports": {"champion_line": "st51c_e2e(不動)", "ladder_best": "e58_r(B 0.5263)", "states": "st58r/res58r1 留;e58_resA4 候清(斜率已裁)"}
+}

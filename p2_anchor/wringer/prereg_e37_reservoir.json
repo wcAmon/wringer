@@ -1,0 +1,79 @@
+{
+ "experiment": "E37 水庫烘焙:冠軍態 + KD 預訓旁路水庫 + 凍結計量排水(QLoRA 恢復 → 蒸餾進格點)",
+ "status": "ADJUDICATED @verdict_e37.json:A=50.46 過閘、B=50.28 新冠軍、ρ=0.969、solver 無罪(solver_acquittal 分岔)",
+ "user_ruling": "用戶 08-12 晚終裁:『E37 定案,接續 E36』——設計不再有分岔;E36 收卷後自主接續:裁 E36 → 填 calibration_pending(τ/W_max 由 E36 flips/absorb 定,不再回問)→ 工程實作 → CPU 三檢 → GPU smoke → FROZEN → 上機;冠軍態原則照文執行(E36 >44.55 則 P0 換 E36 終態)",
+ "user_origin": "用戶 08-12 晚提案:①先在 3元 初始模型插 LoRA、teacher KD 先訓 LoRA、再放入 B_rA_r 計量排放;②指出回滲漏洞(吸收效率過好時降 γ 放不出梯度)→ 凍結修法",
+ "derivation_chain": {
+  "D1_start": "C(17.38/28.65)+ E32(44.55,flip 15.77%)⇒ 分數主宰權在碼軸、冠軍碼已存在、形變路徑兩階段負資產 ⇒ 起點 = 絕對化 E32 e2e 態(extract 已吸收載體;位元一致斷言 vs exports/e32_e2e),不碰形變",
+  "D2_fill": "E35 不可及性論證只約束量化家族;fp 旁路對 bf16 完全可及 ⇒ Phase1 = bf16 老師 e2e 級 KD 只訓旁路(量化側全凍),無需移動老師;KD 最小化資料上函數差 ⇒ 水庫內容自動 H-對齊(最值得翻碼的子空間)",
+  "D3_ceiling": "缺口全秩、r 有限 ⇒ 水庫容量不可先驗 ⇒ 裁判點 A(Q+BA 合併 fp 模型官方 IFEval)為必要組件 = 水庫天花板實測",
+  "D4_freeze": "回滲漏洞:排水段 BA 可訓則 ‖BA‖∝1/γ 回填,排水徒有其表 ⇒ 蓄水畢即凍結 B_rA_r,排水唯一自由度 = γ;Δγ·BA 為常數函數塊,構造上無回滲通道",
+  "D5_thickness": "CPU 檢①:翻碼判準需 H-行聚合殘差 ≳ α/2 ⇒ 排水少而厚(N=5,Δγ=0.2);solver 殘差總虧欠制 R_eff = W_fp − γ·B_rA_r/r − W_hard ⇒ 未吸收自動累積加厚、免記帳、無死鎖;真容量牆顯示為保留率<1 而非隱藏死因",
+  "D6_routing": "extract 語義 ⇒ 放出內容四去處:①碼翻轉(存活)②α/dθ(存活)③次門檻 u 位移(extract 截斷=丟失,gdisc1 為現成量規)④未吸收(丟失);solver 職責 = ③④→①;構成排水段完整量測義務",
+  "D7_no_teacher": "移動老師兩個存在理由(可及性、中間態行為連貫)被『W_eff 全程健康』覆蓋 ⇒ E37 裁撤老師項;E36 vs E37 成乾淨對照:形變+老師+補償 vs 冠軍態+水庫+補償",
+  "D8_pacing": "水位閉環:Δγ 後等 ‖R_eff‖_H ≤ τ×放水前 才放下一格,配最大等待 W_max epoch;D5 累積機制使『未觸發』自動加厚 ⇒ 節奏自校準到翻碼閾值;τ、W_max 由 E36 flips/absorb 實測校準後凍結"
+ },
+ "design": {
+  "phase0": "起點絕對化:load qs_e32_e2e(或重 extract)→ 材化 → 與 exports/e32_e2e 位元一致斷言(P0 gate);量化側 = T1/α/dθ + 內側 LoRA 位(空)",
+  "phase1_fill": "每 target Linear 插量化後旁路:W_eff = W_hard + γ·(B_rA_r)/r,r=128,γ≡1;e2e 級 KD(bf16 老師,cal2,量化側全凍,只訓 B_rA_r)至收斂(~600–1200 步,val CE 平台判停,監控不裁決);→ 合併 W_hard+BA 存臨時 fp 模型 → 官方 IFEval = 裁判點 A(水庫天花板)",
+  "phase2_drain": "凍結 B_rA_r;逐窗滑動(win2/stride1):窗內 γ_w: 1→0 走 N=5 格(Δγ=0.2),水位閉環節奏(D8);每格 = 一次 comp 事件(H 鮮算、solver 靶 R_eff、階梯回退);內側載體(LoRA/α/dθ)照訓吸收連續部分;s 退火照舊,γ_w≡0 必先於 STE 硬尾(斷言);窗 finalize 前 γ=0 → extract 純 3元",
+  "phase2_epochs": "窗 epochs ~40(5 格 × W_max≈4ep 等待 + 退火尾);無走廊無 morph 機制",
+  "chain_tail": "phase2 全窗收 → 標準 e2e(600 步 cal2,連續拋光,T 不動)→ export --verify → 官方 IFEval + humaneval = 裁判點 B"
+ },
+ "criteria": {
+  "P0_gate": "位元一致斷言 PASS 否則停機重審起點",
+  "A_ceiling": "裁判點 A 官方 IFEval(記錄,不設門檻;A ≤ 44.55+ε 則水庫裝不到東西,實驗中止歸因 rank/KD)",
+  "N1_champion": "裁判點 B > 0.4455(E32)→ 3元 新冠軍 = 主判",
+  "N2_retention": "保留率 ρ = (B − 0.4455)/(A − 0.4455) = 機制主量測(烘焙效率);ρ 不設 PASS 線,誠實記錄",
+  "N3_measurement_duty": "①逐格 {γ, flips, absorb, ‖R_eff‖_H 前後, 等待 epoch 數};②D6 流向分解(flip 存活量 / α-dθ 吸收 / gdisc1 截斷 / loss 未吸收);③null_flip 類比:終碼 vs phase0 碼翻轉率;④γ≡0 斷言記錄;⑤humaneval 照記",
+  "N4_stability": "gdisc1 median ≤ 0.1724 且 nonfinite=0(沿用)"
+ },
+ "calibration_filled": {
+  "date": "2026-08-13 01:1x,E36 收卷(N1 FAIL 22.18)後依授權自主填定",
+  "p0_start": "E32 e2e 態(E36 22.18 < 44.55,冠軍態原則 E36 分支不觸發)",
+  "tau": 0.5,
+  "tau_rationale": "E36 薄移動靶逐事件 absorb median 僅 3.2%,CPU toy 靜態靶單解 65%——E37 靜態厚片落兩者之間;τ=0.5(H-norm 減半即視為該格消化)是 solver+梯度在 W_max 內可及、又不至於把格內時間耗在長尾的中位設定;未達 τ 的殘量由 D5 總虧欠制自動併入下一格加厚,無死鎖",
+  "W_max": 4,
+  "W_max_rationale": "phase2 預算 ~40ep = 5 格 ×(1 釋放 + ≤4 等待)+ 退火尾;E36 每事件 ~3s/窗 成本可忽略,等待期每 epoch 重解一次 comp(靜態靶下重解單調降 obj,GPTQ 同性質)",
+  "delta_gamma_steps": 5,
+  "comp_cap_rounds": "沿用 cap 0.03 / rounds 3(E36 增益門檻限流、cap 遠未觸頂=瓶頸不在 cap;靜態厚靶下先觀察不加碼)",
+  "direction": "少事件、穩定靶:格內解到收斂優於加密事件頻率(S3 有利庭審條件,見 verdict_e36 failure_attribution)"
+ },
+ "e36_branch_table": {
+  "declared": "2026-08-13 收卷時預宣告(E36 三嫌疑 S1老師/S2非平穩靶/S3 solver 無法互相開脫,S3 為唯一可轉移嫌疑)",
+  "A_gate_upgrade": "裁判點 A 由記錄點升格硬 go/no-go 閘:A < 0.4555(44.55+1pp)→ 中止,歸因蓄水端(rank/KD),排水段不上場",
+  "solver_conviction": "A ≥ 0.4555 且 B ≤ 0.4455(ρ≤0)→ S3 單獨定罪:H 重建增益≠能力增益成立於排水 régime,記第九筆 proxy 反轉,排水路線關閉",
+  "solver_acquittal": "B > 0.4455 → S3 無罪 + 3元 新冠軍;ρ 為烘焙效率主量測"
+ },
+ "engineering_plan": {
+  "stq.py": "STQParam 加旁路支路(lazy init B_r/A_r、γ buffer、forward 加項 γ·B_rA_r/r);extract 斷言 γ=0;凍結 = requires_grad_(False)",
+  "train_st.py": "--reservoir 旗標:窗內 γ 格排程+水位閉環+comp 事件掛 R_eff;裁撤老師項路徑(E37 不用 --comp 的 teacher 段)或旗標分離",
+  "e2e_soft.py": "--train-bypass-only 模式(phase1:量化側凍結,只訓旁路)",
+  "serve_merge": "新小工具:W_hard+BA 合併存 fp 模型供裁判點 A",
+  "budget": "phase1 KD ~1.5–2h + 裁判 A ~0.6h + phase2 sweep ~1.5–2h + e2e ~1.4h + 裁判 B ~0.9h ≈ 6–7h(單日)"
+ },
+ "cpu_checks_plan": [
+  "①旁路代數:W_eff 恆等式、γ 計量精確性(Δγ 放出 ≡ Δγ·BA)、凍結後 BA 梯度為零斷言",
+  "②排水 toy:凍結水庫+閉環在相關輸入上把內容轉入碼(保留率>0)、回滲不可能(構造斷言)、未觸發格自動累積後續觸發",
+  "③生命週期:γ=0 extract ≡ 純 3元 k2_weight;serve_merge 位元正確;--reservoir 關閉逐位舊行為"
+ ],
+ "freeze_condition": "E36 收卷校準填畢 ✓ + CPU 三檢 PASS ✓ + GPU smoke PASS ✓ → FROZEN(用戶旋鈕裁決由 08-12 終裁『自主接續不回問』取代)",
+ "engineering_result": {
+  "date": "2026-08-13 01:2x–02:0x",
+  "stq.py": "STQParam 加 load_reservoir(B,A,r,γ)凍結 buffers + gamma 閥;off/soft/hard 三模式一律 +γ·BA/r(off+γ=1 = 排水段窗目標 Y 的理想函數);extract 斷言 γ=0;res 未載入三處早退=舊行為逐位不變",
+  "comp.py": "greedy_comp_grid 泛化 solver:theta_eff 分桶取現行指派、目標=鄰格 vals[idx±1] 夾界、落點即格點;Δobj 打分/階梯回退/殘差回饋與 E36 同數學;E36 原函數不動(證據保存);適配混元 grids [3,5,9]",
+  "res_fill.py": "phase0 P0 位元閘(材化態 vs exports/e32_e2e 逐 tensor)+ phase1 ResBypass(r128,B=0 恆等起步)KD 只訓旁路 + 平台判停(每 300 步 val CE 改善<0.5% 停,上限 1200)+ 水庫落盤 data/res_res37 + 合併 fp 導出 exports/e37_resA(serve_merge 併入)",
+  "train_res.py": "phase2 獨立訓練器(不碰 train_st 的 E35/E36 路徑):窗目標 Y=off+γ=1;γ 五格階梯+水位閉環(每 epoch 一事件:鮮 H → R_eff = W₀+(1−γ)BA−W_hard → solver;level≤τ×放水後基準 或 wait≥W_max → 下一格);γ≡0 斷言先於 STE 尾;尾段 s 退火 10ep + STE 4ep;逐窗 resume;N3 逐事件 {gamma,level,wait,flips,absorb,obj} 全記錄"
+ },
+ "cpu_checks_result": "PASS(08-13 01:4x 全 CPU):①W_eff 三模式恆等、Δγ 計量精確、凍結零梯度+位元不變、載體梯度存在;②兩格排水 toy:薄格(γ=0.5)相關欄經 H 聚合先觸發 2 翻、殘量累積至 γ=0 再觸發 2 翻、終端水位 0.46% of 滿虧欠(靜態靶吸收 99.5%,對照 E36 薄移動靶逐事件 3.2%=solver 有利庭審條件的 toy 級證實)、回滲=0(BA 位元不變)、碼移動 4/4;③extract≡k2_weight、殘水 extract 斷言擋下、res=None 舊行為逐位、ResBypass 合併導出位元正確",
+ "smoke_result": "PASS(08-13 02:0x GPU):res_fill --smoke 20步——P0 閘位元一致(抽 7 tensors)、pre-fill val CE 1.775334=E32 post-e2e 1.775404 恆等起步確認、KD 0.65→0.51;train_res --smoke 2窗——排水 4ep/窗、事件記錄齊(gamma/level/wait/flips)、γ=0 斷言過、extract 落盤、resume-skip ✓、post-drain val CE 1.7772≈冠軍態(空水庫預期)。誠實註記:smoke 水位 level 逐事件上行(2569→84515)——空水庫下 R_eff 主體=soft 段 u 漂移+α 漂移噪聲;實跑以 (1−γ)BA 為主體,若 level 仍不降則 τ 觸發失效、W_max 固定節奏主導(D5 累積吸收仍成立);逐格 level 照 N3 記錄,收卷時裁 τ 閉環有效性",
+ "run_chain": "scratchpad/e37_chain.sh:res_fill(1200步 cal2 lr2e-4)→ 裁判A(ifeval_e37_resA;A<0.4555 → E37_ABORT_A 中止)→ rm qs_st37r + train_res(gsteps5 τ0.5 W_max4 tail 10+4 learn-theta holdout0.05 resume)→ e2e_soft(st37r_e2e 600步 cal2)→ export exports/e37_3g --verify → 裁判B(ifeval_e37_3g + humaneval_e37_3g);markers E37_{FILL,JUDGEA,SWEEP,E2E,EXPORT,IFEVAL,HE,CHAIN}_DONE / E37_ABORT_A / E37_FAIL:*",
+ "anchors": {
+  "bf16": 0.90943,
+  "e32_champion": 0.4455,
+  "e35_corridor": 0.28651,
+  "e35c_noe2e": 0.17375,
+  "e36": "運行中,收卷回填"
+ },
+ "timestamp": "2026-08-12T22:0x+08:00"
+}

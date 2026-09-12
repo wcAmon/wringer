@@ -1,0 +1,14 @@
+{
+ "tag": "g9f",
+ "grid": 9,
+ "grid_map": null,
+ "c": 0.6,
+ "block": 32,
+ "n_calib": 128,
+ "seed": 20260806,
+ "zerotrain_val_ce": 2.0299030989408493,
+ "t1_nonzero": 0.6048,
+ "t2_nonzero": 0.5862,
+ "runtime_s": 332.2,
+ "timestamp": "2026-09-03T02:02:02.178965"
+}

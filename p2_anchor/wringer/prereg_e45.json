@@ -1,0 +1,57 @@
+{
+ "experiment": "E45 v3 鏈尾培養化:場態 st44f 三桿 e2e 重設計(B案)+ γ-field 單桿歸因臂(C案)",
+ "status": "USER-AUTHORIZED(2026-08-21:『E45 先B做完再C』)——smoke 過閘即 FROZEN 發射,B 案收卷後自動接 C 案,不回問",
+ "draft_ruling": "用戶裁 2026-08-21:E45 = (b) 三臂 e2e 接場態先行 → 收卷後接 (c) γ-field 單桿;設計依 2026-08-21 晨討論(全三桿保留、換底座換判準、span 升主攻)",
+ "design_provenance": {
+  "e44_attribution": "E44 終裁 @5e458fe:β=1 目標階梯判毒(53.97)、場桿排水段真值(post-drain 65.06 免e2e新高)、e2e 史上首次淨負 −2.58(場態掉出標準鏈尾服務範圍)、he 48.78 新高",
+  "rescue_hypothesis": "不相容病理=逐 token 稠密 FKL 拆掉場態窗級自洽平衡;span(釋放逐因子約束)機制對位=主攻;MTP 次攻(he 新高暗示 hidden 偏多未來);cache=基礎設施閘",
+  "mtp_paper": "arXiv 2404.19737;esp_paper: arXiv 2603.17942;span_math: 段落對齊=放鬆逐因子約束給欠容量學生補償自由度(chain rule 推導見 v2.2)"
+ },
+ "phase_B": {
+  "base_state": "st44f(場態;post-drain triage 65.06、標準 e2e 62.48/48.78/72.56 兩參考線現成)",
+  "arms": {
+   "arm1_cache": "st44f + e2e(FKL 1200, batch 8, calib_e42_train, kd fwd)+ --cache-teacher-k 256 → export e45_a1;無害化閘 vs 62.48",
+   "arm2_mtp": "臂1 + --mtp-k 3 → export e45_a2(單變因 vs 臂1)",
+   "arm3_span": "臂1 + --span-m 16 --span-lam 0.3 → export e45_a3(單變因 vs 臂1;與臂2 平行槓桿)"
+  },
+  "judges": {
+   "H_cache(前置閘)": "臂1 IFEval − 62.48 ∈ ±1 → 無害化成立;< −1 → E45_CACHE_FAIL:跳過臂2/3(污染),直接進 C 案並回報用戶(降 K 重驗為候選)",
+   "H_rescue(主判)": "max(臂) IFEval > 65.06(post-drain)→ e2e 淨貢獻轉正=鏈尾缺陷證成、場態平反;∈ 62.48+1~65.06 → 部分修復;≤63.48 → 鏈尾軸失效",
+   "H_mtp": "臂2 − 臂1:>+1pp 成立;−1~+1 無效;<−1 反噬照實",
+   "H_span(主攻)": "臂3 − 臂1:>+1pp 補償自由度成立;<−1 過度放鬆反噬照實",
+   "G1_champion": "max(臂) > 71.16 → 新冠軍(A1 協定,w128)",
+   "R_he": "he vs 48.78(場態新高):鏈尾是否吃掉 code 軸增益;he<34.98 地板照舊",
+   "R6": "e2e 碼凍結語義、export verify——逐字"
+  },
+  "prereg_expectations": {
+   "span_first": "若 H_span 大正而 H_mtp 平 → 約束鬆綁=解藥,培養哲學鏈尾成立",
+   "all_flat": "三臂全 ≈62.5 → 不相容不在目標形式,嫌疑轉資料軸(drain 用 drain-calib vs e2e 用 train 集)→ 條件臂:e2e-on-drain-data 便宜歸因(需用戶裁)",
+   "specaccept_prediction": "span/MTP 有效則 accept_mean/E[L4] 與官方分同升(基線 0.841/2.72);儀表升分不升 → 第14筆 proxy 候選照實"
+  }
+ },
+ "phase_C": {
+  "purpose": "拆『場=解毒 or 獨立正值』——E44 場桿 +11.09 是在毒目標(β=1)上量的,場單獨值未知",
+  "anchor": "exports/e42b_ne(st42r 免 e2e 態)補 IFEval w128 → 基線 post-drain 新座標錨(舊 63.22)",
+  "arm_field_only": "st44fo:E42b 臂1 底座 + --gamma-field(β=0,XT 不建)72ep → 殺閘 triage(<55 死)→ 標準 e2e 1200 → export e45_fo → 三科 w128 + specaccept",
+  "judges": {
+   "H_field_alone_drain": "st44fo triage − e42b_ne w128 錨:>+1pp 場單獨正值(排水段);與 65.06 差=場×去噪交互項",
+   "H_field_alone_e2e": "e45_fo IFEval − 67.47:端到端場單獨值;triage−終分 同時再測 e2e 相容性(n=2)",
+   "kill_gate": "triage <55 判死跳鏈尾(檔案照 E44)"
+  }
+ },
+ "sequencing": "B 案臂1→閘→臂2→臂3(序列,GPU 單佔)→ B 收卷簡報 → C 案錨+drain+鏈尾 → E45 總終裁;預算 B ~13h + C ~12h",
+ "smoke_gates": {
+  "s1_levers": "e2e_soft --steps 20 --data calib_drain_e42b.pt(小快取)分別以 arm2/arm3 旗標跑通:kd/aux/span 有限、cover p01≥0.995、MTP 頭梯度非零",
+  "s2_bit_identity": "三桿全關=舊路徑——已由 st44f_e2e 產線實跑證明(同代碼),免重跑",
+  "s3_field_beta0": "train_res --smoke --gamma-field(無 β)跑通=C 臂接線(XT=None 路徑)",
+  "s4_specaccept_baseline": "0.841/2.72 已入檔(diag_specaccept_st44f_e2e)"
+ },
+ "instrument_prereg": "churn 崩塌級粗篩升格測試(帶 régime 標籤):C 臂=field régime(st44f 同族,n=1:7.4e7→存活)——預註冊:C drain 若 tflip>1e8 或 solverflips_band>1e6 → 預測 triage<55;若指標低於線 → 預測存活;任一方向命中計 field-régime 首筆記錄;失手照實記。階梯 régime 戰績(3中0誤)不得跨用",
+ "discipline": {
+  "official_only": "官方三科唯一判準;kd/aux/span/accept/churn 一律 monitor-only(13 起 proxy 失效在案)",
+  "no_pt_in_git": ".pt/.npz 不進 git;快取 RAM 內生存不落盤",
+  "coordinate": "全部 w128;62.48/65.06/67.47/71.16/48.78 判準線皆 w128 實測",
+  "single_variable": "臂1→2 只加 MTP;臂1→3 只加 span;C 臂只留場桿(β=0)"
+ },
+ "date_draft": "2026-08-19 v1;08-20 v2.2;**2026-08-21 v3:用戶裁 B→C,base=st44f,H_rescue 主判,span 主攻,C=場單桿歸因+churn 升格測試**"
+}

@@ -1,0 +1,634 @@
+{
+ "tag": "st61smk2",
+ "grid": "mix(state)",
+ "state_tag": "st54r",
+ "res_tag": "res58r1",
+ "seed": 20260806,
+ "equiv_gate_rel": 0.0,
+ "hparams": {
+  "tag": "st61smk2",
+  "state_tag": "st54r",
+  "res_tag": "res58r1",
+  "n_calib": 32,
+  "calib": "evidence/p1_grouping/calib_e58r1b_traj.pt",
+  "lengths": "evidence/p1_grouping/calib_e58r1b_len.pt",
+  "batch": 4,
+  "win": 2,
+  "stride": 1,
+  "gsteps": 2,
+  "tau": 0.5,
+  "w_max": 1,
+  "comp_rounds": 3,
+  "comp_cap": 0.03,
+  "tail_soft": 2,
+  "tail_ste": 1,
+  "s0": 30.0,
+  "s_plateau": 2.0,
+  "lora_r": 64,
+  "lora_lr": 0.0006,
+  "factor_lr": 0.003,
+  "theta_lr": null,
+  "clip": 1.0,
+  "learn_theta": true,
+  "holdout_frac": 0.05,
+  "x_cpu": true,
+  "resume": false,
+  "res_zero": false,
+  "group_override": null,
+  "strain_wmax": false,
+  "calib_domains": null,
+  "domain_weights": null,
+  "dom_exit": null,
+  "tau_dom": null,
+  "beta_denoise": 0.0,
+  "gamma_field": false,
+  "field_epochs": 0,
+  "stop_after_layer": null,
+  "smoke": true,
+  "mix_block": 128,
+  "mix_lr": 0.0001
+ },
+ "windows": [
+  {
+   "window": [
+    0,
+    2
+   ],
+   "finalized": [
+    0
+   ],
+   "w_max": 1,
+   "drain_epochs": 4,
+   "loss": [
+    4.2e-05,
+    2.2e-05,
+    4e-05,
+    3.1e-05,
+    5.7e-05,
+    2.8e-05,
+    2.4e-05
+   ],
+   "gdisc1_exit_rel": 0.0,
+   "flips_vs_p0": 28462,
+   "final_level": 443354104.8729,
+   "mix_stats": {
+    "model.language_model.layers.0.linear_attn.in_proj_qkv": {
+     "sv_min": 0.9404,
+     "sv_max": 1.0604,
+     "dist_I": 0.12561
+    },
+    "model.language_model.layers.0.linear_attn.in_proj_z": {
+     "sv_min": 0.9601,
+     "sv_max": 1.0627,
+     "dist_I": 0.1136
+    },
+    "model.language_model.layers.0.linear_attn.out_proj": {
+     "sv_min": 0.9139,
+     "sv_max": 1.0586,
+     "dist_I": 0.11203
+    },
+    "model.language_model.layers.0.mlp.gate_proj": {
+     "sv_min": 0.9626,
+     "sv_max": 1.0434,
+     "dist_I": 0.0964
+    },
+    "model.language_model.layers.0.mlp.up_proj": {
+     "sv_min": 0.9635,
+     "sv_max": 1.0359,
+     "dist_I": 0.09347
+    },
+    "model.language_model.layers.0.mlp.down_proj": {
+     "sv_min": 0.9717,
+     "sv_max": 1.0386,
+     "dist_I": 0.06569
+    }
+   },
+   "drain_events": [
+    {
+     "gamma": 0.5,
+     "flips": 6405,
+     "absorb": [
+      0.0193,
+      0.0305,
+      0.2369,
+      0.1418,
+      0.2121,
+      0.0159
+     ],
+     "obj": [
+      103945680.0,
+      11621158.0,
+      1173.1322,
+      1444901.5,
+      988626.1875,
+      252.8792
+     ],
+     "ev_flips": 0,
+     "revisit": 0,
+     "mix_gain": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "mix_dist": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "ep": 0,
+     "level": 118001791.6989,
+     "wait": 0,
+     "gamma_now": 0.5
+    },
+    {
+     "gamma": null,
+     "flips": 1104,
+     "absorb": [
+      0.0395,
+      0.0213,
+      0.0936,
+      0.0929,
+      0.1232,
+      0.0069
+     ],
+     "obj": [
+      99631120.0,
+      11296574.0,
+      1346.1542,
+      1465036.0,
+      949073.75,
+      361.6514
+     ],
+     "ev_flips": 1002,
+     "revisit": 0,
+     "mix_gain": [
+      -0.0001,
+      -0.0002,
+      0.0159,
+      -0.0001,
+      0.0006,
+      0.0001
+     ],
+     "mix_dist": [
+      0.06231,
+      0.04528,
+      0.05248,
+      0.0404,
+      0.04037,
+      0.02839
+     ],
+     "ep": 1,
+     "level": 113343511.5556,
+     "wait": 1,
+     "gamma_now": 0.5
+    },
+    {
+     "gamma": 0.0,
+     "flips": 23900,
+     "absorb": [
+      0.0144,
+      0.0145,
+      0.0329,
+      0.2881,
+      0.3762,
+      0.0092
+     ],
+     "obj": [
+      396307840.0,
+      45160112.0,
+      5796.814,
+      5945208.0,
+      3579885.5,
+      1537.1019
+     ],
+     "ev_flips": 21865,
+     "revisit": 85,
+     "mix_gain": [
+      -0.0001,
+      0.0001,
+      0.0215,
+      -0.0007,
+      0.0012,
+      0.0
+     ],
+     "mix_dist": [
+      0.07748,
+      0.0647,
+      0.0778,
+      0.0573,
+      0.05531,
+      0.03809
+     ],
+     "ep": 2,
+     "level": 451000379.4159,
+     "wait": 0,
+     "gamma_now": 0.0
+    },
+    {
+     "gamma": null,
+     "flips": 5147,
+     "absorb": [
+      0.01,
+      0.0433,
+      0.1868,
+      0.0321,
+      0.1033,
+      0.0086
+     ],
+     "obj": [
+      391691616.0,
+      42981600.0,
+      4657.0947,
+      5573819.0,
+      3100886.0,
+      1526.7782
+     ],
+     "ev_flips": 4510,
+     "revisit": 1212,
+     "mix_gain": [
+      -0.0003,
+      0.0006,
+      0.0481,
+      -0.0008,
+      0.0019,
+      -0.0
+     ],
+     "mix_dist": [
+      0.09087,
+      0.08144,
+      0.09462,
+      0.0675,
+      0.06375,
+      0.04273
+     ],
+     "ep": 3,
+     "level": 443354104.8729,
+     "wait": 1,
+     "gamma_now": 0.0
+    }
+   ]
+  },
+  {
+   "window": [
+    1,
+    3
+   ],
+   "finalized": [
+    1,
+    2
+   ],
+   "w_max": 1,
+   "drain_epochs": 4,
+   "loss": [
+    4.6e-05,
+    2.5e-05,
+    3.7e-05,
+    3e-05,
+    5.5e-05,
+    2.9e-05,
+    2.4e-05
+   ],
+   "gdisc1_exit_rel": 0.0,
+   "flips_vs_p0": 67788,
+   "final_level": 66275168.5627,
+   "mix_stats": {
+    "model.language_model.layers.1.linear_attn.in_proj_qkv": {
+     "sv_min": 0.9627,
+     "sv_max": 1.0639,
+     "dist_I": 0.1289
+    },
+    "model.language_model.layers.1.linear_attn.in_proj_z": {
+     "sv_min": 0.9667,
+     "sv_max": 1.0494,
+     "dist_I": 0.10118
+    },
+    "model.language_model.layers.1.linear_attn.out_proj": {
+     "sv_min": 0.9513,
+     "sv_max": 1.0588,
+     "dist_I": 0.10032
+    },
+    "model.language_model.layers.1.mlp.gate_proj": {
+     "sv_min": 0.9719,
+     "sv_max": 1.0821,
+     "dist_I": 0.11046
+    },
+    "model.language_model.layers.1.mlp.up_proj": {
+     "sv_min": 0.9691,
+     "sv_max": 1.0597,
+     "dist_I": 0.11018
+    },
+    "model.language_model.layers.1.mlp.down_proj": {
+     "sv_min": 0.9567,
+     "sv_max": 1.0544,
+     "dist_I": 0.08004
+    },
+    "model.language_model.layers.2.linear_attn.in_proj_qkv": {
+     "sv_min": 0.9688,
+     "sv_max": 1.0559,
+     "dist_I": 0.10223
+    },
+    "model.language_model.layers.2.linear_attn.in_proj_z": {
+     "sv_min": 0.9709,
+     "sv_max": 1.0412,
+     "dist_I": 0.07305
+    },
+    "model.language_model.layers.2.linear_attn.out_proj": {
+     "sv_min": 0.9313,
+     "sv_max": 1.0691,
+     "dist_I": 0.07984
+    },
+    "model.language_model.layers.2.mlp.gate_proj": {
+     "sv_min": 0.9695,
+     "sv_max": 1.0512,
+     "dist_I": 0.07744
+    },
+    "model.language_model.layers.2.mlp.up_proj": {
+     "sv_min": 0.972,
+     "sv_max": 1.0358,
+     "dist_I": 0.07534
+    },
+    "model.language_model.layers.2.mlp.down_proj": {
+     "sv_min": 0.9495,
+     "sv_max": 1.0402,
+     "dist_I": 0.05143
+    }
+   },
+   "drain_events": [
+    {
+     "gamma": 0.5,
+     "flips": 8911,
+     "absorb": [
+      0.0547,
+      0.0257,
+      0.0075,
+      0.1476,
+      0.1557,
+      0.005,
+      0.1032,
+      0.1515,
+      0.0036,
+      0.1098,
+      0.0231,
+      0.0033
+     ],
+     "obj": [
+      10776688.0,
+      1738083.5,
+      158.1792,
+      1260690.25,
+      736699.4375,
+      269.9284,
+      7118704.0,
+      2023765.25,
+      131.3238,
+      1638585.875,
+      569661.375,
+      342.4277
+     ],
+     "ev_flips": 0,
+     "revisit": 0,
+     "mix_gain": [
+      -0.0004,
+      -0.0001,
+      0.0001,
+      -0.0,
+      -0.0,
+      0.0007,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      -0.0
+     ],
+     "mix_dist": [
+      0.08415,
+      0.07181,
+      0.0671,
+      0.07509,
+      0.07638,
+      0.05407,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+     ],
+     "ep": 0,
+     "level": 25863779.5465,
+     "wait": 0,
+     "gamma_now": 0.5
+    },
+    {
+     "gamma": null,
+     "flips": 6519,
+     "absorb": [
+      0.2124,
+      0.1115,
+      0.0343,
+      0.0411,
+      0.0926,
+      0.0093,
+      0.1086,
+      0.0406,
+      0.0469,
+      0.0681,
+      0.0266,
+      0.0152
+     ],
+     "obj": [
+      8473032.0,
+      1527995.0,
+      164.6676,
+      1329319.5,
+      742027.125,
+      312.6485,
+      6551229.0,
+      1933832.5,
+      181.4368,
+      1778537.5,
+      634740.6875,
+      488.2667
+     ],
+     "ev_flips": 6249,
+     "revisit": 0,
+     "mix_gain": [
+      -0.001,
+      0.0004,
+      0.0055,
+      -0.0018,
+      -0.0014,
+      -0.0001,
+      0.0018,
+      0.001,
+      0.0066,
+      -0.0007,
+      -0.0001,
+      -0.0015
+     ],
+     "mix_dist": [
+      0.09551,
+      0.08184,
+      0.07543,
+      0.08279,
+      0.08134,
+      0.05504,
+      0.04641,
+      0.03743,
+      0.03279,
+      0.03036,
+      0.02902,
+      0.01816
+     ],
+     "ep": 1,
+     "level": 22971860.3321,
+     "wait": 1,
+     "gamma_now": 0.5
+    },
+    {
+     "gamma": 0.0,
+     "flips": 42813,
+     "absorb": [
+      0.2695,
+      0.2891,
+      0.0185,
+      0.3149,
+      0.273,
+      0.0162,
+      0.2115,
+      0.2062,
+      0.0035,
+      0.2496,
+      0.1838,
+      0.0087
+     ],
+     "obj": [
+      25524352.0,
+      4373944.0,
+      655.1271,
+      4182009.5,
+      2411988.25,
+      1376.5919,
+      21783004.0,
+      6481100.0,
+      818.2849,
+      5933896.5,
+      2154367.75,
+      2052.1428
+     ],
+     "ev_flips": 40338,
+     "revisit": 634,
+     "mix_gain": [
+      0.0086,
+      0.0044,
+      0.0022,
+      0.0009,
+      0.0035,
+      0.0,
+      0.0019,
+      0.0072,
+      0.0003,
+      -0.0011,
+      0.0,
+      -0.0001
+     ],
+     "mix_dist": [
+      0.11938,
+      0.10408,
+      0.09577,
+      0.09823,
+      0.09508,
+      0.06261,
+      0.07428,
+      0.05943,
+      0.04949,
+      0.04878,
+      0.03829,
+      0.02322
+     ],
+     "ep": 2,
+     "level": 72849564.1467,
+     "wait": 0,
+     "gamma_now": 0.0
+    },
+    {
+     "gamma": null,
+     "flips": 28516,
+     "absorb": [
+      0.109,
+      0.1405,
+      0.0098,
+      0.1044,
+      0.0763,
+      0.0228,
+      0.0301,
+      0.1231,
+      0.0049,
+      0.0702,
+      0.0282,
+      0.0075
+     ],
+     "obj": [
+      22607884.0,
+      3746820.5,
+      668.2969,
+      3803471.5,
+      2317954.25,
+      1436.4655,
+      20656720.0,
+      5556767.5,
+      873.4661,
+      5461266.0,
+      2119069.0,
+      2237.5842
+     ],
+     "ev_flips": 27449,
+     "revisit": 4291,
+     "mix_gain": [
+      0.0119,
+      0.0062,
+      0.0073,
+      0.0009,
+      -0.0024,
+      -0.0001,
+      0.0059,
+      0.0021,
+      0.0018,
+      0.0002,
+      0.0001,
+      0.0001
+     ],
+     "mix_dist": [
+      0.14027,
+      0.12164,
+      0.1122,
+      0.10891,
+      0.10535,
+      0.06895,
+      0.09339,
+      0.07377,
+      0.06322,
+      0.05936,
+      0.05081,
+      0.03097
+     ],
+     "ep": 3,
+     "level": 66275168.5627,
+     "wait": 1,
+     "gamma_now": 0.0
+    }
+   ]
+  }
+ ],
+ "post_drain_val_ce": 1.9972114711999893,
+ "t_flip_rate_vs_p0": 0.000142,
+ "runtime_s": 120.7,
+ "timestamp": "2026-09-03T23:54:06.809163"
+}

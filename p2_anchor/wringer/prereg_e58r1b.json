@@ -1,0 +1,27 @@
+{
+ "experiment": "E58 R1b 吞吐軸修理臂(甲=等劑量分層覆蓋/乙=3× 劑量)",
+ "status": "FROZEN 2026-08-31(用戶裁「跑甲然後乙」;甲 ρ≥0.80 時停鏈回報,乙是否仍跑量劑量邊際由用戶裁,不自主燒 25h)",
+ "basis": {
+  "instrument_defect": "train_res.py:186 取列 [:n_calib] 頭取無洗牌 × gen 域序寫入(ifshape→code→math)⇒ R1 drain calib 128 列=100% ifshape,code/math 零覆蓋;分科 ρ 對齊(he 0.622 最傷)",
+  "e57_boundary": "E57 同為單域 calib(agentic 在前)但 ρ 0.870 均勻 ⇒ 病因=覆蓋缺陷×傳輸需求 2.5× 交互,非覆蓋單因;agentic=歷史最 on-manifold 域、ifshape=模板性最強=最差單域",
+  "saturation": "每窗 loss 收斂 1e-5~1e-3、train/holdout 中位 ratio 1.0 ⇒ 優化已飽和,缺列非缺步",
+  "dose_line": "E54/E57/R1 排水劑量恆 ~2M tok,ΔA 0.33→0.46→0.70,ρ 0.912→0.870→0.748 單調",
+  "fix_at_data_level": "不改 train_res(零程式風險):物化分層 calib 檔,前綴即分層(E58R1B_CALIB_MANIFEST.json,seed 20260831,sha 2ce45a4c)"
+ },
+ "arms": {
+  "armA": {"tag": "st58rb", "calib": "calib_e58r1b(前 128:code 66/if 33/math 29)", "n_calib": 128,
+           "isolates": "等劑量、只修覆蓋", "wall_est_h": 10.5},
+  "armB": {"tag": "st58rc", "calib": "calib_e58r1b 全 384(code 198/if 98/math 88)", "n_calib": 384,
+           "isolates": "覆蓋+3× 劑量(對齊 ΔA 2.5×)", "wall_est_h": 27,
+           "trigger": "甲 ρ<0.80 自動點火;甲 ≥0.80 停鏈回用戶"}
+ },
+ "fixed": {"state_tag": "st54r", "res_tag": "res58r1", "A4_ceiling": 0.7038, "fill": "不重跑",
+           "drain_hparams": "batch 4 learn-theta holdout 0.05 expandable_segments(E58 R1 同檔)"},
+ "judges": {
+  "rho_gate": "ρ'=B'/0.7038 ≥ 0.80 過閘",
+  "attribution": "甲過=覆蓋主因(儀器缺陷定罪);甲不過乙過=劑量主因;B' 對 R1 B 0.5263/冠軍 0.7388 照實並列",
+  "falsifier": "兩臂 ρ 皆 <0.78 ⇒ 覆蓋+劑量假說雙殺,吞吐軸讓位,碼軸 contingency(E37 式局部重解碼)升首選"
+ },
+ "sentinels": "E58R1B_DRAIN_DONE/E58R1B_B:/E58R1B_RHO:/E58R1B_PASS_STOP/E58R1C_DRAIN_DONE/E58R1C_B:/E58R1C_RHO:/E58R1B_CHAIN_DONE/E58_FAIL:*",
+ "downstream": "收卷後回用戶裁 R2 疊梯;R2 產料=e58r2 題庫 11236 題+gen_agentic(27B 出題槽)補 agentic 域(排水百搭卷屬性,E57 判例)"
+}

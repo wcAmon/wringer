@@ -1,0 +1,52 @@
+{
+ "experiment": "E41 格子應變雙臂:深層細粒(g16)× 應變導引打磨——零新語料,重用 res40 水庫",
+ "status": "FROZEN",
+ "date_draft": "2026-08-15",
+ "date_frozen": "2026-08-15(用戶裁:先啟動 E41,E42 細項中途再議)",
+ "design_provenance": "用戶 2026-08-15 定調:E41 最重要兩問=①深層細粒能否救回更多能力 ②隨零逃逸分佈打磨能否救回能力;皆零新語料。機制基礎=零重疊診斷(diag_zero_overlap_e40_vs_9e.json @40be701):深層表徵需求驅動逃零跳 ±1、scale 承幅(L30-35 逃逸 6.73%、±1 占用 80% 滿載),淺層歸零=鬆弛吸收;逃逸剖面=零成本逐層應變計。E40 R4 佐證:機器稅否證,drain+e2e 通道健康,改良空間在轉寫配置本身",
+ "shared_base": {
+  "state": "data/qs_st39r_e2e(E39 冠軍態)",
+  "reservoir": "data/res_res40(E40 蓄好的 r512 水庫,格子無關——蓄排分離紅利,兩臂免重 fill)",
+  "corpus": "calib_e40_train.pt sha 208587b2(drain calib=前 128 列、e2e 全量,與 E40 逐字同)",
+  "teacher": "bf16 snapshot 945c40a4 不動",
+  "e2e_loss": "FKL only(E40 R3 已裁:RKL off-policy 淨負除名)",
+  "baseline": "B_fkl = exports/e40_3g 70.43/31.71/79.38(同 fill 同料同 e2e,唯一變因=排水配置)"
+ },
+ "arm_1_deep_grain": {
+  "question": "深層細粒能否救回深層表徵?",
+  "amendment_band": "2026-08-15 啟動前(未偷看任何 E41 數據):模型實為 32 層,診斷檔尾帶『L30-35』實=L30-31 僅 2 層(標籤 bug,數據無誤,diag 已補 label_correction)。草案選層規則本體=『逃逸率>3% 層帶』(e41_candidates 預註冊),按規則落 L24-31(L24-29 3.06% + L30-31 6.73%,共 8 層);位元記帳與等值線隨之機械重算,判準結構(真貢獻/位元等值/無效/淨負 四分岔)不動",
+  "change": "L24-31 全量化權重 g32→g16(逃逸>3% 帶;L30-31 ±1 占用 80%);其餘層 g32 不動;drain/e2e 超參與 E40 逐字同",
+  "bit_accounting": "受影響 8/32 層:scale 開銷 +0.5 b/w 該層帶 = +0.125 b/w 全模型攤提;線性律 36.8 點/b·w 預測 ~+4.6pp=純位元等值線",
+  "chain": "train_res --tag st41g --state-tag st39r_e2e --res-tag res40 --group-override '24-31:16' → e2e_soft fkl 600 步 --tag st41g_e2e → export e41_g16(層異質 g)→ B 三科",
+  "H_grain": "ΔIF = B_g16 − 70.43:>+4.6pp = 粒度真貢獻(超位元帳,PASS);+1~+4.6pp = 位元等值帶(線性律可解釋,記錄不判 PASS);−1~+1pp = 無效;<−1pp = 淨負",
+  "conditional_extension": "PASS 且 ΔIF>+7pp → 全模型 g16 列 E41b 候選;不自動跑"
+ },
+ "arm_2_strain_polish": {
+  "question": "隨零逃逸分佈打磨能否救回能力?",
+  "change": "逐層應變權重 s_l = escape_l / 0.0673(帶內插值);drain_epochs_l = round(25·(1+2·s_l))(末帶 L30-31 至 75、淺層 ~26;帶=li//6 同 diag);W_max_l = 4 + round(4·s_l)(深層至 8);τ=0.5 不動(少一變因);格子全 g32 不動;e2e 同 E40",
+  "amendment_impl": "2026-08-15 啟動前(未偷看任何 E41 數據):草案 epochs 式與 W_max 式互相矛盾(閉環機制下 epoch 上限=gsteps×(1+W_max),emergent 非直接旋鈕)。以 epochs 目標式為準:W_max_l = round(25·(1+2·s_l)/gsteps) − 1 → 淺層 4(逐字還原 E40 基線)、L18-23 5、L24-29 9、L30-35 14(上限 75 epoch,τ 閉環可早退);W_max 式 4+round(4·s_l) 廢止;τ/判準/量測逐字不動",
+  "chain": "train_res --tag st41s --state-tag st39r_e2e --res-tag res40 --strain-profile diag 剖面 → e2e_soft fkl 600 步 → export e41_sp → B 三科",
+  "H_strain": "ΔIF = B_sp − 70.43:>+1pp = PASS(零位元成本,任何真增益);−1~+1pp = 無效;<−1pp = 淨負(過度打磨深層反攪動)",
+  "cost_note": "深層窗 epochs 3× → drain 時間 ~1.5h→~2.5h,零位元成本"
+ },
+ "engineering_gates": {
+  "prep": "①train_res 支援 --group-override 逐層 g / --strain-profile 逐層 epochs+W_max(改 comp.py 排程表);②export 支援層異質 g(header 帶 per-layer group size);③冒煙:g16 單層 dry-run + export 200 tensors bit-exact 驗證,冒煙不過該臂 E41_FAIL:export 照實",
+  "smoke_first": "兩臂各自冒煙過閘才進全鏈"
+ },
+ "judges": {
+  "G1_champion": "任一臂 B-IFEval > 0.7043 → 新冠軍(官方 IFEval strict prompt,錨定 E40 同協定)",
+  "R_strain_gauge": "每臂 export 重測逃逸剖面(vs 9元 e33pre_9e 同法)——裁 g16 是否降深層逃逸/±1 占用鬆動;monitor-only 不入判,入歸因",
+  "R6_stability": "gdisc1_exit_rel ≤ 0.1724、nonfinite=0、holdout 無擴口(絕對值雜訊地板不計)、31/31 finalize——同 E40 逐字",
+  "measurements": "humaneval 無地板、gsm8k 記錄;A 點免測(fill 未動,A=74.31 承 E40)"
+ },
+ "discipline": {
+  "official_only": "判準只認官方科目;val CE/KD monitor-only(九筆反轉+型十+型十一在案)",
+  "single_var": "兩臂各自唯一變因=排水配置(臂1 格子粒度/臂2 打磨排程);fill/語料/e2e/種子逐字不動;兩臂互相獨立可並裁",
+  "no_fill_step_increase": "欠訓訊號已記,加步軸保留 E42,本輪不動(避免汙染單變因)",
+  "fail_honest": "FAIL 照實;5/7元 混檔備胎不啟動(衝突 E32 層級配置否證)",
+  "no_pt_in_git": ".pt/.npz 不進 git;manifest+sha256 留痕"
+ },
+ "budget_estimate": "冒煙 ~0.5h + 臂1(drain 1.5h + e2e 1.8h + export 0.3h + B 三科 1.6h ≈ 5.2h)+ 臂2(drain ~2.5h + 同尾 ≈ 6.2h)≈ 12h 總",
+ "artifacts_plan": ["train_st41g.json", "train_st41g_e2e.json", "train_st41s.json", "train_st41s_e2e.json", "a1eval/*_e41_{g16,sp}/", "diag_strain_e41_{g16,sp}.json", "exports/e41_{g16,sp}(.pt 不進 git)"],
+ "next_ladder": "兩臂皆 PASS → 疊加臂(g16+應變打磨)E41c;臂1 位元等值帶 → 位元預算改投 E42 加步;皆 FAIL → 深層損傷=容量軸殘留,回 O2 DARE/O6 on-policy cal6"
+}

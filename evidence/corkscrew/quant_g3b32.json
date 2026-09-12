@@ -1,0 +1,14 @@
+{
+ "tag": "g3b32",
+ "grid": 3,
+ "grid_map": null,
+ "c": 0.6,
+ "block": 32,
+ "n_calib": 128,
+ "seed": 20260806,
+ "zerotrain_val_ce": 3.5525941252708435,
+ "t1_nonzero": 0.5828,
+ "t2_nonzero": 0.0,
+ "runtime_s": 250.0,
+ "timestamp": "2026-08-26T22:58:10.191204"
+}

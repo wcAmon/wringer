@@ -1,0 +1,79 @@
+{
+ "experiment": "E66-RD 率失真台階(零訓練;he 單科裁)",
+ "refs": {
+  "g9": {
+   "he": 88.41,
+   "ifeval": 78.56,
+   "gsm8k": 94.16,
+   "comp": 0.9226,
+   "code_entropy_joint": 3.101,
+   "code_fixed": 3.2
+  }
+ },
+ "rows": {
+  "rd_r1": {
+   "arm": "R",
+   "he": 82.93,
+   "empties": 4,
+   "lam": 0.095,
+   "flips_mean": 0.1339,
+   "rel_rms_max": 0.0945,
+   "code_entropy_joint": 3.0034,
+   "code_fixed": 3.2,
+   "alpha": 0.5,
+   "total_entropy_joint": 3.5034,
+   "total_fixed": 3.7
+  },
+  "rd_r2": {
+   "arm": "R",
+   "he": 76.83,
+   "empties": 8,
+   "lam": 0.135,
+   "flips_mean": 0.2174,
+   "rel_rms_max": 0.1178,
+   "code_entropy_joint": 2.9081,
+   "code_fixed": 3.2,
+   "alpha": 0.5,
+   "total_entropy_joint": 3.4081,
+   "total_fixed": 3.7
+  },
+  "rd_r3": {
+   "arm": "R",
+   "he": 73.78,
+   "empties": 6,
+   "lam": 0.175,
+   "flips_mean": 0.2906,
+   "rel_rms_max": 0.1458,
+   "code_entropy_joint": 2.8086,
+   "code_fixed": 3.2,
+   "alpha": 0.5,
+   "total_entropy_joint": 3.3086,
+   "total_fixed": 3.7
+  },
+  "rd_s1g": {
+   "arm": "S",
+   "he": 30.49,
+   "empties": 59,
+   "lam": 0.0,
+   "flips_mean": 0.6101,
+   "rel_rms_max": 0.2557,
+   "code_entropy_joint": 2.7172,
+   "code_fixed": 2.8,
+   "alpha": 0.5,
+   "total_entropy_joint": 3.2172,
+   "total_fixed": 3.3
+  }
+ },
+ "judges": {
+  "J_R1": "GREY[80,84) he=82.93 Δ=-5.48",
+  "J_SLOPE": {
+   "he_drop_per_0.1b": [
+    6.4,
+    3.07
+   ],
+   "note": "後段掉幅 > 前段 2× ⇒ 非線性加速,台階上限記在該點"
+  },
+  "J_AB": "RATE_WINS he_R@H=2.717≈73.78 vs S1g 30.49 Δ=+43.29",
+  "J_TYPE11_note": "rel_rms 與 he 排序不一致即記第 11 型;局部誤差不作裁判"
+ }
+}

@@ -1,0 +1,29 @@
+{
+ "experiment": "E49 蓄水軸戰役:he 靶向語料工程,打 A 點天花板(80% recovery 的存在性工程)",
+ "status": "FROZEN-on-slot-fill(2026-08-23 用戶裁『目前排程我都同意,排程到達自動發射』——排水封盤+鏈尾槽位填入即自主發射,不再回問;唯 E49-b 產線預算另報)",
+ "arithmetic": {
+  "constraint": "A 點甲 = mean(78.74/92.79, 59.15/94.51, 83.70/95.53) = 0.784——排水/鏈尾全零損也到不了 0.80;蓄水軸是 80% 的存在性條件",
+  "short_board": "he 在 A 點僅 62.6% recovery(IF 84.9%/gs 87.6%)——水在蓄水段就沒灌進去,非下游弄丟",
+  "target": "A 點 he 59.15→65+(A 點甲 →0.81+);次目標 IF/gs 不倒退(A 點三科聯合閘)"
+ },
+ "laws_in_force": {
+  "dead_ends": "容量軸三案否證:r↑(E38 ρ₂ 0.485)、步數/水庫加大(E42b H_cap −8.50)、全域碼容量(E47 g16 −5.18)——E49 不動 r=512、不動步數帳、不動碼配置",
+  "live_levers": "on-manifold 老師軌跡(E39 +4.62,現行 res42 已內建)、FKL(E40)、分科餵料定律(E38:gsm8k 域餵料 +7.7 成立;raw code 反傷 he/IF 稀釋稅)",
+  "dose": "劑量以檔案實測為準(E43);混比改變不得偷改總量"
+ },
+ "arms": {
+  "E49-a(便宜先行)": "現有料重組:E42 語料(code 5014/math 2500/ifshape 3749)he 靶向再加權(code 佔比 ~45%→65%,總量不變),重蓄水→A 點三科;單變因=混比",
+  "E49-b(條件產線)": "E49-a 若 he +2 以上但未達 +5:bleachers 產線 code v2 he 靶向(MBPP/humaneval 風格,執行驗證);出題模型=deepseek/deepseek-v4-flash-0731(OpenRouter,E42 全量現任;2026-08-23 用戶裁+活性微測 PASS:20 題 $0.0165≈$0.0008/題);**預算硬頂 USD 50(用戶已批,無需再報)**;估 5-8k 題 ≈ $7-11,餘裕 4×",
+  "E49-c(歸因臂,條件)": "E49-a 若 he 無動:裁『混比 vs 料質』——抽換 code 子集為 MBPP 927 執行驗證料,同比重跑"
+ },
+ "judges": {
+  "stage_A(蓄水閘)": "A 點三科(免排水,週期 ~半天/輪):he 主判 vs 59.15;IF ≥77.5、gs ≥82.5 不倒退閘;A 點甲 vs 0.784",
+  "stage_rho(排水驗證閘)": "過 stage_A 後:新水庫用排水冠軍配方【已填:st47d 逐字=field×β+W_max12+半g16,E47-X 收卷 @9c1b61d】排水→triage;ρ_drain vs 現任讀數;ρ<0.90 判『水過富』(E38 型態)而非配方失敗,歸因分開;E47-X 負交互=口徑餘裕耗盡→本閘收緊、優先小水量臂",
+  "stage_tail(收割)": "過 stage_rho 後:鏈尾最佳配方【已填:e2e_soft 1200×8 data=hec65,E48b 封冠 @verdict_e48b】→三科→甲 vs 現任冠軍 0.7055(E48b 更新)",
+  "monitors": "val CE/KD 曲線一律 monitor-only(17 筆在案)"
+ },
+ "risk_calibration": "D×E 已收卷:負交互(69.13=cap 臂逐位同分)=口徑飽和確認——stage_rho 閘收緊並優先小水量臂生效",
+ "exec_notes_e49a": "res42 配方逐字繼承(res_fill --state-tag st41g_e2e --ref-export exports/e41_g16 --r-res 512 --steps 7500 --batch 8 --lr 2e-4),唯一變因 --data=calib_e42_train_hec65.pt(19,385 列;劑量 steps 制與檔案大小無關=總量不變成立);E48b 讀數併卷:code 加重在鏈尾治 IF 不治 he——蓄水段是否互補即本臂裁決點;思考閉合軸(O1 稽核 +11.5pp 頭寸)列 E49 後續臂候選,只走模型側(用戶 R2 裁決)",
+ "open_slots": [],
+ "date": "2026-08-23(槽位填定+口徑校準更新 2026-08-24)"
+}

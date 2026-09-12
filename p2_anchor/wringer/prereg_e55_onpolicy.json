@@ -1,0 +1,27 @@
+{
+ "experiment": "E55 on-policy 矯正段(GKD O6;文獻兩缺口合一)",
+ "status": "DRAFT(PENDING-USER)——E54 收卷後與用戶討論 open_questions → 才 FROZEN → 才發射;依 feedback-arm-launch-approval 紀律,本檔僅為設計記錄,不構成點火授權",
+ "date": "2026-08-26 21:5x +0800(用戶指示:把以上設計為 E54 後路徑記錄,到時討論後發射)",
+ "origin": "08-26 文獻審視:E54 對六錨點的唯一實質缺口=GKD 軸。policy 軸(O6 student-policy)從未測;divergence 軸(O4)E40 已裁離線形式崩塌(H_rkl 崩塌級淨負),其敗法恰為 GKD 所預測(mode-seeking 缺 on-policy 支撐必坍縮)→ 離線形式已死、on-policy 形式未測,divergence 降為本臂子開關",
+ "hypotheses": {
+  "H_onpolicy": "老師料 KD 對學生自有失律區(迴圈/不終止/空核)覆蓋恆為零——老師不進迴圈,故永不示範逃脫;學生自生軌跡+老師全詞表標註直接照亮這些區域。預期分科落點:he stable 空核 16-18 帶、硬核 33 殘留、空回應數",
+  "H_serve_align": "學生自生採樣用官方 eval 參數(temp 1.0/top_p 0.95/top_k 20/min_p 0/presence 1.5)= policy 軸的真『訓練分佈=推理分佈』(E54 amendment_1 已證溫度軸版本前提錯誤;本臂是那個故事的正確實作)",
+  "approximation_note": "快照 on-policy(單輪 DAgger 式,學生快照一次性產料)≠ GKD 逐 batch 全 on-policy;照實預記。若正增益,第二輪=快照重生成迭代"
+ },
+ "design_sketch": {
+  "S0_gen": "serve 學生快照 export(起點態待 E54 收卷定)→ gen_e55_onpolicy.py(骨架=gen_e54lt.py:換採樣參數為 eval 全套含 top_k/presence、prompt bank 同域配比、新 SEED)→ 學生自生 ~900-1800 列 8k + lengths;傾向 all-keep(on-policy 的價值恰在病態軌跡=矯正對象),決議待討論",
+  "S1_train": "e2e_soft 600 步尾段:--data 學生自生料 --lengths 對應 len;老師 bf16 全詞表 KD 標註(現行 kd 流程零改動,只換料);λ_close 待討論(學生料的閉合權重語義與老師料不同)",
+  "S2_judge": "export → 官方三科;主判=雙跑均值 vs 當時冠軍(門檻數字收卷時填);Δ_onpolicy = B − 起點態同座標讀數",
+  "optional_subarm": "JSD/RKL divergence 子開關——僅在本臂主形(FKL)裁決後、且 on-policy 支撐證實有效時,單變因加測"
+ },
+ "entry_points": "勝敗兩頭都接:E54 勝訴 → 在新冠軍上做矯正段(替代/疊加壓回段);E54 敗訴 → 回 st51c_e2e/st47d 血統,與量化殘留軸並列候選(空核病理本就指向學生自有流形)",
+ "open_questions_for_user": [
+  "起點態:E54 冠軍 or st51c_e2e(視 B2 而定)",
+  "產料 all-keep vs 篩選(推薦 all-keep:病態軌跡即矯正對象)",
+  "λ_close 取值(學生料語義不同;候選=沿用 256 / 歸零 / 重掃)",
+  "產料規模 900 vs 1800 與是否第二輪迭代",
+  "JSD 子臂是否隨行"
+ ],
+ "budget_est": "~3h(產料 1-2h + 600 步 ~1h + eval);第二輪迭代再 +3h",
+ "instrument_context": "eval 採樣參數實測(ifeval_runner/subject_runner):temp 1.0/top_p 0.95/top_k 20/min_p 0/presence_penalty 1.5;溫度軸儀器組(cal8lt):closure_lt ag 33.2/if 25.3/code 34.1/math 90.6 + EOS 饑荒 79.6%(E54LT_TRAJ_MANIFEST)"
+}

@@ -1,0 +1,36 @@
+{
+  "id": "E59",
+  "status": "FROZEN(用戶 2026-09-02「開工」核准;S0 已過閘 G9_FLOOR comp 0.9226 @ecd9d3b;S1→S2→S3 自主接續屬授權範圍)",
+  "date": "2026-09-02",
+  "title": "9→3 轉換單矛:T2 平面逐窗排水(方法論通則第一輪)",
+  "hypothesis": {
+    "H_basin2": "碼置換量×能力雙凹曲線:盆地一(繼承/直解 3元)之外存在更優 3元 擺法;解法器對 W₉ 藍圖直解=瞬移跨屏障,免 BitNet 級量能",
+    "evidence": "T1 探針 @09-02:st54r vs g3b32 一致率 0.9994(全訓練史淨移 0.06%=從未離開盆地一)/g9 vs 三元 0.634(另一擺法實存);E54 走路跨盆死於 token 饑荒、E58R1b 中段死亡谷、R1 少翻碼 he 最保"
+  },
+  "simplification": {
+    "ruling": "用戶 09-02:簡化排程,投注最有潛力方向",
+    "kept": "單矛 B1(T2 逐窗排水,零訓練 g9 為藍圖)",
+    "deferred": ["Phase A 9元 蓄水(機制證明後才投,倒轉次序:先證管道再灌水)", "B2 梯級走廊 9→5→3", "檔1 通道重排", "檔2 Hadamard", "LoRA 暫態載體變體(α/θ 吸收不足時的第二輪)"]
+  },
+  "stages": {
+    "S0_foundation": "G9_FLOOR 三科地板(運行中)。過閘=comp_g9 有意義高於 3元 零訓練帶且 empties 不爆;地板即 ρ_conv 分母。不過閘=停,回用戶(9元 空間夠假設動搖)",
+    "S1_engineering": "~1d:t2drain 變體——逐窗逐模組 GPTQ(W_eff=a0·(T1+c·T2) 材化自 qs_g9, H=窗 X 流)重解 grid3;窗級殺閘(窗 loss > 直投對照 ×1.05 ⇒ 模組回退);α/θ 逐窗吸收(E38 對策);沿 train_res 窗機器(win2/stride1)",
+    "S2_chain": "~1.5d:32 窗全網轉換;calib=calib_e58r1b_traj 384 列 16k 分層卷(標配);逐窗記帳=T2 未吸收殘量(final_level 同構)+T1 落點一致率",
+    "S3_judge": "export → 三科官方 → ρ_conv=B/G9_FLOOR 逐科"
+  },
+  "kill_gates": {
+    "landing_probe": "窗 4 落點探針:累計 T1 對 g3b32 一致率 ≥0.99 ⇒ 沒跳出盆地一,臂當場判死(不燒後續磨合)",
+    "window_gate": "窗 loss 對照線超帶 ⇒ 模組回退照實記數",
+    "fault": "中途故障=修理+resume 不算裁決"
+  },
+  "judges": {
+    "primary": "ρ_conv(comp) ≥ 0.85 = 轉換機制成立;he 專項 ρ_conv_he ≥ 0.70(對照 E58 排水 he ρ 帶 0.49-0.62)",
+    "basin_readout": "終態 T1 對 g3b32 一致率(獨立於分數的盆地判別讀數,任何結果都入卷)",
+    "falsifier": "ρ_conv(comp) < 0.70 ⇒ 本輪機制 FAIL;歸因分岔按落點探針讀:落點未跳=解法器被 W₉≈bf16 拉回盆地一(藍圖軸修理);落點已跳仍低=盆地二不存在或藍圖太弱(容量天花板加重一票,回用戶)",
+    "context": "B 絕對值對冠軍 0.7388 並列參考,不作判準(零訓練藍圖第一輪不背追冠任務)"
+  },
+  "assets": {"blueprint": "qs_g9(決定論復現 CE 2.0304)", "calib": "calib_e58r1b_traj.pt(sha 2ce45a4c)", "floor_eval": "a1eval/*_g9_floor", "probe": "T1 一致率三態矩陣(本卷 hypothesis.evidence)"},
+  "cost": "工程 ~1d + 鏈 ~1.5d + 評測 2.5h;零新語料成本",
+  "on_success": "管道證明後:Phase A 重開(R2 語料/O6 疊梯灌 9元,增益過管道傳導)+deferred 項按價值重排(重排/Hadamard/混檔位元帳)",
+  "relation": "R2/O6=補給線(見 09-02 對話裁定);冠軍 st51c_e2e 不動;v1 champion-手術版封存 @14bf8e7"
+}

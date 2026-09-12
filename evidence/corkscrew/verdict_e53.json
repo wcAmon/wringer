@@ -1,0 +1,68 @@
+{
+  "experiment": "E53 整軌長窗:8k×b1 四科整軌(截斷保留),訓練分佈=推理分佈",
+  "prereg": "prereg_e53.json(FROZEN @a2d0909)",
+  "date_adjudicated": "2026-08-26 17:17 +0800",
+  "verdict": "FAIL(殺閘擊穿)——st51c_e2e 衛冕;falsifier 觸發:語料軸封盤",
+  "scores": {
+    "run_w128":   {"ifeval": 74.49, "humaneval": 47.56, "gsm8k": 77.86, "jia": 0.7070,
+                   "empties": {"ifeval": 35, "humaneval": 35, "gsm8k": 40}},
+    "run_w128r2": {"ifeval": 71.53, "humaneval": 45.73, "gsm8k": 77.03, "jia": 0.6870,
+                   "empties": {"ifeval": 40, "humaneval": 35, "gsm8k": 44}},
+    "mean": {"ifeval": 73.01, "humaneval": 46.64, "gsm8k": 77.44, "jia": 0.6970},
+    "champion_mean_ref": {"ifeval": 75.97, "humaneval": 53.36, "gsm8k": 79.57, "jia": 0.7388},
+    "stable_empties": {"ifeval": 17, "humaneval": 18, "gsm8k": 15, "total": 50,
+                       "e52_ref": {"ifeval": 18, "humaneval": 16, "gsm8k": 10, "total": 44}}
+  },
+  "gates": {
+    "primary_swap":  "FAIL(mean 甲 0.6970 < 0.750;亦低於冠軍 0.7388 達 −0.0418=7σ_mean 級,非噪音帶)",
+    "milestone_080": "FAIL",
+    "mechanism":     "FAIL(stable 50 > 44;he stable 18 > 16——雙雙惡化)",
+    "kill":          "TRIGGERED(he mean 46.64 < 48.36 殺閘線,vs 冠軍 he 53.36 為 −6.72pp;if/gs 未擊穿)",
+    "falsifier":     "TRIGGERED(8k 整軌推不動 he 空核 16→18 反升)→ 語料軸正式封盤"
+  },
+  "hypotheses": {
+    "H_regime": "FAIL——把長弧收尾納入訓練分佈未降失律,stable 空核 44→50 反升",
+    "H_domain_full": "FAIL——蹺蹺板未改全升,改全跌(if −2.96 / he −6.72 / gs −2.13)",
+    "prefix_alignment(用戶假說)": "本劑量下 REFUTED(誠實記:與 λ_close 下調混雜,見 attribution)"
+  },
+  "instruments_monitor_only": {
+    "closure_rate_8k": {"math": 0.9367, "ifshape": 0.7856, "agentic": 0.6256, "code": 0.5333},
+    "p_exceed_8k":     {"math": 0.0633, "ifshape": 0.2144, "agentic": 0.3744, "code": 0.4667},
+    "dose_curve_code": "3072→6.3%(E52)、8192→53.3%——E52 yield 慘案主因=預算不足,高溫長尾為真實模型特性",
+    "val_ce": "1.6236→1.6340(+0.010;方向與官方一致,非 proxy 反轉)",
+    "t_flip": 7e-06,
+    "corpus": "rows 3530(除汙 −70)、有效 24.5M tok(槽位利用率 84.6%)、closure_rows 2581(73.1%)、訓練 2400 列抽樣 < 3530 = 不足一 epoch"
+  },
+  "attribution_candidates_not_adjudicated": [
+    "(i) 無閉合列毒性:26.9% 列窗內無 </think>,且 ≥75% 列滿窗 8192——以 token 計,「永不收尾的思考示範」佔比遠高於列佔比,恰與 E51 冠軍配方(閉合加權)反向;截斷前綴 KD 可能教會 student 教師的高溫不終止行為(P1 失律型態同構)",
+    "(ii) λ_close 256→32 下調與 (i) 混雜,單獨貢獻不可分",
+    "(iii) 訓練不足一 epoch(2400/3530)+變長列 loss 抖動,收斂質量未知",
+    "(iv) 列截斷切掉 26 列的閉合點(ifshape 13/code 13),量小非主因"
+  ],
+  "instrument_validation_amendment": {
+    "date": "2026-08-26 17:3x +0800",
+    "challenge": "用戶質疑:FAIL 可能是 cal7 pad+mask 儀器傷害而非語料內容",
+    "test": "在體因果性 A/B(bf16 教師,cal7 短列):(1) 改 pad 內容(0/隨機/11)→有效位置 logits max|Δ|=0.0 精確為零,前/中/後段全零;(2) 改 pad 長度(8192 vs L+64,同內容)→max|Δ|=1.66",
+    "reading": "模型嚴格因果,pad 零洩漏=mask 儀器無罪,falsifier 裁決成立;長度差異為 chunked-scan 分塊數值(內容不變式,師生同窗長共享同數值域,KD 對齊不受影響;train/serve 長度數值錯位舊制同樣存在,量級遠低於 −6.72pp);傷害分佈亦反相關 pad 質量(he 零 pad 科跌最重、gs 高 pad 科跌最輕)",
+    "note_on_no_pad_alternative": "「直接加列」兩解:(a) mb=1 原生長度切片=梯度等價(本測已證),僅省 ~15% 算力,可作衛生優化;(b) 整軌 packing 不 pad=因果方向真汙染(後文以前文為 context),比末端 pad 更差,需文件邊界狀態重置引擎工程"
+  },
+  "student_autopsy_amendment": {
+    "date": "2026-08-26 17:4x +0800",
+    "question": "用戶追問:E53 student 病因是否同 P1 失律(思考不終止)?",
+    "answer": "否——空回應(不終止代理)vs 冠軍持平(he 35/35 與 35/25;gs 40/47 反而略少);he 流失 26/29 題中空的僅 7/8,gs 流失 129 題中空的僅 13=~75-90% 流失是非空答錯;he 非空長度中位 697/641 vs 588/626 僅微升,非 rambling;he 新贏 14/19 題=軌跡漂移 churn 常態",
+    "attribution_update": "歸因候選 (i) 的『教會不終止』表達型 REFUTED(若成立空回應應激增,實測持平);存活的機制敘事改寫為:temp 1.0 高溫長尾整軌的漫遊式思考監督逐 token 質量低於閉合加權堆砌料,KD 把 policy 拉向漫遊軌跡流形→答案精度退化(內容病,非終止病);λ_close 256→32 下調(E51 已證 +0.0414 的閉合強化被撤走)仍為共犯候選,混雜未拆"
+  },
+  "consolidation": {
+    "corpus_axis": "封盤(prereg if_fail_he_core_unmoved 路徑)——he 空核 16(E52)→18(E53)兩連不動/反升,歸量化殘留軸",
+    "16k_upgrade": "失去立案基礎(prereg 綁 E53 勝訴解鎖)",
+    "next_candidates": "迴圈硬核小臂 / 量化殘留軸(儲存軸系列工具:水庫烘焙、旁路蓄水)——待用戶裁",
+    "salvage": "p_exceed_8k 四點儀器 + 8k 引擎能力(--lengths 補丁、5.5s/step)為永久資產;若語料軸日後重開,無閉合列過濾/閉合列純化為首選再試座標"
+  },
+  "artifacts": {
+    "state": "qs_st53_e2e(data/,不入 git)",
+    "export": "exports/st53_e2e_x(候刪:FAIL 臂,依磁碟政策可清)",
+    "train_log": "corkscrew/train_st53_e2e.json",
+    "corpus_manifest": "E53_TRAJ_MANIFEST.json(sha c52181f4…)",
+    "evals": "a1eval/{ifeval,humaneval,gsm8k}_st53_e2e_{w128,w128r2}/"
+  }
+}

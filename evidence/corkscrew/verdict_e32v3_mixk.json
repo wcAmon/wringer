@@ -1,0 +1,30 @@
+{
+ "name": "verdict_e32v3_mixk",
+ "date": "2026-08-10",
+ "prereg": "prereg_e32v3_mixk.json @2687db2(GPU 前凍結;e2e 條件與 escape guard 鏈內自動判,run_e2e=yes)",
+ "arm_official_ifeval": {
+  "e32_zt": {"strict_prompt": 0.34196, "strict_inst": 0.45084, "loose_prompt": 0.37893, "generation_s": 725.3},
+  "e32_e2e": {"strict_prompt": 0.44547, "strict_inst": 0.53477, "loose_prompt": 0.48799, "generation_s": 641.8}
+ },
+ "retention_e2e": 0.4898,
+ "monitor_only": {
+  "gmix32_zerotrain_ce": 2.5710,
+  "post_window_ce": "2.3046(史上最佳;E31 2.8186/E30 st3 2.8792)",
+  "window_flip_vs_init": "15.77%(E31 窗段 8.40% 的 1.88×;檔距加密→翻轉勢壘下降)",
+  "e2e_ce": "2.3045 → 1.7754(穿透 bf16 錨 2.003;E30 已證穿透≠侵蝕)",
+  "e2e_flip_vs_input": "0.0000——檔距加密後全域 KD lr 1e-4 仍零翻轉:過壘需要窗訓級梯度強度,T 搜索只住在逐窗段",
+  "e2e_kd": "soft 末段 ~0.197 / STE 末段 0.252(step500 0.434 切換瞬態後回落)"
+ },
+ "tests": {
+  "Y1_init": {"verdict": "FAIL", "evidence": "gmix32 零訓練 CE 2.5710 > g3b16 2.494(但 < 均勻 g3@32 2.808)。α 加倍是均勻逐塊紅利,init CE 總分佔優;檔位是斷崖層定向紅利,init 不顯——分數層反轉(見 Y3)"},
+  "Y2_cliff": {"verdict": "FAIL(邊緣)", "evidence": "深段窗(28+)末 loss 0.002584/0.003530/0.007411;門檻 0.0351/5=0.00702,末窗(30-31 雙層 finalize)超線 5.6%,從嚴判 FAIL。2/3 窗過;對 E31 末窗 0.035118 壓低 4.7×,機制方向成立但判準字面未全過"},
+  "Y3_zt": {"verdict": "PASS", "evidence": "e32_zt strict 34.20 > 28.65(E31 zt,+5.55)。init CE 較差而 zt 分數大勝 = proxy 第七次反轉(CE 與官方分數排序相反)"},
+  "Y4_main": {"verdict": "PASS", "evidence": "e32_e2e strict 44.55 > 門檻 37.49(max(35.49,30.68)+2.0),超線 +7.06;對 E31 e2e 35.49 淨升 +9.06——主命題成立:同位元預算下檔位派(gmix32+細窗)勝粒度派(g16 細 α)"},
+  "Y5_honest_band": {"verdict": "PASS", "evidence": "保留 48.98% ∈ [40%, 80%]"},
+  "Y6_stability": {"verdict": "PASS", "evidence": "窗訓 31 窗 loss 全程有限無帶化連發;e2e STE 末段 0.252 < soft 末段 ×2≈0.394(step500 0.434 單點切換瞬態,照實揭露)"}
+ },
+ "mechanism_note": "Y1/Y2 敗 + Y3/Y4 大勝的組合:init CE 與窗 loss 判準都輸給細粒 α 或貼線,官方分數卻 +9.06——檔位紅利是「斷崖層定向」的,對均勻指標(init CE 總分)不顯,對能力(分數)顯著。窗訓 flip 15.77% vs e2e flip 0.0000 把翻轉熵框架收攏成:檔距加密降低翻轉勢壘,但過壘仍需窗訓級梯度(lr 6e-4 重建),全域 KD(lr 1e-4)只做 α/θ 打磨——T 搜索必須發生在逐窗退火段(CAT-Q 分工實證)。生成時間 zt 725.3s/e2e 641.8s 雙雙進健康帶,e2e 快過 bf16 錨 707s,損傷探針史上最健康。",
+ "branch_decision": "Y4 過但保留 48.98% < 55% → prereg 分岔=邊界上移掃描(16→12 或 28→24)。執行方式依用戶 08-10 定向併入 E33 分階降元綱領(低預算逐階降元+逐階官方記帳,繪能力-位元密度前沿曲線):混合檔位確立為有效加速先驗(Y3/Y4 證實),邊界掃描成為 E33 階梯設計的自由度之一;跨 3元 邊界診斷(#35)先行,E33 prereg 凍結前不上 GPU",
+ "queue_next": "四科錨定過夜(gsm8k/mmlu/humaneval × bf16/e28_qat/e32_e2e/lp300;IFEval 四臂已有)→ #35 診斷 + E33 prereg",
+ "runtime": {"wall": "quantize 4min + 窗訓 2.86h + e2e 1.76h + 匯出 + 雙臂裁判 ~0.8h,16:46→23:15 CST"}
+}

@@ -1,0 +1,50 @@
+{
+ "experiment": "E38 雙軸水庫二輪:容量(rank)×語料域 三臂 A 點篩選 → 贏家排水 → B 點三科",
+ "prereg": "p2_anchor/corkscrew/prereg_e38_dualaxis.json(FROZEN @eefbd39;amendment_1 @9a1c98e 先於任何 A 點讀數)",
+ "date": "2026-08-13",
+ "chain": "cal3 建置除汙 → 三臂 fill(固定1200步)+A 點三科 → 贏家 a1 → 排水(cal2[:128] 域一致)→ e2e(cal2)→ export → B 點三科",
+ "scores": {
+  "judge_A_arms": {
+   "a1_r256_cal2": {"ifeval": 0.50647, "humaneval": 0.33537, "gsm8k": 0.57165},
+   "a2_r128_cal3": {"ifeval": 0.48614, "humaneval": 0.27439, "gsm8k": 0.63381},
+   "a3_r256_cal3": {"ifeval": 0.49908, "humaneval": 0.28659, "gsm8k": 0.64898}
+  },
+  "judge_B_final": {
+   "ifeval_strict_prompt": 0.47504621072088726,
+   "ifeval_strict_instruction": 0.57674,
+   "ifeval_loose_prompt": 0.52680,
+   "humaneval": 0.29878,
+   "gsm8k": 0.56331
+  },
+  "champion_e37_B": 0.502773, "e37_A": 0.504621,
+  "gsm8k_refs": {"e32_e2e": 0.46323, "bf16": 0.952995},
+  "bf16_ifeval_anchor": 0.9094
+ },
+ "criteria_verdicts": {
+  "winner_rule": "a1(IFEval-A 最高 50.65;humaneval 地板 33.54 過;a2 破地板 27.44 除名)",
+  "R1_new_champion": "FAIL(B=47.50 < 50.28;冠軍仍 E37 qs_st37r_e2e/e37_3g)",
+  "R2_rho2": "0.4846(=(47.50−44.55)/(50.65−44.55);E37 ρ=0.969 未跨輪轉移——排水保留率崩塌,本輪頭號機制發現)",
+  "R3_measurements": {
+   "humaneval_B": "0.29878=E37 B 逐位相同(49/164 同數,巧合註記);A→B −3.66pp=code 增益全數蒸發",
+   "gsm8k_B": "0.56331;A→B 僅 −0.83pp(排水損失分科極不均);vs E32 46.32 為 +10.0pp,但混疊 E37 輪貢獻(E37 未測 gsm8k)"
+  },
+  "R4_stability": "PASS 帶註記(gdisc1 中位 0.007 max 0.1128 ≤ 0.1724;nonfinite=0;holdout exit 比中位 1.114 max 1.333,較 E37 的 1.000/1.200 輕度擴口,照實)"
+ },
+ "hypothesis_verdicts": {
+  "H_capacity": "FAIL(A1 he 33.54 未過 0.35;IFEval 軸 rank 加倍僅 +0.19pp=cal2 資訊早已榨乾)",
+  "H_coverage": "FAIL 於 humaneval 軸(raw code 反傷:a2 27.44 破地板);gsm8k 軸成立為量測(57.16→63.38→64.90 單調 +7.7pp)",
+  "H_interaction": "FAIL(a3 無任一科超線;r256 對稀釋僅小幅緩解 +1.3/+1.2/+1.5)",
+  "synthesis": "分科解耦:語料價值由『老師在其上的行為分佈 vs 考題行為分佈』的距離決定,非主題——同一 cal3 在 gsm8k(格式對齊)+7.7、humaneval(格式錯位)−4.9、IFEval(被稀釋)−0.7"
+ },
+ "mechanism_reading": {
+  "rho_collapse": "r256 的水拉高了天花板(A 50.65)但排水吞吐接不住:淨翻碼 0.095%(比 E37 0.18% 更低)、過程攪動 5×(事件流量 676萬 vs 136萬)、增量能力在 γ→0 時大量蒸發。E37 的 ρ=0.969 是 r128 水量恰好匹配轉寫吞吐的特例——『排水吞吐』取代『水庫容量』成為新綁定約束",
+  "per_subject_retention": "排水損失分科不均:IFEval −3.14、humaneval −3.66(全數)、gsm8k −0.83——排水 calib=cal2(agentic)卻最保住 gsm8k,犧牲方向與 calib 域的對應關係存疑,支持 E39 的 on-manifold 排水 calib 動機但需實測",
+  "val_ce_note": "e2e 此輪 val CE 1.7654→1.7484(降),E37 同段(升)——方向逐輪隨機,對官方分數零資訊(不計新反轉,無官方對照段)"
+ },
+ "route_disposition": "E39 已與用戶共同定案:cal4(三域 prompt bank+bf16 老師離線軌跡,MBPP 主力/gsm8k-train/agentic 種子,超量 1024×2048 多採樣)→ 雙 rank A 點篩選(r256 裁純形式效應 vs a3;r512 裁富語料容量)→ 過閘(贏家 IFEval-A > 0.5028)→ 全鏈 on-manifold(drain calib=cal4[:128]、e2e=cal4)→ B 點三科+分科 ρ。E38b 條件觸發已被 E39 吸收(A2/A3 he 卡 ~30 條件成立,cal4 code=行為對位主攻)",
+ "artifacts": {
+  "champion_unchanged": "data/qs_st37r_e2e、exports/e37_3g(E37)",
+  "e38_states": "data/qs_st38r_e2e、exports/e38_3g、data/res_res38a{1,2,3}(非冠軍;.pt 不進 git)",
+  "evidence": ["fill_res38a1/2/3.json", "train_st38r.json", "train_st38r_e2e.json", "a1eval/{ifeval,humaneval,gsm8k}_e38_{a1A,a2A,a3A,3g}"]
+ }
+}

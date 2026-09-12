@@ -1,0 +1,37 @@
+{
+ "experiment": "E58 語料規模化 × 梯級複利(v4 考場語料;精簡版=單臂單梯三數字)",
+ "status": "FROZEN(2026-08-30;用戶四裁:①配比 code50/if30/math20 OK ②k-rollout 探針先行 OK ③API deepseek 補位 開(~$29/梯) ④精簡版其餘照呈 OK;五凍結題全採推薦=歷史對照/80M/每梯 drain/純新產 v4/agentic R2 併入)",
+ "evidence_basis": {
+  "linear_dose": "健康語料劑量效率兩級同帶:cycle-2 +0.0266/24.6M≈0.0011/M、cycle-3 +0.1001/76.5M≈0.0013/M;ρ 0.87-0.91 高位帶傳導(E57 verdict @23e436a)",
+  "probe_v4": "gen v4 真模板探針:自然終止 ifshape 100%/code 98%/math 100%(偽模板 23.3%)=EOS 饑荒根治;len 中位 5221/5803/1340",
+  "kl_discriminant": "E57_KL_POS.json:內容軸主導絕對量、長窗適配軸在尾段真實存在(12-16k 比 2-2.8×)→ 窗長裁定 16k 純投",
+  "q27_slot": "27B 本機出題槽已整合 @3527f49:MTP 1400 tok/s、先導過閘 code 62.5/math 92.5/if 56;題池硬約束=現有池僅夠 R1 一梯(design_e58_corpus.md §3)"
+ },
+ "hypotheses": {
+  "H_template_multiplier": "v4 bundle(真模板+自然列長+新配比)每 token 效率 > 0.0013/M;預測分科受益 he/終止軸 > if",
+  "H_linear_dose": "健康語料下 ΔA ∝ tokens 仍成立(斜率 ≥0.0010/M 帶)",
+  "falsifier_slope": "斜率 <0.0006/M ⇒ 劑量軸判停,回用戶議軸轉移",
+  "falsifier_rho": "ρ <0.80 ⇒ 排水吞吐綁定重現(E38 型),碼軸 contingency 升首選,停梯回報",
+  "falsifier_corpus": "manifest code natural_stop_rate <0.70 ⇒ 訓練鏈不點,回用戶",
+  "kill_gate_A4": "A₄ ≤ A₃−0.02(0.4358)⇒ 語料淨傷害,停鏈回報",
+  "coscaling_watch": "累計 tokens 逼近 244M×1-2× 時 A 停漲=rank 重開庭訊號(餵飽條件+E38 排水稅警告)"
+ },
+ "corpus_structure": {
+  "ruling": "design_e58_corpus.md 用戶已裁(2026-08-30):R1 token 份額 code 50%/ifshape 30%/math 20%;agentic R2 併入(27B 題池+操作軌跡題程序驗證)",
+  "counts": {"code": 6700, "ifshape": 4400, "math": 11000},
+  "packing": "凍結裁定:整集打包 16k 窗(--pack)——v4 自然列 1.3-5.8k,遮罩填充下 8k+ 位置零梯度=KL 尾段增益餓死+fill 步數 3×;打包=域內整集順序集裝、不跨集切割、finish!=stop 集淘汰照實計數;教師/學生同見打包上下文=KD 一致",
+  "krollout_probe": "kroll_probe.py 50 題×2 軌 12-gram Jaccard(非閘門;<0.2 中位=k=2 可用於 R2 sizing、>0.5 否決、中間帶回用戶)",
+  "r2_pool": "API deepseek-v4-flash 補位已批(cap $30/梯;prod 走 pilot_e42 runner);27B 本機槽排 GPU 空檔;gen_agentic(操作軌跡題)R1 fill 段實作呈議"
+ },
+ "pipeline": {
+  "R1_probe": "serve bf16 → kroll_probe(非致命,~15min)",
+  "R1_gen": "gen_e58_examroom --per-domain-counts code:6700,ifshape:4400,math:11000 --pack --out-tag e58r1(~80M 有效 token;manifest gate=falsifier_corpus)",
+  "R1_fill": "res_fill --tag res58r1 --state-tag st54r --ref-export exports/e54_r --res-init res57 --out exports/e58_resA4 --batch 2 --microbatch 1 --kd-impl hidchunk --grad-ckpt --steps <rows×2ep/batch2> --plateau-eps 0.002 --plateau-min-steps <同 steps>(步數主導+發散真保底,E57 紀律)",
+  "R1_A4": "官方三科單跑 → kill_gate_A4 → 斜率 =(A₄−A₃)/tokens_valid vs 0.0013/M(主判,收卷裁)",
+  "R1_drain_B": "train_res --n-calib 128 --batch 4 + expandable_segments(E54/E57 檔位)→ export → B 單跑 → ρ=B/A₄(每梯 drain=五凍結題③)",
+  "R1_close": "verdict → commit → 回用戶裁 R2(斜率/ρ 雙過閘才同構複製;B 逼近冠軍 0.7388 才啟動 e2e+雙跑全禮儀)",
+  "note": "精簡版:R1 免鏈尾 e2e(16k régime comp 中性 @E57)、B 單跑(雙跑留給冠軍挑戰);中途故障=修理+resume 不算裁決"
+ },
+ "judges": "官方三科唯一裁判;主判=斜率(對 0.0013/M)+ρ;B 對冠軍 0.7388 照實並列;空回應/stable 單列終止軸讀數",
+ "artifacts_policy": ".pt/.npz 不入 git;manifest/probe/KROLL json 入 git;exports e57_resA3/e57_r 本輪凍結後候清"
+}

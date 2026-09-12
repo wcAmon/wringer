@@ -1,0 +1,95 @@
+{
+ "purpose": "早期預警指標防自欺普查(用戶提問 2026-08-20:收官欠額數值帳是否誤導/error feedback 是否被 calib 資料誤導/哪個指標可當早期預警)——凍結 st44f 預測於 E44_B_SCORE 落地前,樣本外計分",
+ "frozen_at": "2026-08-20 ~20:0x(臂B e2e 運行中,終分未出;triage 65.06 已知並如實標注)",
+ "accounting_audit": {
+  "level_def": "level = Σₙ obj_after,obj = ‖R_eff‖²_H,H = calib 批次活化二階矩(HAccum 對 train_bi 前向)",
+  "distortion_1_scale": "未歸一:H 特徵值隨深度/活化幅度增長,晚窗高水位部分是尺度效應非吸收力不足;跨窗/跨 run/跨 régime 直比原始值即誤導",
+  "distortion_2_data_metric": "帳本以 calib 誘導的幾何量債:calib 不激發的方向 H 權重≈0=隱形債;過度代表的方向被灌水。E43 為存證:512 calib 下 H 度量族全『改善』而官方崩",
+  "distortion_3_solver_steering": "solver 翻碼由 RH 打分=補償方向也被資料引導;E38 gsm8k 域餵料 +7.7 是同一枚硬幣的建設性證明",
+  "coupling": "level 與吸收『有關但非同義』(obj_after=吸收後殘差,混合產債速率×尺度×吸收力);與 ev_flips 弱耦合(少量大翻或大量小翻可得同 obj)"
+ },
+ "screen_pool": "同 régime 9 run(E40-E43 corridor 家族,FKL1200 鏈尾,舊座標分):st41g 72.27/st41s 71.16/st40r 70.43/st42r 68.02/st42 63.59/st40o1 63.03 || st42c 59.52/st43w 53.60/st43s 52.13",
+ "screen_result": {
+  "tested": [
+   "tflip",
+   "gdisc_max",
+   "gdisc_late",
+   "absorb_close_med",
+   "absorb_close_max",
+   "solverflips_band",
+   "loss_final_last5",
+   "holdout_ratio_max"
+  ],
+  "pass_no_counterexample": {
+   "gdisc_max": "邊際 1.01×(0.1520|0.1531)=雜訊級,棄",
+   "absorb_close_med": "邊際 1.05×(0.0270|0.0283)=雜訊級,棄",
+   "absorb_close_max": "邊際 1.21×(0.1213|0.1468)=唯一實質候選;量綱歸一(1−obj_after/obj_before)免疫尺度污染;機制敘事=收官仍在大量吸收→產債速率>吸收速率未達平衡"
+  },
+  "multiple_testing_caveat": "8 指標×9 點閾值搜索,天選分離機率不可忽略;本篩=候選生成非確證",
+  "final_level_verdict": "原始 level 已於 12 點池證僞(Spearman −0.24~−0.31;st38r 低水位最爛分/st42r 高尖峰健康分)"
+ },
+ "frozen_predictions_st44f": {
+  "note": "st44f=γ-field 新 régime,本表即跨 régime 壓力測試;triage 65.06(post-drain)已知",
+  "absorb_close_max": {
+   "value": 0.2728,
+   "rule": ">0.147 判崩",
+   "prediction": "崩塌(B<55)",
+   "status_at_freeze": "已被 triage 65.06 事實上反駁於 post-drain 座標;終分若 ≥55 即正式陣亡=第13筆 proxy 失效型態(régime 越界)"
+  },
+  "gdisc_max": {
+   "value": 0.2019,
+   "rule": ">0.152 判退化",
+   "prediction": "退化(B<63)"
+  },
+  "holdout_ratio_max": {
+   "value": 1.854,
+   "rule": ">~1.6 判退化(st40o1 2.0 假警報在案)",
+   "prediction": "退化傾向"
+  },
+  "tflip_collapse_grade": {
+   "value": 73960000.0,
+   "rule": ">~1e8(崩塌級=健康最大 4.3e7 的 2.3×+)判崩",
+   "prediction": "非崩塌"
+  },
+  "solverflips_band": {
+   "value": 95920.0,
+   "rule": "崩塌帶 3.3e6 vs 健康 ≤1.2e5",
+   "prediction": "健康"
+  }
+ },
+ "scoring_rule": "E44_B_SCORE 落地後逐指標記分:預測對=存活(仍僅候選),預測錯=標注 régime 邊界或直接陣亡;唯一可升格路徑=同 régime 同配方新 run 上預註冊閾值再中",
+ "scored_2026-08-20_2200": {
+  "actual": "e44_f 三科 w128:IFEval 62.48 / he 48.78(全系新高)/ gs 72.56;triage 65.06→e2e 後 62.48=e2e 對場態 −2.58pp(基線同鏈尾 +4.80)",
+  "absorb_close_max": "陣亡——預測崩<55,實際 62.48;跨 régime 語義反轉坐實(階梯:收官高吸收=產債失控;場:設計工作點)=第13筆 proxy 失效型態",
+  "gdisc_max": "命中(62.48<63,邊際 0.5pp)——保留為唯一倖存退化候選,但篩選邊際 1.01× 雜訊級警告仍在,需同 régime 預註冊再中一次",
+  "holdout_ratio_max": "命中(退化方向)——st40o1 假警報在案,同保留觀察",
+  "tflip_collapse_grade": "命中(非崩塌)——崩塌級粗篩繼續存活",
+  "solverflips_band": "邊界失手 0.5pp(預測健康,實際 62.48)——降權",
+  "meta": "五指標三中一亡一邊界;唯一被正式處決的正是篩選裡邊際最大的候選=多重比較警告兌現"
+ },
+ "discipline": "全部 monitor-only;官方三科唯一判準;本檔不授權任何裁決",
+ "frozen_predictions_st44d_2026-08-21_0500": {
+  "note": "臂A=階梯模式(β=1 單桿)=普查池本 régime;凍結於 triage 分數落地前",
+  "tflip": {
+   "value": 201300000.0,
+   "prediction": "崩塌(>1e8 崩塌級,超 E43 的 1.63e8)"
+  },
+  "solverflips_band": {
+   "value": 1930000.0,
+   "prediction": "崩塌帶(健康 16×)"
+  },
+  "absorb_close_max": {
+   "value": 0.1542,
+   "prediction": "退化(壓線 0.147;跨 régime 已亡,本 régime 死緩觀察)"
+  },
+  "gdisc_max": {
+   "value": 0.1828,
+   "prediction": "退化(<63)"
+  },
+  "holdout_ratio_max": {
+   "value": 1.673,
+   "prediction": "退化傾向"
+  },
+  "stakes": "臂A triage 健康→churn 系儀表本 régime 全滅;崩→儀表二次確認+β=1 去噪目標階梯模式判毒(prereg 劇本三)"
+ }
+}

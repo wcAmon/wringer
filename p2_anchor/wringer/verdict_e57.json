@@ -1,0 +1,35 @@
+{
+ "experiment": "E57 16k 全鏈(cal10→e57f 閉合語料;st54r 基底蓄排+梯尾 e2e 16k)",
+ "closed": "2026-08-30 02:30 CST(E57_CHAIN_DONE;全程含兩筆修理 @2da6154/@bd4f2b0,修理+resume 不算裁決)",
+ "readings": {
+  "A3": {"if": 54.71, "he": 23.17, "gs": 50.87, "comp": 0.4558,
+         "empties": {"ifeval": 58, "humaneval": 45, "gsm8k": 70}},
+  "B3": {"if": 47.5, "he": 19.51, "gs": 45.03, "comp": 0.3966,
+         "empties": {"ifeval": 58, "humaneval": 47, "gsm8k": 99}},
+  "B4_run1": {"if": 47.13, "he": 20.12, "gs": 42.15, "comp": 0.3873,
+              "empties": {"ifeval": 36, "humaneval": 29, "gsm8k": 65}},
+  "B4_run2": {"if": 48.24, "he": 20.12, "gs": 43.75, "comp": 0.3969,
+              "empties": {"ifeval": 38, "humaneval": 30, "gsm8k": 56}},
+  "B4_mean": {"if": 47.69, "he": 20.12, "gs": 42.95, "comp": 0.3921},
+  "B4_stable_empties": {"ifeval": 13, "humaneval": 12, "gsm8k": 15, "total": 40},
+  "drain": {"post_drain_val_ce": 1.958112, "flip_vs_p0": 0.0003,
+            "total_flips": 2331567, "windows": 32, "wall_s": 29839},
+  "e2e": {"post_e2e_val_ce": 1.935523, "flip_vs_input": 0.0}
+ },
+ "judges": {
+  "A3_gate": "PASS:A₃ 0.4558 > 線 0.3357(A₂−0.02);+0.1001 vs A₂=本帶史上最大單臂天花板增量",
+  "H_window": "PASS:16k 閉合語料使天花板全科上移(if +?、he +7.32、gs 上移;A₂→A₃ +0.1001)",
+  "H_he_discriminant": "PASS(內容軸定罪):A₃ he 23.17 vs A₂ 15.85=+7.32pp(12 題,≥1.8pp 線的 4×);碼全凍下取得→rank/碼軸非瓶頸,閉合示範=he 病灶教材根因",
+  "rho": "0.870(B₃/A₃)高位帶:離 E54 0.912 僅 4 分、遠離 E38 崩塌 0.485;分科均勻(if .868/he .842/gs .885)→排水無罪第三案;路線分流器裁定=瓶頸仍在天花板,主線 E58 規模化,碼軸 contingency 不啟動",
+  "B3_vs_B1_bare": "+0.1092(0.3966 vs 0.2874)同座標淨增量,與 A₃−A₂ +0.1001 等幅=天花板增量近乎完整傳導",
+  "champion_parallel": "B₄_mean 甲 0.3921 vs 冠軍 st51c_e2e 0.7388:冠軍衛冕(照實並列;本梯=fresh-basin 機制研究線,防線不變)"
+ },
+ "morphology": {
+  "linear_dose_regime": "健康語料下劑量效率兩級同帶:cycle-2 +0.0266/24.6M≈0.0011/M、cycle-3 +0.1001/76.5M≈0.0013/M→增益∝token 近似成立;線性段首現=離開配方搜索期進入劑量期;外推追冠軍需 ~+300M 健康 tokens(經 ρ 0.87)",
+  "drain_flips_decay": "窗序 flips 61192→~16k 單調衰減、gdisc1 穩 0.05-0.08 帶=淺層承擔主重排的健康形態(E54/E37 同構);全網淨翻動 0.03%=水走連續載體",
+  "e2e_tail_neutral": "新讀數:B₄_mean 0.3921 vs B₃ 0.3966=−0.0045 噪音帶內,16k régime 鏈尾 e2e 對 comp 中性(對比 E35-C 時代 +11.27pp);但空回應大幅下修(B₃ {58,47,99}→B₄ 均值 {37,30,61})=λ_close 修終止不修分數,兩軸首次解耦",
+  "termination_axis": "gs 空回應 A₃ 70→B₃ 99(排水後退化)→B₄ ~61(e2e 拉回);stable 空核 40=偽模板病灶殘留,E58 v4 真模板主治對象"
+ },
+ "route": "主線=E58 語料規模化×梯級複利(v4 真模板對照臂設計;斜率+ρ 雙判準寫入 prereg);收卷後佇列=27B 出題槽煙測+gen v4 探針→KL 判別(st54r vs st57r @16k holdout,用戶已核准)→E58 prereg DRAFT 呈議",
+ "exports": {"champion_line": "st51c_e2e(不動)", "ladder_best": "e57_3g(B₄ 0.3921)", "cleanup_candidates": "e57_resA3/e57_r 收卷後候清(待 KL 判別用畢 st57r)"}
+}

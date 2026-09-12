@@ -1,0 +1,49 @@
+{
+  "experiment": "P1 熵軸驗屍:冠軍 st47d_hec_e2e 181 空回應題思考流形態學",
+  "date": "2026-08-25",
+  "champion": "st47d_hec_e2e(甲 0.7055,export exports/st47d_hec_e2e_x)",
+  "design": "同 seed(20260806+idx)重生成空回應題,抓 reasoning 全文 + finish_reason,分類 loop/ramble/silent_eos/open_think_stop",
+  "instrument_incident": {
+    "what": "首輪 gen 讀 message.reasoning_content,vLLM 0.26 已改名 message.reasoning(protocol.py 明載 rename),181 條思考流全漏抓;首輪形態學分類(stall 64)作廢",
+    "fix": "改讀 reasoning(容錯 fallback reasoning_content)+ 抓 finish_reason/completion_tokens + 分析端加『閉合條目思考流全空=儀器自檢 FAIL』哨兵",
+    "lesson": "API 欄位名是儀器的一部分;跨 vLLM 版本升級後首次使用需先做單條煙測"
+  },
+  "round1_closure_facts": {
+    "regen": "181 題同 seed,117 閉合(65%)/ 64 仍空",
+    "finding_nondeterminism": "同 seed 不逐位重現=vLLM 連續批次調度下推理側非決定性;與 Gate 1 訓練側(linear_attn torch fallback backward)非決定性同型,本機兩側皆不逐位",
+    "finding_stochastic_majority": "一次重擲收復 65% 空回應=失律主體是採樣動力學層次的機率事件,非題目鎖死",
+    "finding_hardcore_4th_state": "殘存 64 題與三態硬核(E49-c phase-2,35 題)交集 24/35(硬核留存 69% vs 整體 35%;隨機子集期望 13.6 題,富集 2×)——『跨態持久』與『重擲持久』兩獨立軸指向同一批題,題目錨定硬核為真實結構"
+  },
+  "round2_morphology": {
+    "input": "殘存 64 題再重生成(修復儀器):18 再閉合、46 未閉合",
+    "headline": "46 條未閉合全部 finish_reason=length(completion_tokens=16384)——無一條 silent_eos/open_think_stop:失律=</think> 永不觸發、思考打滿上限,不是靜默斷流",
+    "classes": {"loop": 19, "ramble": 27, "silent_eos": 0, "open_think_stop": 0},
+    "by_subject": {
+      "ifeval": {"loop": 13, "ramble": 4, "closed_on_retry": 9},
+      "humaneval": {"loop": 6, "ramble": 14, "closed_on_retry": 4},
+      "gsm8k": {"loop": 0, "ramble": 9, "closed_on_retry": 5}
+    },
+    "core_vs_fringe": {
+      "hard_core": {"loop": 13, "ramble": 10},
+      "fringe": {"loop": 6, "ramble": 17}
+    },
+    "tail_repeat_distribution": "雙峰:0.16-0.55 漂移簇(33 條)與 0.65-1.0 硬迴圈簇(13 條,其中 ≥0.9 者 10 條);中位 0.419",
+    "note_presence_penalty": "presence_penalty=1.5 在場仍壓不住 ≥0.9 硬迴圈=局部 logit 陷阱強度超過懲罰項量級"
+  },
+  "unified_picture": {
+    "statement": "空回應病理=思考不終止,雙成分動力學:①硬迴圈(repetition attractor)——IFEval 主導(13/17)、硬核偏聚(13/23),題目錨定、跨態/跨重擲持久,presence 1.5 不可破=logit 層級損傷;②漂移(diffusive ramble)——humaneval/gsm8k 主導、邊緣偏聚(17/23),機率性、重擲可翻",
+    "e50_interlock": "E50 H_entropy 勝出(鏈尾統計治療無效)+ 本案=病灶定位完成:損傷在生成動力學的終止機制,分裂為『可統計治療的漂移大宗』與『題目錨定的迴圈硬核』",
+    "goldmine_split": "+0.123 甲 空回應金礦拆帳:~65% 邊緣(漂移型,重擲即收復=校準類干預的可及目標)+ ~35 題硬核(迴圈型,需 logit 層級修復,難度高)"
+  },
+  "routing": {
+    "P4_token_weighted_kd": "升為首選:ramble 主導邊緣大宗(占金礦 ~65%),</think> 觸發校準漂移正是 P4 的靶;E50 只封了『窗選擇』軸,損失加權軸未測",
+    "P2_fill_closure": "硬迴圈證據支持(IFEval 硬核),但 E50 已示鏈尾統計不可治迴圈;P2 改讀為『fill 語料以空回應率為選料判準』仍可行,優先級次於 P4",
+    "P3_three_way_mix": "維持默認插值臂備選",
+    "all_need_frozen_prereg": true
+  },
+  "artifacts": {
+    "raw_round1": "$SCRATCHPAD/autopsy_raw.jsonl(不入 git,過大)",
+    "raw_round2": "$SCRATCHPAD/autopsy_raw2.jsonl + .cls",
+    "residual_list": "$SCRATCHPAD/autopsy_residual64.json"
+  }
+}

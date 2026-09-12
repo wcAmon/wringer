@@ -1,0 +1,37 @@
+{
+  "experiment": "E51 閉合軸總攻:</think> token 加權 KD(pre → main)",
+  "status": "FROZEN",
+  "date": "2026-08-25",
+  "user_directive": "整合分散策略為單矛,全力攻擊平衡冠軍;80% 平衡冠軍出現即計劃收尾",
+  "hypothesis": {
+    "H_rl_delta": "量化×強化假說(用戶提出):A1-4B 的『思考該停就停』是 RL 在 Qwen base 上刻的薄增量(DARE 文獻:SFT/RL delta 小範數高可修剪);三元量化擾動量級 ≫ RL 增量 → 終止行為優先被抹除,模型回退 base Qwen 超長思考本性",
+    "evidence_chain": "E50 H_entropy(統計層治療無效)→ P1 驗屍 @3c8fbf1(46/46 finish_reason=length,</think> 永不觸發;loop 19 硬核/ramble 27 邊緣)→ pre-2 語料稽核:</think> token 級出現率 1/5428=平權 KD 下閉合梯度被淹沒,『補 CE 不補終止』定量成立",
+    "prediction": "把閉合訊號在 loss 中放大 λ 倍 → 空回應下降(先消漂移邊緣)→ 三科分數同升"
+  },
+  "pre": {
+    "pre1_fingerprint": "教師 vs 冠軍 export 在 8 條驗屍思考流(loop4+ramble4)× 檢查點 [1024,2048,4096,8192,12288] 量 P(</think>|prefix);治療前錨 e51_fp_before.json,治療後同量測 e51_fp_after.json",
+    "pre2_corpus_audit": "已收:hec65 19385×2048 窗,含 </think> 窗 13.0%,token 級 1/5428,位置分位 [201,973,1840]",
+    "pre3_infra": "polish.closure_weights + kd_loss/kd_loss_hidchunk w 參數(w=None 逐位走原歸約序)+ e2e_soft --close-weight/--close-post-weight/--close-post-k;CPU 遮罩單元測 PASS"
+  },
+  "main_arm": {
+    "tag": "st51c_e2e",
+    "coords": "冠軍 e2e 座標逐項不動:state st47d、data calib_e42_train_hec65.pt(sha 0d792995…)、steps 1200、batch 8、gamma 0.8、s0 30、lora_r 64、lora_lr 1e-4、factor_lr 3e-4、clip 1.0、kd_dir fwd、seed 20260806、microbatch 1(=冠軍原路徑)",
+    "only_change": "--close-weight 256 --close-post-weight 16 --close-post-k 8",
+    "lambda_rationale": "λ_close=256 → 閉合位置佔 loss 質量 ~4.7%(256/5428),95% 質量仍為普通 KD(CE 恢復不失真);λ_post=16×8 位重教閉合後開口作答;歸一 Σw·KL/Σw 保 loss 量級可比",
+    "export": "export.py --state-tag st51c_e2e --alphas alphas_st51c_e2e.npz --out exports/st51c_e2e_x --verify"
+  },
+  "judges": {
+    "primary": "官方三科 甲 = mean(IF/92.79, he/94.51, gs/95.53) > 0.7055 → 冠軍換防",
+    "milestone": "甲 ≥ 0.80 = 平衡冠軍達成(計劃收尾條件;金礦算術:0.7055+0.123=0.828 → 閉合軸單獨可達)",
+    "mechanism_gate": "空回應總數 < 181 且無單科增加 > +5",
+    "fingerprint_gate": "e51_fp_after 的 P(</think>) 逐檢查點中位 > before(向教師方向移動;歸因判準,非主判)",
+    "kill_gate": "任一科官方分 < 冠軍同科 − 5pp → 臂 FAIL,冠軍衛冕,照實入卷",
+    "judge_rules": "官方 benchmark 唯一裁判;訓練曲線/val CE 僅監控(第9筆:冠軍 e2e post CE 惡化但官方反升)"
+  },
+  "consolidation": {
+    "P2_fill_closure": "後備臂:僅當 main 方向正確但幅度不足時追加(空回應率為 fill 選料判準)",
+    "P3_three_way_mix": "後備插值臂",
+    "not_scattered": "本 prereg 後不再平行散射;下一步由 E51 主判結果決定"
+  },
+  "schedule_est": "fp_before ~15min → main e2e ~3.7h(11s/step×1200)→ export ~10min → 三科 eval ~25min → fp_after ~10min;總 ~4.7h"
+}

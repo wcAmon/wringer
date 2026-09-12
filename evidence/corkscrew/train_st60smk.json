@@ -1,0 +1,246 @@
+{
+ "tag": "st60smk",
+ "grid": 5,
+ "blueprint": "g9f",
+ "probe": "g3b32",
+ "seed": 20260806,
+ "equiv_gate_rel": 0.0,
+ "hparams": {
+  "tag": "st60smk",
+  "blueprint_tag": "g9f",
+  "probe_tag": "g3b32",
+  "n_calib": 32,
+  "calib": "evidence/p1_grouping/calib_e58r1b_traj.pt",
+  "lengths": null,
+  "batch": 4,
+  "win": 2,
+  "stride": 1,
+  "absorb_ep": 2,
+  "tail_ste": 1,
+  "s_plateau": 2.0,
+  "s0": 30.0,
+  "lora_r": 64,
+  "lora_lr": 0.0006,
+  "factor_lr": 0.003,
+  "clip": 1.0,
+  "kill_mult": 1.05,
+  "learn_theta": true,
+  "holdout_frac": 0.0,
+  "x_cpu": true,
+  "resume": false,
+  "grid": 5,
+  "base_dir": "exports/a1_fold_bf16",
+  "rot_q": "evidence/p1_grouping/corkscrew/rot_Q_L9.pt",
+  "smoke": true
+ },
+ "windows": [
+  {
+   "window": [
+    0,
+    2
+   ],
+   "finalized": [
+    0
+   ],
+   "loss": [
+    0.000124,
+    0.000105,
+    6.3e-05
+   ],
+   "gdisc1_exit_rel": 0.003851,
+   "flips_vs_solved": 23,
+   "reverted": 0,
+   "agree_g3_cum": 0.7372,
+   "solve_stats": [
+    {
+     "n": "0.in_proj_qkv",
+     "err_s": 56130544.0,
+     "err_c": 241760800.0,
+     "revert": false,
+     "agree_g3": 0.7383,
+     "agree_g9t1": 0.6778,
+     "t2_nonzero": 0.3745
+    },
+    {
+     "n": "0.in_proj_z",
+     "err_s": 28482728.0,
+     "err_c": 129577184.0,
+     "revert": false,
+     "agree_g3": 0.7389,
+     "agree_g9t1": 0.6813,
+     "t2_nonzero": 0.3808
+    },
+    {
+     "n": "0.out_proj",
+     "err_s": 8581.4307,
+     "err_c": 25724.7891,
+     "revert": false,
+     "agree_g3": 0.7684,
+     "agree_g9t1": 0.7082,
+     "t2_nonzero": 0.4031
+    },
+    {
+     "n": "0.gate_proj",
+     "err_s": 2559019.5,
+     "err_c": 10972727.0,
+     "revert": false,
+     "agree_g3": 0.741,
+     "agree_g9t1": 0.6992,
+     "t2_nonzero": 0.3917
+    },
+    {
+     "n": "0.up_proj",
+     "err_s": 2172945.25,
+     "err_c": 9202509.0,
+     "revert": false,
+     "agree_g3": 0.7434,
+     "agree_g9t1": 0.7001,
+     "t2_nonzero": 0.3939
+    },
+    {
+     "n": "0.down_proj",
+     "err_s": 4993.4575,
+     "err_c": 21642.1016,
+     "revert": false,
+     "agree_g3": 0.7046,
+     "agree_g9t1": 0.6777,
+     "t2_nonzero": 0.3719
+    },
+    {
+     "n": "1.in_proj_qkv",
+     "err_s": 11722904.0,
+     "err_c": 51862520.0,
+     "revert": false,
+     "agree_g3": 0.7354,
+     "agree_g9t1": 0.6877,
+     "t2_nonzero": 0.3802
+    },
+    {
+     "n": "1.in_proj_z",
+     "err_s": 5916331.0,
+     "err_c": 26882780.0,
+     "revert": false,
+     "agree_g3": 0.7296,
+     "agree_g9t1": 0.6854,
+     "t2_nonzero": 0.378
+    },
+    {
+     "n": "1.out_proj",
+     "err_s": 7681.6709,
+     "err_c": 24360.6426,
+     "revert": false,
+     "agree_g3": 0.7368,
+     "agree_g9t1": 0.6942,
+     "t2_nonzero": 0.3878
+    },
+    {
+     "n": "1.gate_proj",
+     "err_s": 4984244.0,
+     "err_c": 19701964.0,
+     "revert": false,
+     "agree_g3": 0.7477,
+     "agree_g9t1": 0.6965,
+     "t2_nonzero": 0.389
+    },
+    {
+     "n": "1.up_proj",
+     "err_s": 4111843.0,
+     "err_c": 15902858.0,
+     "revert": false,
+     "agree_g3": 0.7511,
+     "agree_g9t1": 0.6985,
+     "t2_nonzero": 0.3926
+    },
+    {
+     "n": "1.down_proj",
+     "err_s": 10919.8994,
+     "err_c": 43196.7773,
+     "revert": false,
+     "agree_g3": 0.725,
+     "agree_g9t1": 0.6859,
+     "t2_nonzero": 0.3811
+    }
+   ]
+  },
+  {
+   "window": [
+    1,
+    3
+   ],
+   "finalized": [
+    1,
+    2
+   ],
+   "loss": [
+    0.000148,
+    0.000111,
+    0.000355
+   ],
+   "gdisc1_exit_rel": 0.00571,
+   "flips_vs_solved": 6,
+   "reverted": 0,
+   "agree_g3_cum": 0.7387,
+   "solve_stats": [
+    {
+     "n": "2.in_proj_qkv",
+     "err_s": 14835928.0,
+     "err_c": 68028264.0,
+     "revert": false,
+     "agree_g3": 0.7432,
+     "agree_g9t1": 0.6891,
+     "t2_nonzero": 0.3823
+    },
+    {
+     "n": "2.in_proj_z",
+     "err_s": 7762105.0,
+     "err_c": 35449936.0,
+     "revert": false,
+     "agree_g3": 0.7328,
+     "agree_g9t1": 0.6853,
+     "t2_nonzero": 0.3804
+    },
+    {
+     "n": "2.out_proj",
+     "err_s": 10629.3545,
+     "err_c": 35211.9648,
+     "revert": false,
+     "agree_g3": 0.7268,
+     "agree_g9t1": 0.6875,
+     "t2_nonzero": 0.385
+    },
+    {
+     "n": "2.gate_proj",
+     "err_s": 6361497.5,
+     "err_c": 26501728.0,
+     "revert": false,
+     "agree_g3": 0.7511,
+     "agree_g9t1": 0.6945,
+     "t2_nonzero": 0.3895
+    },
+    {
+     "n": "2.up_proj",
+     "err_s": 4591251.0,
+     "err_c": 18403396.0,
+     "revert": false,
+     "agree_g3": 0.7542,
+     "agree_g9t1": 0.6969,
+     "t2_nonzero": 0.3932
+    },
+    {
+     "n": "2.down_proj",
+     "err_s": 15426.2793,
+     "err_c": 59838.2344,
+     "revert": false,
+     "agree_g3": 0.7287,
+     "agree_g9t1": 0.6878,
+     "t2_nonzero": 0.3839
+    }
+   ]
+  }
+ ],
+ "post_convert_val_ce": 1.652520664036274,
+ "flip_vs_solved_rate": 0.0,
+ "agree_g3_final": 0.7387,
+ "runtime_s": 79.6,
+ "timestamp": "2026-09-03T02:21:28.623809"
+}

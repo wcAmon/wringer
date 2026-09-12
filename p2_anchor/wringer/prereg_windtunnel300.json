@@ -1,0 +1,16 @@
+{
+ "experiment": "蓄水風洞校準對:300 步 fill 快篩儀器驗證(E49-a 事故轉化)",
+ "status": "FROZEN(2026-08-25 用戶裁『照建議排程』)",
+ "basis": "E49-a run1 事故=免費低劑量錨點(hec65@300:he 38.41/IF 72.46/gs 78.77);若 300 步 A 點分數跨混料保序於 7500 步,蓄水語料候選快篩週期 12h→0.5h(×5 吞吐)",
+ "design": {
+  "arm": "res42 混料 @300 步(補第二對):res_fill --tag res42c300 --state-tag st41g_e2e --ref-export exports/e41_g16 --out exports/e49cal_A300 --r-res 512 --data calib_e42_train.pt --steps 300 --batch 8 --lr 2e-4 --clip 1.0 --plateau-every 1000000000 → A 點三科",
+  "pairs": "對1:hec65(300→7500)=run1 遺產 vs run2;對2:res42 混料(300→7500)=本臂 vs e42a 在檔(78.74/59.15/83.70)"
+ },
+ "judges": {
+  "validation": "兩對在 he(主)與 A 甲 的排序 300 步 vs 7500 步一致 → 風洞上崗;不一致 → 儀器否決,照實記(第 18 筆 proxy 候選)",
+  "discipline": "上崗後僅授權候選止損(差者淘汰),終裁一律滿劑量 7500;與 triage --limit 同紀律",
+  "confound_note": "n=2 對只裁方向;每新增混料候選自動累積驗證對"
+ },
+ "budget": "~0.5h fill + ~2h 三科",
+ "date": "2026-08-25"
+}

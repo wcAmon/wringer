@@ -1,0 +1,31 @@
+{
+ "experiment": "E42b 拆軸終裁(prereg @09b38f7 FROZEN 逐字)",
+ "scores": {
+  "arm1_e42b_r1(分層256+W_max8+gsteps8)": {"ifeval": 68.02, "humaneval": 44.51, "gsm8k": 77.48},
+  "arm2_e42b_r2(臂1+lora_r128)": {"ifeval": 59.52, "humaneval": 32.32, "gsm8k": 74.22},
+  "stage_b_st42_ne(免e2e拆帳)": {"ifeval": 63.22, "humaneval": 45.73, "gsm8k": 74.91},
+  "refs": {"champion_e41_g16": 72.27, "e42_B": 63.59, "A_ceiling_res42": {"ifeval": 78.74, "humaneval": 59.15, "gsm8k": 83.70}}
+ },
+ "verdicts": {
+  "G1_champion": "FAIL——max(68.02, 59.52)=68.02 < 72.27;e41_g16 衛冕(差 4.25pp)",
+  "H_drain(主判)": "PASS——臂1 ρ_if = 68.02/78.74 = 0.864 > 0.808:排水加力有效(+4.43pp vs E42 B);未達 0.9,吞吐可修宣告不成立;25→72ep 響應斜率偏緩=單加預算邊際遞減",
+  "H_cap": "容量反噬記錄——臂2 − 臂1 = −8.50pp < −1pp;he 同步 −12.19、gs −3.26 三科全損;H_richcap 續成立且強化:滿水庫排水下容量加倍非但非瓶頸解,反而過擬 calib 傷泛化",
+  "D_split": "已裁 @0fd4a6e——drain 段 −15.52pp ≫ e2e 段 +0.37pp,漏水全在排水段;兩臂保持全額歸因讀法",
+  "R_he_floor": "臂1 PASS——44.51 ≥ 34.98,且再破 code 軸新高(43.29→44.51);臂2 32.32 < 34.98 照實記錄(反噬臂不承接冠軍錨定)",
+  "R6_stability": "PASS——gdisc1 max 0.152/0.153 ≤ 0.1724;兩臂 31/31 窗全定案(finalized=層索引清單,32 層齊);holdout 擴口 1.2e-5/6.5e-5 乾淨;e2e t_flip 4e-6/8e-6 碼凍結"
+ },
+ "process_evidence": {
+  "budget_exit": "兩臂 31 窗全數打滿 72ep(gsteps 8 × (W_max 8+1)),τ=0.5 全程零觸發——吞吐仍未見底",
+  "absorb_note": "臂1 殘留 0.107 vs E42 0.035 不可比(儀器換分層尺,ifshape 首次曝光);臂2 0.134 與臂1 同量級=容量加倍不改排水型態",
+  "e2e_convergence": "兩臂 e2e 後 val CE 收斂同點(1.623/1.615),排水期 CE 差被抹平;val CE monitor-only 前科第十一筆候選未立案(無官方反轉,僅不敏感)",
+  "capacity_backfire_reading": "r128 排水型態不變(τ 0、殘留同級)但官方三科全損=多出的 rank 吸收了 calib 特異結構、e2e 1200 步修不回;與 E38 儀器近視同族:on-calib 乾淨、官方漏"
+ },
+ "attribution_next": {
+  "s_throughput": "主軸續成立但邊際遞減:E43 候選=域加權排水(patch @9afd259)+ 512 分層 calib(sha 0337c60a)而非再加 W_max",
+  "s_capacity": "關閉並反向:r64 為當前最優載體口徑;r128 過擬證據入檔",
+  "suction_hypothesis": "自由乘車預測落空(臂1 ifshape 加權下 he 不降反升 44.51 新高)→ 弱化為『排水總量不足各軸皆餓』;終審=分域 gdisc 三態診斷批(st42/st42r/st42c 同尺)",
+  "e43_free_lunch": "臂1 68.02 態(qs_st42r_e2e)為新best-non-champion;E43 若域加權+512 calib 收回剩餘 4.25pp 即封冠"
+ },
+ "date": "2026-08-18",
+ "evidence": ["train_st42r.json", "train_st42c.json", "train_st42r_e2e.json", "train_st42c_e2e.json", "a1eval/{ifeval,humaneval,gsm8k}_e42b_{r1,r2}", "exports/e42b_r1", "exports/e42b_r2(驗證 PASS,.pt/.npz 不進 git)"]
+}

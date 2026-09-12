@@ -1,0 +1,56 @@
+{
+ "id": "E67",
+ "title": "E67 GSQ 為主 / Unsloth GGUF 對照曲線 / 用訓練換恢復 —— 主判『脫離 GGUF 曲線』",
+ "status": "CLOSED 09-09(U✓/A FAIL/B1 GO/B2 不點火→E68)",
+ "design_doc": "docs/2026-09-08-e67-gsq-offcurve-design.md",
+ "goal": "同帳同模同 harness 下 he/comp 顯著高於 UD 式 GGUF 對照;北極星 comp ≥ 0.90 @2.7 另記",
+ "evaluation_epoch": {
+  "rule": "a1eval seed 20260806;he 對舊錨 94.51;U 點經 llama-server(OpenAI 端點)同 harness;GGUF bpw 列整檔與不含 embedding 兩欄",
+  "noise_band": "he ±3 pp;comp ±0.016"
+ },
+ "arms": {
+  "U": {
+   "points": {
+    "U27": "UD 配方 ≈2.7 bpw",
+    "U30": "≈3.0 bpw"
+   },
+   "step0": "convert_hf_to_gguf 對 qwen3_5 hybrid 可行性;不可行 ⇒ 退社群數字並註跨協議",
+   "subjects": "he 先;三科待核准"
+  },
+  "A": {
+   "engine": "gsq_block.py:逐層區塊重建對 bf16 老師輸出;逐權重 5 local-shift logits(g9 碼 ±2)+ δα;Gumbel-Softmax 退火→硬指派;率項 λ·E_soft[bits];保護 linear_attn.out_proj / self_attn.v(λ=0)",
+   "instrument_check": "λ=0、logits=0 ⇒ 硬指派 = g9 碼 bit-exact(smoke L0–2)",
+   "points": {
+    "A30": "H≈3.0 vs R1 82.93",
+    "A29": "H≈2.9 vs R2 76.83"
+   },
+   "judge": "J_A:兩點 Δhe > +3 ⇒ PASS;一點 ⇒ GREY;皆 ≤ +3 ⇒ FAIL(GSQ 機制不轉移;B 從 R 態起)",
+   "ablation_optional": "A29-noprot(不保護)"
+  },
+  "B": {
+   "start": "A 勝者(或 R 態)推到碼熵 ≈2.6–2.7,記 he0",
+   "stage1": "e2e_soft KD to bf16 + 閉合加權 + 率項保熵(軟碼 bits 分段線性 + 硬尾率罰 rounding),600–1200 步;閘 he1",
+   "stage2": "E37 式蓄水 LoRA r128 KD 14 h;閘 A",
+   "stage3": "閉式排水(pa64 配方);ρ<0.9 ⇒ GSQ 式排水(目標 dense+水);閘 B",
+   "official": "三科(需核准)",
+   "judge": "J_OFF:he(B)−he(U 同帳) > +5 且 comp > +0.03 ⇒ 脫離曲線;J_NORTH:comp ≥ 0.90",
+   "falsifiers": [
+    "he1 ≤ he0 + 3 ⇒ 訓練換不回 he,B 停,目標改 2.9–3.0",
+    "ρ < 0.7 ⇒ 吞吐綁定,GSQ 式排水立案"
+   ]
+  }
+ },
+ "order": "U-0 → U(he)‖ A-eng → A30 → A29 → B",
+ "cost": {
+  "U": "0.5 h 建置 + 1 h(+1.5 h 三科)",
+  "A": "工程 1 天 + ~4 h GPU",
+  "B": "~21 h"
+ },
+ "forbidden": [
+  "FROZEN 前點火",
+  "自主跑官方三科",
+  "局部誤差當裁判",
+  "無先驗 α 重解",
+  "零訓練減格點"
+ ]
+}

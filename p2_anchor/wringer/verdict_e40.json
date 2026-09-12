@@ -1,0 +1,52 @@
+{
+ "experiment": "E40 規模化(prereg_e40_scale.json FROZEN @3533324,amendment_v2 @444b9cc 語料節重寫、判準逐字不動)",
+ "date": "2026-08-15",
+ "corpus": "cal5 v2 = bleachers 四庫(@36ff4ae)+人寫庫 10240×2048(sha 50b1d76e)tilt 35/15/25/25;train = concat(cal5v2, cal4 1023) [11263,2048] sha 208587b2(O5 accumulate)",
+ "judge_A": {
+  "scores": {"ifeval": 0.74307, "humaneval": 0.37195, "gsm8k": 0.81122},
+  "H_scale": "PASS——A-IFEval 74.31 > 59.23 判準(+15.08pp 超線);vs E39-A 58.23 = +16.08pp。附註(amendment_v2):語料軸為規模+形狀(ifshape 域)複合變因,PASS 歸因到軸不到成分",
+  "gate": "PASS(74.31 > 54.90 冠軍線)",
+  "undertrain_signal": "fill KD 尾段 ~0.098–0.13 > E39 尾段 0.068,3600 步(≈2.6 epoch)仍緩降無 plateau——依 prereg 記欠訓訊號不加步;步數階梯保留為 E42 軸"
+ },
+ "judge_B": {
+  "scores_fkl": {"ifeval": 0.70425, "humaneval": 0.31707, "gsm8k": 0.79378},
+  "scores_rkl": {"ifeval": 0.35860, "humaneval": 0.25000, "gsm8k": 0.77331},
+  "score_o1": {"ifeval": 0.63031},
+  "R1_new_champion": "PASS——max(B_fkl,B_rkl)=B_fkl 70.43 > 54.90(E39),+15.53pp 封冠;冠軍軌跡 E32 44.55 → E37 50.28 → E39 54.90 → E40 70.43(bf16 錨 90.94,距錨 −20.51pp)",
+  "R2_rho": {
+   "rho_if": 0.8696,
+   "A_to_B_pp": {"ifeval": -3.88, "humaneval": -5.49, "gsm8k": 1.74},
+   "lineage": "ρ_if 0.485(E38)→0.757(E39)→0.870(E40) 連兩升;IFEval 絕對稅 −3.88pp vs E39 −3.33/E38 −3.14 同量級——轉寫稅絕對值未減但相對佔比縮(A 基數大),固定稅候選之『固定』指絕對 pp 帶 ~3–4pp 成立"
+  },
+  "R3_h_rkl": {
+   "verdict": "淨負(FAIL)——B_rkl−B_fkl = IFEval −34.57pp / he −6.71pp / gs −2.05pp,判準線 −1pp 的 34 倍,IFEval 主行為軸崩塌;prereg 敘事預測(RKL 犧牲多樣性軸、IFEval 不應受損)被反向擊穿",
+   "mechanism_note": "三層歸因:①梯度自加權 ∂RKL/∂z_j = q_j(log(q_j/p_j)−RKL)——訊號只在學生質量處,丟模式零成本且不可恢復(vs FKL 梯度 q−p 凡 p 有質量必追討);②off-policy 錯置:teacher-forced 軌跡上算 RKL,zero-forcing 代價照付、mode-seeking 收益(需 E_{y~q} on-policy)歸零,長生成偏航復合;③欠容量+scale 唯一自由度(t_flip 3e-06)——銳化壓力由全域 scale 幾何承載,temp 1.0+presence 1.5 下備選 token 失真、長格式指令脫軌",
+   "entropy_ordering_signature": "損傷按老師條件熵排序:gsm8k(低熵近單模)−2.05 < humaneval(中)−6.71 < IFEval(高熵開放解空間)−34.57——低熵極限 FKL≈RKL≈CE 的可證偽推論被資料驗證",
+   "kd_log_flat": "RKL kd 全程平坦 ~0.17–0.21 無下降(step 1 即 0.19)——非未收斂,是自加權梯度無路可走;R5 加步候補條款不適用,方向錯誤非步數可修",
+   "consequence": "RKL 步數階梯+skew-KL 自 next_ladder 除名;mode-seeking 重訪唯一合法形式=on-policy 學生軌跡採樣(GKD 原配方,O6 cal6 候選),屬換資料分佈非換損失方向,另立 prereg"
+  },
+  "R4_o1_tax": {
+   "tax_o1_pp": -8.13,
+   "verdict": "≤1pp 分支(且為負)——內容依賴成立,機器稅否證:排空水庫(B≡0)同參排水+e2e 從 E39 冠軍態拉到 63.03 > 54.90,drain+e2e 機器本身無固定損耗,新語料經 e2e 單通道即 +8.13pp",
+   "decomposition": "B_fkl 70.43 = O1 63.03 + 7.40pp——水庫內容邊際貢獻 +7.40pp(蓄水通道)與語料 e2e 通道 +8.13pp 各自獨立可加,合計 +15.53pp 與冠軍增量吻合",
+   "o1_mechanics": "res-zero 排水 equiv_gate_rel 0.0、t_flip_vs_p0 7e-05(空水下排水器近恆等,設計意圖達成);e2e val CE 1.6791→1.6230 正常修復形態",
+   "prereg_fork": "依 prereg:≤1pp → O2 DARE 過濾優先於 O3 QA-LoRA;惟用戶已裁 E41=兩臂(深層 g16/應變導引打磨),O2/O3 依用戶裁示退居候補"
+  },
+  "R5_measurements": "humaneval-B 31.71 = 低元系史高(vs E37 29.88 +1.83pp;無地板,依用戶裁定);gsm8k-B 79.38 = 3元 史上最高(vs E39 77.10 +2.28pp);A-humaneval 37.20/A-gsm8k 81.12 亦皆為對應座標史高",
+  "R6_stability": "PASS——gdisc1_exit_rel max 0.0387 ≤ 0.1724;nonfinite 0;31/31 窗 finalized;附記:4/31 窗 holdout 末值>2×min(1.2e-5→2.7e-5 量級),絕對值在雜訊地板,不構成擴口"
+ },
+ "proxy_records": {
+  "rkl_ce_same_direction_structural": "RKL 臂 val CE 1.6193→1.6388 惡化與官方同向,但屬結構必然(CE=FKL 家族量,最小化 RKL 可推高 FKL)——同向不平反 proxy,紀律不變",
+  "fkl_e2e_ce": "FKL 臂 e2e val CE 1.6193→1.6075 改善,官方亦升——本輪無新反轉;累計九筆反轉+型十+型十一在案"
+ },
+ "mechanics": {
+  "fill_res40": {"steps": 3600, "runtime_s": 16648.4, "p0_gate": "PASS", "val_ce": "1.6636→1.6240", "kd_tail": "0.098–0.13 緩降未收"},
+  "drain_st40r": {"t_flip_rate_vs_p0": 0.000892, "runtime_s": 5475.3, "note": "水走連續載體,與 E37 0.18%/E39 0.15% 同型"},
+  "e2e_fkl": {"steps": 600, "t_flip_rate_vs_input": 0.0, "runtime_s": "≈6400"},
+  "e2e_rkl": {"steps": 600, "t_flip_rate_vs_input": 3e-06, "runtime_s": 6433.3},
+  "o1": {"drain_runtime_s": 5388.0, "e2e_runtime_s": 6388.9, "export_verify": "200 tensors bit-exact"}
+ },
+ "zero_overlap_diag": "diag_zero_overlap_e40_vs_9e.json 同批歸檔——3元 vs 9元 零位置嵌套 98.67%、深層逃逸率單調 48×(0.14%→6.73%)、L30-35 交叉 p3<p9;用戶假說(深層表徵需求驅動逃零跳 ±1、scale 承幅)三簽名成立",
+ "champion_assets": {"state": "data/qs_st40r_e2e", "export": "exports/e40_3g"},
+ "next": "E41(用戶已定調兩臂,prereg 草案交用戶 FROZEN 裁定後才開跑):①深層細粒臂——逃逸率>3% 層帶 g32→g16(~+0.08 b/w 攤提),裁細粒能否救回深層表徵;②應變導引打磨臂——τ/W_max/drain epochs 按逃逸剖面逐層加權;零新語料,重用 res40(蓄排分離紅利)+calib_e40_train。候補:O2 DARE、O6 on-policy cal6、E42 fill 步數階梯"
+}

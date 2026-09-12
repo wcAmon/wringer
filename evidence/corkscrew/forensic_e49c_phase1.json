@@ -1,0 +1,39 @@
+{
+ "experiment": "E49-c 歸因第一階段(零 GPU 法證)+ 用戶裁 cal300 撤收改道 E50",
+ "date": "2026-08-25 02:1x",
+ "question": "hec65(code 65%)蓄水為何傷 A 點三科(E49-a stage_A FAIL @e70203e)?",
+ "method": "e49a_A vs e42a 逐科分解:空回應增量(思考未閉合→自動零分)vs 非空通過率(真實力)",
+ "decomposition": {
+  "ifeval": {"score_delta": -2.95, "empty": "47→64(+3.1pp)", "attribution": "≈100% 空回應解釋"},
+  "gsm8k": {"score_delta": -0.99, "empty": "33→46(+1.0pp)", "attribution": "≈100% 空回應解釋"},
+  "humaneval": {"score_delta": -6.71, "empty": "31→41(+6.1pp,貢獻約 −4.4pp)", "nonempty_pass": "72.9%→69.9%(殘差 ~−2.2pp)", "attribution": "2/3 空回應、1/3 真實力"}
+ },
+ "verdict": "code 重混料在蓄水段的毒性主通道=思考失律加重(三科空回應同步增加),表徵損傷僅 he ~2pp 殘差。與閉合軸稽核(@b4e9440 三科共同通道)互證:蓄水語料選擇的可遷移判準候選=『是否誘發思考失律』(空回應率探針),非 benchmark 特定知識",
+ "dose300_side_note": "he 空回應 28.7pp(300 步)→25.0pp(7500 步)=劑量部分治 he 失律;IF 反向 10.2→11.8 照實記",
+ "user_ruling_cal300": {
+  "ruling": "殺 cal300、立即發射 E50(2026-08-25 02:1x,AskUserQuestion 裁定)",
+  "rationale": "① 段特異性實證後,蓄水段篩選儀器的直接客戶(E49-b 新料)未觸發;② 本法證以零 GPU 取代 E49-c 成分掃描的主歸因,~2pp 殘差不值 12h 級探針;③ 17 筆 proxy 反轉史支持對 300 步外推保持最低信任;④ cal300 可隨時重跑(腳本+料確定性,2.5h),撤收無不可回復損失",
+  "cal300_state_at_kill": "fill step 240/300,無 export 產出;prereg_windtunnel300 保留=未執行非否證(儀器效度未裁,不記 proxy 筆數)"
+ },
+ "e50_launch": "e2e_soft st47d_hcl_e2e 已發射(pid 1255973,02:1x;Monitor bcih797b4;prereg_e50 FROZEN 判準不變:甲 vs 0.7055、機制閘空回應 181→≤127、no_regress IF≥70/he≥45/gs≥76、殺閘 <0.62);終裁預計 ~10:30",
+ "e49c_phase2_queue": "CPU 並行:he 翻案題目清單(e42a 對 e49a_A 逐題)、空回應題目與 cal6 code part 重疊分析、IF/gs 空回應題目交集(三科共同失律題?)",
+ "phase2": {
+  "date": "2026-08-25 06:0x(date 實測)",
+  "he_flip_list": {
+   "pass_to_fail": "28 題(13 題因空回應、15 題非空=真實力損失候選:題號 69,74,76,78,88,94,97,98,110,115,139,146,150,155,158)",
+   "fail_to_pass": "17 題(8 題原為 e42a 空回應)",
+   "net": "−11 題 = −6.71pp 帳齊",
+   "correction_to_phase1": "翻案粒度下空回應淨貢獻 −5 題(≈−3.0pp)、非空淨 −6 題(≈−3.7pp)→ 空/實比修正為 ~45/55,非 phase-1 估的 2/3-1/3;注意 temp 1.0 抽樣下 45 筆雙向翻案含隨機成分,單次運行粒度有噪"
+  },
+  "empty_item_stability": {
+   "method": "三態(e42a/e49a_A/冠軍 st47d_hec_e2e)逐科空回應題目交集 vs 獨立假設期望",
+   "ifeval": "47/64/78;成對交集 22-26 vs 期望 5.6-9.2;三態核心 16 題",
+   "humaneval": "31/41/46;交集 17-25 vs 期望 7.8-11.5;三態核心 13 題",
+   "gsm8k": "33/46/57;交集 9-12 vs 期望 1.2-2.0;三態核心 6 題",
+   "finding": "空回應=『穩定硬核 + 大隨機邊緣』雙成分:交集全面高於獨立期望 3-8×(失律有題目錨定的硬核),但 Jaccard 僅 0.10-0.40(多數空回應是態特異/隨機的機率性事件)",
+   "implication_for_e50": "隨機邊緣占多數 → 失律主要是全域閉合機率漂移而非題目鎖死,與 H_logit(剎車訊號統計可治)相容;若 E50 壓下空回應,預期先消隨機邊緣、硬核最後消",
+   "implication_for_unification": "蓄水態/排水態/基線共享超隨機重疊=病理部分統一(同一病灶足跡),但硬核占比低=大部分損傷是機率性、可統計治療"
+  },
+  "remaining": "cal6 code part 重疊分析(需語料映射,收益低,擱置)"
+ }
+}

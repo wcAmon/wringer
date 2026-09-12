@@ -1,0 +1,40 @@
+{
+  "experiment": "E53 整軌長窗:8k×b1 全科閉合完整軌跡(訓練分佈=推理分佈)",
+  "status": "DRAFT(待用戶 FROZEN;劑量選項 A/B 待裁)",
+  "date": "2026-08-26",
+  "user_design": "用戶指示(08-26):窗拉 8k/16k、batch=1、語料整軌不截斷(6k 就用 6k pad+mask,超 8k 丟棄)、不亂堆砌;packing 若用需正確處理邊界",
+  "hypothesis": {
+    "H_regime": "失律發生於 8-16k 深思考=2048 訓練域外;整軌長窗把「長弧收尾」納入訓練分佈,且消滅堆砌偽影(截斷示範/跨文件狀態汙染/抖動帶人工位置)",
+    "H_domain_full": "E52 教訓:單補 code 買 he 賣 IF(稀釋稅);全科(if/math/code/agentic)各自的閉合整軌可望蹺蹺板改全升(E38 域餵料定律)",
+    "falsifier": "若 8k 整軌仍推不動 stable 空核(he 16)→ 空核正式歸量化殘留軸,語料軸封盤"
+  },
+  "engine_gate_results": {
+    "smoke_8k_b1": "PASS(full-ckpt + hidchunk;3.8s/step 12步實測)",
+    "smoke_16k_b1": "OOM×2(裸跑差 288MiB;expandable_segments 碎片 1.15→0.89GiB 仍差 90MiB)→ 16k 檔正式關閉,現引擎上限 8k×b1",
+    "token_parity": "冠軍座標 16384 tok/優化步;8k×b1 需 grad-accum 2 補等值 → ~7.6s/優化步(仍快於冠軍 10.7-11.9s)"
+  },
+  "production": {
+    "gen": "全科重生成:題池 bleachers if 2047/math 2031/code 80k 池/agentic;bf16 教師(釘定 revision)temp 1.0/top_p 0.95、max_tokens ~12000;僅收含 </think> 整軌;軌長 ≤8192 整列保留(含 prompt),超長丟棄並記 discard_rate(儀器:量選擇偏差+回答 E52 高溫長尾懸案);8-gram 除汙照舊",
+    "format": "變長 pad 到 8192 + loss mask(pad 位零權重);v1 不 packing(linear attention packing=文件邊界狀態重置,引擎工程延 v2)",
+    "budget_est": "12k 預算吞吐 ~4× 降(~25 gen/min);目標 4-5k 整軌(四科配比待 FROZEN 定),生成段 ~8-14h 過夜",
+    "production_gates": "per-domain closure_yield 入卷(無 hard gate,誠實記);discard_rate 入卷;軌長分佈四分位入卷"
+  },
+  "main_arm": {
+    "tag": "st53_e2e(暫名)",
+    "coords": "state st47d、grad-accum 2×8k=16384 tok/優化步、1200 優化步、gamma 0.8、s0 30、lora_r 64、lr 1e-4/3e-4、clip 1.0、kd fwd、--full-ckpt --kd-impl hidchunk;λ_close 待劑量選項裁定",
+    "single_variable_note": "vs 冠軍改動=語料生成域+窗長(合併敘事:訓練分佈對齊真實生成分佈);誠實記為單原則雙參數"
+  },
+  "open_decisions_for_user": {
+    "D1_dose": "選項 A(推薦):純整軌語料,轉折佔比天然 100%,λ_close 從 256 下調(候選 16-64,曝險已高)——理由:E50 病因是同窗複本無新資訊非佔比本身,整軌料每列新資訊。選項 B:整軌+hec65 短窗混裝壓佔比(變長組裝複雜化)",
+    "D2_mix": "四科整軌配比:均分 25% each vs 按科損傷加權(he 主修多給 code?)——E52 蹺蹺板教訓傾向均分起步",
+    "D3_16k_alt": "16k 檔關閉後的替代:接受 8k 課程(丟棄>8k=行為塑形方向)或後續 mb 引擎工程解鎖 16k"
+  },
+  "judges": {
+    "protocol": "雙跑均值制(σ_mean≈0.006);官方 benchmark 唯一裁判",
+    "primary": "mean 甲 > 0.750 → 換防",
+    "milestone": "mean 甲 ≥ 0.80 = 收官",
+    "mechanism": "stable 空 < 44(E52 值)且 he stable < 16(首次擊穿即語料軸勝訴)",
+    "kill": "任一科 mean < 冠軍科 mean − 5pp(if<70.97/he<48.36/gs<74.57)",
+    "schedule_est": "生成 8-14h → 合裝 → 訓練 2400 fwd×3.8s ≈ 2.5h → export → 雙跑 eval ~1.2h;總 ~13-19h"
+  }
+}

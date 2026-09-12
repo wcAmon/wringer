@@ -1,0 +1,32 @@
+{
+  "experiment": "E60-probe(零訓練旋轉探針,用戶 09-02 口頭核准)",
+  "date": "2026-09-02",
+  "design": "全局殘差流隨機正交 Q(R1 型,seed 20260806)折入 bf16 → GPTQ 三元直投(grid3/b32/c0.6/n128 calib_train)→ 官方三科;判準點火前宣告",
+  "verdict": "PARTIAL",
+  "bands": {"confirm": "comp≥0.14(≥2×地板)", "refute": "comp≤0.082(≤1.2×)", "floor_ref": 0.0683},
+  "scores": {"ifeval": 18.3, "humaneval": 5.49, "gsm8k": 1.29,
+             "comp": 0.0896, "ratio_vs_floor": 1.31,
+             "empties": {"ifeval": 35, "humaneval": 48, "gsm8k": 269}},
+  "equiv_gate": {"ce_bf16": 2.003239, "ce_rot_bf16": 2.004016, "delta": 0.000777, "pass": true},
+  "paired_ce": {"ctl_g3ctl": 2.8081, "rot_g3rot": 2.4957, "delta": -0.3124,
+                "note": "同卷同 Σ 配對;旋轉 CE 甚至優於 E59 訓練吸收轉換態 2.904"},
+  "per_module_err": {"median_ratio_rot_over_ctl": 1.052, "p10": 0.955, "p90": 1.155,
+                     "reading": "局部 Σ-加權誤差量級不降反微升,CE 卻大幅改善=增益在誤差幾何方向(outlier 對齊壞方向被打散、跨層複合傷害降),非量級;與 E59 第 11 型互為鏡像"},
+  "confounds": [
+    "地板基線 0.0683(E54 g3b32)Σ 源=cal8,本探針 Σ 源=calib_train;g3ctl 同卷對照僅有 CE 未官方評測",
+    "單一隨機 Q;非 Hadamard、非可學習;機制上限未探",
+    "gs 1.29 幾乎歸零(empties 269)而 if 18.3 反超 E59 17.74=分科形態極不均,failure 主體疑在生成失律非知識"
+  ],
+  "options_for_user": [
+    "(a) 補對照臂官方評測(exports g3ctl 導出+三科 ~3h)→ 1.31× 變乾淨配對讀數再裁",
+    "(b) PARTIAL 就地入卷:方向正但弱,旋轉不靠零訓練地板證明,直接當 E60 走廊內連續自由度(可學習 Q)寫 prereg",
+    "(c) 升級探針:Hadamard/對 calib 學 Q(SpinQuant 式)再測零訓練地板"
+  ],
+  "assets": {"rot_ckpt": "exports/a1_rot_bf16", "export": "exports/g3rot_floor",
+             "Q": "evidence/p1_grouping/corkscrew/rot_Q.pt",
+             "fold": "evidence/p1_grouping/corkscrew/rot_fold.json",
+             "quant": "quant_g3ctl.json/quant_g3rot.json",
+             "per_module_err": "proberr_g3ctl.json/proberr_g3rot.json",
+             "evals": "a1eval/{ifeval,humaneval,gsm8k}_g3rot_floor",
+             "tool": "p2_anchor/corkscrew/rot_fold.py"}
+}

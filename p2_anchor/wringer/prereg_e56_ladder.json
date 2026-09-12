@@ -1,0 +1,62 @@
+{
+ "experiment": "E56 迭代蓄排梯:st54r 起點,三段結構=斜率量測(cycle-2)→ 外推裁決(強制回用戶)→ 條件式劑量爬坡迭代;鏈尾單次 e2e(fresh-basin 劑量軸)",
+ "status": "ABORTED mid-cycle2(2026-08-28 08:5x 用戶裁「立即中止轉 16k」;drain 於 ~13/31 窗被殺,B₂ 未量測;偏離凍結 pipeline 經用戶核准照實入卷)",
+ "cycle2_disposition_2026-08-28": {
+  "readings_kept": {
+   "B1_bare": {"if": 40.3, "he": 10.37, "gs": 30.4, "comp": 0.2874, "empties": {"ifeval": 92, "humaneval": 84, "gsm8k": 201}, "note": "e2e 尾實測貢獻 +0.037(vs B1 0.3242)非設計推定的 ≈0,照實推翻"},
+   "fill": "plateau 判停 @1500 步(實吃 ~24.6M tokens,非滿程 59M),val CE 2.0231→1.9354,曲線 1.85%→0.60%→0.66%→0.80%→0.49%/300 步",
+   "A2": {"if": 44.73, "he": 15.85, "gs": 39.88, "comp": 0.3557, "empties": {"ifeval": 81, "humaneval": 65, "gsm8k": 133}, "gate": "A₂−A₁=+0.0266>0.02 ⇒ 劑量綁定成立、r128 未見頂;he 恰好 ±0.00=劑量不敏感"},
+   "B2": "N/A(drain 中止)"
+  },
+  "abort_rationale": "cal8 開箱定罪(E54_TRAJ_MANIFEST+len 實測):78.7% 列頂格 8192(EOS/答案尾遭列窗切除,完整終止示範僅 21.3% 列)、26.7% 列無 </think>(E53 無閉合毒性帶 26.9% 復現)、agentic/code 連 Q1 總長都 >8192=列窗先於生成上限成為綁定約束;分科閉合率×A₂−A₁ 單調劑量-反應(math 94.1%↔gs +4.78、ifshape 75.8%↔if +2.77、code 53.5%↔he ±0.00)⇒ 斜率外推的分母(cal8 式 token)失效,16k 是劑量軸上游修正;stage2 外推裁決以本節+用戶兩裁(中止/全科 16k 重產)提前完成,接棒 E57",
+  "proxy_note": "plateau 判停觸發時官方天花板仍 +0.0266 上行=val CE plateau 截停過早候選(proxy 鈍化觀察第 12 型),E57 fill 判停準則須重議",
+  "artifacts": "st54r2 半成品州已刪;res_res54c2+exports/e56_resA2(A₂ 態)保留=E57 warm-start 候選;e54_r 保留(P0 ref+B1_bare/A₂ 座標)"
+ },
+ "date": "2026-08-27 22:5x 立案;23:3x 凍結 +0800",
+ "origin": "E54 終裁 @c5d51a2:FAIL falsifier(B2 0.3062<0.70)但歸因指向劑量未兌現+token 饑荒;ρ=0.912/ρ_B1≈0.98 排水近無損=複利機制成立;用戶連裁:①迭代基於未 e2e 態 ②壓回段退場 ③cal8 重複用 ④N_max=3 ⑤三段結構認可",
+ "hypotheses": {
+  "H_dose": "0.32 帶的官方座標斜率 Δ甲/100M tokens 為正且足夠陡=劑量軸活;E54 首點(+0.256/42M)屬曲線最陡段不可外推,cycle-2 量真斜率",
+  "H_capacity_rival": "r128 單輪 6.8% rank 覆蓋在 fresh 盆地稠密誤差下見頂→A_2 停滯(vs A_1 0.3291)=容量綁定,rank 臂立案(須配吞吐保護);註:E38 r256 FAIL 帶「更欠訓水庫」混雜,rank 判例從未在餵飽條件下開庭",
+  "coscaling_law": "配比法則:每輪 tokens ≳ 1-2× 旁路參數(r128=244M 實測);現況失配=料太少非 rank 太小(E54 fill 僅 0.08 t/p);先餵飽再動 rank",
+  "falsifier": "Δ甲 = B_2 − 0.3242 < 0.02(≈2σ 單跑帶)且 A_2 停滯 → 劑量軸+容量軸雙死,梯停,回冠軍血統(E55/量化殘留軸)"
+ },
+ "three_stage_structure": {
+  "stage1_cycle2": "斜率量測點(~19h 自主):S0=export st54r→exports/e54_r(P0 ref)+serve 單跑三科=B1_bare(乾淨同座標基線;B1 0.3242 含 e2e 尾,e2e 在此帶≈0 照實註記)→ fill smoke 20 步(新 state 配對保險)→ fill 3600 步(59M tok,0.24 t/p,plateau-every 300)→ export+單跑=A_2 → drain(參數凍結同 E54 S3)→ export+單跑=B_2;產出:第二個 (tokens,甲) 點+A_2 判別讀數",
+  "stage2_extrapolation": "外推裁決(零 GPU,強制回用戶):兩點斜率外推「到 0.5/0.65/0.74 帶各需幾 tokens」對照吞吐帳(fill ~320M/天)換算天數與 cal9 需求;用戶裁:買 0.5-1B 級投資 / rank 臂 / 回冠軍血統(E55);斜率太平(0.74 帶 >10B)=fresh 盆地定價出局,沉沒成本一輪 cycle",
+  "stage3_conditional_iterate": "通過外推裁決才續:cycle-3 起劑量爬坡至真平台(上限 ~3 epochs≈172M≈0.7 t/p,fill ~13h/輪);cal9(2× 再加倍)僅在重複抽樣邊際遞減實證時產;每輪 B_k 單跑+Δ甲<0.02 梯停+N_max=3(用戶已裁);rank 凍結除非餵飽後 A 仍停滯;梯停後鏈尾單次 e2e(λ_close 256 凍結配方)→雙跑終裁"
+ },
+ "pipeline_c2": {
+  "S0_ref": "export --state-tag st54r --out exports/e54_r --verify → serve → 三科單跑 = B1_bare",
+  "fill_smoke": "res_fill --tag res54c2smk --state-tag st54r --ref-export exports/e54_r --smoke(P0 位元閘 vs e54_r+新 state 配對)",
+  "fill": "res_fill --tag res54c2 --state-tag st54r --ref-export exports/e54_r --out exports/e56_resA2 --data calib_e54_traj.pt --lengths calib_e54_len.pt --batch 2 --microbatch 1 --kd-impl hidchunk --steps 3600(plateau-every 300 判停)",
+  "A2": "serve exports/e56_resA2 → 三科單跑 = A_2",
+  "drain": "train_res --tag st54r2 --state-tag st54r --res-tag res54c2 --calib calib_e54_traj.pt --lengths calib_e54_len.pt --n-calib 256 --batch 4 --learn-theta --holdout-frac 0.05 --resume",
+  "B2": "export --state-tag st54r2 --out exports/e54_r2 --verify → serve → 三科單跑 = B_2 + empties + 形態分類"
+ },
+ "judges": {
+  "protocol": "官方 benchmark 唯一裁判;cycle 讀數(B1_bare/A_2/B_2)單跑照實入卷不裁換防;終裁僅在 stage3 鏈尾 e2e 後雙跑",
+  "slope": "主讀數=Δ甲/100M tokens(B_2 vs B1_bare 同座標;對 B1 0.3242 的差照實並列)",
+  "A2_gate": "A_2 − A_1(0.3291)判劑量 vs 容量:顯著升(>0.02)=劑量綁定;停滯=容量綁定→rank 臂候選(warn:val CE 若續降而 A_2 停=proxy 反轉候選第 N 筆,照實入卷)",
+  "mandatory_user_gate": "stage2 外推報告=強制回用戶,cycle-3 不自主點火",
+  "noise_note": "單跑 甲 噪音 ~±0.01;Δ 判讀以 0.02(≈2σ)為線"
+ },
+ "token_budget_context": {
+  "anchors": "BitNet from-scratch ~4T;BitNet Distillation(2510.13998,Qwen3 4B 同款)FP16→1.58-bit ~10B tokens 全參數續訓≈FP16 持平;LLM-QAT(2305.17888)4-bit 恢復 ~1e8 tokens",
+  "ours_measured": "r128 旁路=244M 參數(32 層×7 targets 實算)/單輪 rank 覆蓋 6.8%/cal8 49M 有效=0.20 t/p/E54 fill 實餵 0.08 t/p=水庫從未餵飽",
+  "throughput": "fill ~3.7k tok/s ≈ 320M/天;0.5B ≈ 1.6 天、1B ≈ 3.1 天、10B ≈ 31 天",
+  "structural_note": "溫和排水(τ/W_max 窗局部)的不可替代價值=ρ 0.91-0.98 近無損轉移使迭代複利成立;單輪 rank 上限由迭代疊加繞過(k 輪等效 ≤128k)"
+ },
+ "measurement_duty": [
+  "cycle-2:B1_bare/A_2/B_2 三科+empties、B_2 形態分類(正常錯 vs 空/迴圈/超長)、fill 實停步數+CE 曲線(monitor)、逐窗 flips、ρ_c2=(B_2−B1_bare)/(A_2−B1_bare)",
+  "stage2:兩點斜率表+三檔外推(0.5/0.65/0.74 帶)+吞吐換算=呈用戶裁決包",
+  "stage3(若續):每輪同 duty;鏈尾雙跑+stable 空核"
+ ],
+ "budget_est": "cycle-2 ~19h(S0+B1_bare ~2h + fill 4.4h + A_2 2h + drain 8.8h + B_2 2h);stage3 若續 ~22h/輪×≤2 + 鏈尾 e2e ~4h",
+ "user_rulings_2026-08-27": {
+  "e54_fuse": "免跑補雙跑,偏離照實入卷(座標距 0.70 >0.37)",
+  "n_max": "3 cycles",
+  "structure": "23:3x「認可」三段結構=本 prereg 凍結+cycle-2 點火授權;外推裁決強制回用戶",
+  "design_lineage": "迭代基於未 e2e 態/壓回段退場/cal8 重複用/先量斜率再外推預算後續迭代/rank 與 cal 互配(先餵飽再動 rank)"
+ },
+ "artifacts_policy": ".pt/.npz 不入 git;states data/qs_st54r2、data/res_res54c2;exports e54_r/e56_resA2/e54_r2(候清依磁碟政策);E54 遺產 e54_hot/e54_3g/e54_resA/e54_g3b32 exports 候清(st54r state 必留)"
+}

@@ -1,0 +1,50 @@
+{
+ "tag": "Ksmk",
+ "q0": "evidence/p1_grouping/corkscrew/rot_Q_L1.pt",
+ "codes": "g3rotL1",
+ "steps": 2,
+ "best_step": 2,
+ "batch": 4,
+ "lr": 0.0001,
+ "chunks": 2334,
+ "gptq_ce_ref": 2.4311694353818893,
+ "ce_frozen_q0": 2.429912820458412,
+ "ce_frozen_best": 2.3992622792720795,
+ "delta_frozen": -0.030650541186332703,
+ "rms_principal_angle": 0.001011678659494048,
+ "per_layer": false,
+ "kd": true,
+ "kl_ctl": 2.215671420097351,
+ "val_kl_q0": 1.7133748643100262,
+ "val_kl_best": 1.6905163265764713,
+ "r_kl_q0": 0.2267017352984836,
+ "r_kl_best": 0.23701848963588912,
+ "closure_best": {
+  "n_close": 27,
+  "logp_close_mean": -0.06641526049848094,
+  "logp_close_med": -0.009292683564126492,
+  "rank_med": 0,
+  "pre64_mass_mean": 0.0622107767504295
+ },
+ "close_weight": 256.0,
+ "per_layer_angle_rms": null,
+ "trajectory": [
+  {
+   "step": 0,
+   "val_ce": 2.429912820458412,
+   "val_kl": 1.7133748643100262
+  },
+  {
+   "step": 1,
+   "train_ce": 1.147438645362854,
+   "gnorm": 8.687253952026367
+  },
+  {
+   "step": 2,
+   "val_ce": 2.3992622792720795,
+   "val_kl": 1.6905163265764713
+  }
+ ],
+ "runtime_s": 49.3,
+ "timestamp": "2026-09-03T02:27:14.868480"
+}

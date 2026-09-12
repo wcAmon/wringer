@@ -1,0 +1,67 @@
+{
+ "experiment": "E39 on-manifold 蒸餾:cal4(prompt bank+老師離線軌跡)→ 雙 rank A 點篩選 → 全鏈 on-manifold 排水 → B 點三科+分科 ρ",
+ "status": "FROZEN",
+ "date_frozen": "2026-08-13",
+ "design_provenance": "與用戶逐項共同定案:離線生成(速度等價論證)、同 prompt 多採樣、code 主力 MBPP(starcoder 自足過濾 5.6% 量化裁定)、雙 rank(r512 排除容量限縮混淆)、E38b 條件觸發吸收於本實驗",
+ "motivation": {
+  "from_e38": "分科解耦定律:語料價值=老師行為分佈與考題行為分佈的距離(gsm8k +7.7/raw code −4.9/稀釋 −0.7);cal4 把該距離人為歸零",
+  "rho_risk": "E38 ρ₂=0.485 崩塌=排水吞吐為新綁定約束;E39 的 on-manifold 排水 calib 是對此的第一個處置(排水犧牲方向改在行為流形上決定),分科 ρ 為主量測",
+  "hypotheses": {
+   "H_form": "同域同 rank 下,老師軌跡流 > 自然語料(判:A_r256 任一科 > a3 同科 +2pp)",
+   "H_richcap": "富語料下容量成為新瓶頸(判:A_r512 IFEval > A_r256 +1pp 或 humaneval +3pp)",
+   "H_drain_manifold": "on-manifold 排水 calib 改善保留(判:贏家分科 ρ 相對 E38 的 0.485/全蒸發/0.86 剖面整體上移;量測非硬判準)"
+  }
+ },
+ "base": {
+  "state": "data/qs_st37r_e2e(E37 冠軍態,碼凍結)",
+  "ref_export": "exports/e37_3g(P0 gate)",
+  "teacher": "bf16 snapshot 945c40a4(生成者=KD 評分者同一模型)"
+ },
+ "corpus_cal4": {
+  "generator": "gen_cal4.py(@15156cb;CPU 預驗過)",
+  "file": "evidence/p1_grouping/calib_selfgen_v4.pt(1024×2048)",
+  "banks": {
+   "agentic": "cal3 同源五切片種子 360×256tok,老師續寫 1900(保 IFEval 軸;~10% 種子 token 為人寫)",
+   "code": "MBPP 974 全集 k=3 + starcoder 自足過濾 134 k=2(SFT 格式 <|user|>/<|assistant|>,gen 800)",
+   "math": "gsm8k train 7473 k=1(gen 600;train/test 隔離)"
+  },
+  "sampling": "temperature 1.0 / top_p 0.95(與 eval 協定一致);同 prompt 多採樣即多樣性",
+  "decontam": "全列 8-gram(gsm8k-test+humaneval)列級切除,margin=超量生成;manifest 留痕",
+  "packing": "各域獨立打包至 1024/3 列,合併列級 shuffle(seed 20260818)"
+ },
+ "arms": {
+  "R1arm": {"r_res": 256, "tests": "H_form(vs E38 a3 同 rank 同配比,單變因=語料形式)"},
+  "R2arm": {"r_res": 512, "tests": "H_richcap(vs R1arm,單變因=rank)"},
+  "fill_params": "steps 1200 / batch 8 / lr 2e-4 / 固定步數(plateau 停用,承 E38 amendment_1)/ data=cal4",
+  "note_steps": "1024 列下每列重見 ~9 次(E38 為 ~19),同算力對照;r512 若 KD 曲線末端仍陡=欠訓訊號記錄不加步"
+ },
+ "judge_A": {
+  "subjects_per_arm": ["ifeval", "humaneval", "gsm8k"],
+  "winner_rule": "主判 IFEval-A 最高;humaneval-A ≥ 0.28 地板(破地板者除名;全破則取 IFEval 最高並記 floor_fail)",
+  "drain_gate": "贏家 IFEval-A > 0.5028(E37 B=冠軍線;ρ<1 下低於此值 B 必不可能奪冠)→ 過閘排水;否則不排水收卷,A 點三科+假說裁決即 verdict",
+  "abort_none": "兩臂 IFEval-A 均 ≤ 0.4861(E38 a2)→ cal4 對 IFEval 淨負,直接收卷歸因(agentic 軌跡段失效候選)"
+ },
+ "drain_onmanifold": {
+  "trainer": "train_res --tag st39r --state-tag st37r_e2e --res-tag res39<贏家> --gsteps 5 --tau 0.5 --w-max 4 --tail-soft 10 --tail-ste 4 --learn-theta --holdout-frac 0.05 --resume",
+  "calib": "cal4 前 128 列(另存 calib_drain_e39.pt)——排水犧牲方向首次在行為流形上決定",
+  "e2e": "e2e_soft 600 步 data=cal4",
+  "export": "exports/e39_3g --verify"
+ },
+ "judge_B": {
+  "R1_new_champion": "B-IFEval > 0.5028 → 新冠軍",
+  "R2_rho_per_subject": "ρ_if=(B_if−0.4455)/(A_if−0.4455);ρ_he、ρ_gs 用 A→B 差絕對值報(對照 E38 剖面 −3.14/−3.66/−0.83);H_drain_manifold 據此裁",
+  "R3_measurements": "humaneval-B vs 0.29878、gsm8k-B vs 0.56331(E38 B)與 0.46323(E32)",
+  "R4_stability": "gdisc1 ≤ 0.1724、nonfinite=0、holdout exit 比對照 E38 的 1.114/1.333 不再擴口"
+ },
+ "discipline": {
+  "official_only": "判準只認官方三科;val CE/KD/水位 monitor-only(九筆反轉+第十筆控制迴路失效在案);fill KD 絕對值預測(cal4 上應顯著低於 E38)列量測",
+  "no_cross_corpus_loss": "cal4 與 cal2/cal3 的 loss 尺度不可比",
+  "fail_honest": "FAIL 照實;鏈斷點 E39_FAIL:<段>"
+ },
+ "budget_estimate": "cal4 生成(bf16 serve+三域)~1.5h;雙臂 fill+A 三科 ≈ (80+95)m fill + 2×100m 評 ≈ 6.3h;過閘後 drain ~1.5h + e2e ~1.8h + B ~1.2h ≈ 4.5h;合計 ~12h",
+ "artifacts_plan": {
+  "evidence": ["CAL4_MANIFEST.json", "fill_res39r{256,512}.json", "a1eval/{ifeval,humaneval,gsm8k}_e39_r{256,512}A/", "train_st39r.json", "train_st39r_e2e.json", "a1eval/*_e39_3g/"],
+  "states": "data/res_res39r{256,512}、data/qs_st39r_e2e、exports/e39_3g(.pt 不進 git)"
+ },
+ "next_ladder": "E40 候選:GKD(學生軌跡快照重生成)、rank 階梯續掃(若 H_richcap 成立)、排水吞吐改造(若 ρ 仍崩)"
+}

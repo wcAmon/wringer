@@ -1,0 +1,23 @@
+{
+ "experiment": "E50 閉合鏈尾臂已終裁:轉折窗偏置雙軌 FAIL(H_entropy 勝出,模型側鏈尾治閉合路徑關閉)",
+ "date": "2026-08-25 07:03(date 實測)",
+ "design": "單變數:鏈尾 e2e 窗選 隨機→轉折偏置(</think> token 248069,轉折窗占比 13%→50%;calib_e50_closure.pt sha 2b5f694f,15072 列);劑量/起點/配方與冠軍全同(st47d + e2e 1200 步 batch 8)",
+ "state": "st47d_hcl_e2e(export e50 鏈自產;post-e2e val CE 1.615、flip_vs_input 0.0000 與歷史 e2e 鎖 T 型態一致,監測用不作裁決)",
+ "scores": {"ifeval": 73.01, "humaneval": 41.46, "gsm8k": 79.23, "comp": 0.685},
+ "empties": {"ifeval": "78/541(vs 冠軍 78,持平)", "humaneval": "55/164(vs 46,惡化 +9)", "gsm8k": "63/1319(vs 57,惡化 +6)", "total": "196 vs 冠軍 181(惡化 +15)"},
+ "judges": {
+  "primary_comp": "0.685 < 0.7055 FAIL(he −6.71 主拖累;IF 持平;gs 79.23 反超 +0.91)",
+  "mech_gate": "196 > 127 FAIL(且方向反轉:轉折窗 3.8× 加餵後空回應不降反升)→ H_logit 否證、H_entropy 勝出",
+  "no_regress": "IF 73.01≥70 PASS、he 41.46<45 FAIL、gs 79.23≥76 PASS",
+  "kill": "0.685 ≥ 0.62 免殺"
+ },
+ "verdict": "雙軌 FAIL:失律不是『收尾範例統計不足』(補到 50% 仍零效果),是生成動力學病(熵漂移/複讀迴圈候選)。模型側鏈尾治閉合路徑關閉;+0.123 甲 空回應金礦仍在,入口改道:(a) 蓄水段閉合工程(源頭防損)(b) 熵軸診斷(空回應內容形態學,零 GPU 可起步)。推理側鷹架維持用戶 R2 排除",
+ "integrity_check": "IF 73.01+empty 78 與冠軍逐位同引誠實性檢查:回應僅 29/541 逐條相同、空題交集 26/78=確為不同模型,雙巧合(粒度 1/541);評測有效",
+ "honest_records": {
+  "gs_new_high": "79.23 > 78.85(E47/E48)冠軍態系 gsm8k 新高——轉折偏置對 gs 分數有正效但空回應仍惡化,分數與失律解耦的又一例",
+  "he_tax": "he −6.71 恰與 E49-a 蓄水 he 損傷同量級,轉折窗擠掉的 code 窗占比是候選歸因(未裁)",
+  "phase2_interlock": "E49-c phase-2 的『隨機邊緣占多數』先驗曾利多 H_logit;E50 否證後合併更新=隨機性來自抽樣動力學不穩,非資料統計缺口"
+ },
+ "lineage": "冠軍 st47d_hec_e2e 甲 0.7055 衛冕;E50 態封存不采用",
+ "next": "已批排程:引擎壓榨窗(Gate 1 逐位等效 → Gate 2 容差+gsm8k 冒煙)→ 熵軸零 GPU 診斷;蓄水段閉合工程需新 prereg 待用戶裁"
+}

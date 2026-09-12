@@ -1,0 +1,212 @@
+{
+ "mode": "gsq_block",
+ "state": "g9",
+ "hparams": {
+  "state_tag": "g9",
+  "save_tag": "gsq_t0.4",
+  "lam": 0.4,
+  "rd_bits": "",
+  "protect": "linear_attn.out_proj,self_attn.v_proj",
+  "shift": 2,
+  "init_logit": 2.0,
+  "steps": 300,
+  "lr": 0.02,
+  "logit_opt": "tsgd",
+  "alpha_lr": 0.001,
+  "tau0": 1.0,
+  "tau1": 0.1,
+  "no_gumbel": true,
+  "gumbel_scale": 1.0,
+  "n_calib": 16,
+  "calib": "evidence/p1_grouping/calib_e58r1b_traj.pt",
+  "lengths": "evidence/p1_grouping/calib_e58r1b_len.pt",
+  "batch": 4,
+  "max_layer": 2,
+  "out": "evidence/p1_grouping/corkscrew/gsq_gsq_t0.4.json",
+  "smoke": true
+ },
+ "bits": [
+  3.974220571544968,
+  3.1371339208956357,
+  3.2675722725820773,
+  2.9900765106957055,
+  2.4258198959329946,
+  2.9901831283189875,
+  3.2675832544348578,
+  3.1372386853893133,
+  3.9759176534242058
+ ],
+ "modules": {
+  "model.language_model.layers.0.linear_attn.in_proj_qkv": {
+   "layer": 0,
+   "lam": 0.4,
+   "flips": 0.18532481789588928,
+   "entropy_joint": 2.7930500507354736,
+   "dalpha_med": 0.005835068412125111,
+   "dense_rel_change": 0.3159838616847992
+  },
+  "model.language_model.layers.0.linear_attn.in_proj_z": {
+   "layer": 0,
+   "lam": 0.4,
+   "flips": 0.3026767671108246,
+   "entropy_joint": 2.415632486343384,
+   "dalpha_med": 0.0057648285292088985,
+   "dense_rel_change": 0.40252453088760376
+  },
+  "model.language_model.layers.0.linear_attn.out_proj": {
+   "layer": 0,
+   "lam": 0.0,
+   "flips": 0.011040019802749157,
+   "entropy_joint": 3.0979626178741455,
+   "dalpha_med": 0.00531415781006217,
+   "dense_rel_change": 0.1338416188955307
+  },
+  "model.language_model.layers.0.mlp.gate_proj": {
+   "layer": 0,
+   "lam": 0.4,
+   "flips": 0.12367027997970581,
+   "entropy_joint": 2.920865058898926,
+   "dalpha_med": 0.005371361505240202,
+   "dense_rel_change": 0.25775113701820374
+  },
+  "model.language_model.layers.0.mlp.up_proj": {
+   "layer": 0,
+   "lam": 0.4,
+   "flips": 0.10885696113109589,
+   "entropy_joint": 2.9502665996551514,
+   "dalpha_med": 0.005464714486151934,
+   "dense_rel_change": 0.24108168482780457
+  },
+  "model.language_model.layers.0.mlp.down_proj": {
+   "layer": 0,
+   "lam": 0.4,
+   "flips": 0.3217836618423462,
+   "entropy_joint": 2.375440835952759,
+   "dalpha_med": 0.0069892448373138905,
+   "dense_rel_change": 0.4092806279659271
+  },
+  "model.language_model.layers.1.linear_attn.in_proj_qkv": {
+   "layer": 1,
+   "lam": 0.4,
+   "flips": 0.5810807943344116,
+   "entropy_joint": 1.4178059101104736,
+   "dalpha_med": 0.009637489914894104,
+   "dense_rel_change": 0.4876437485218048
+  },
+  "model.language_model.layers.1.linear_attn.in_proj_z": {
+   "layer": 1,
+   "lam": 0.4,
+   "flips": 0.590613067150116,
+   "entropy_joint": 1.3619953393936157,
+   "dalpha_med": 0.015103147365152836,
+   "dense_rel_change": 0.48844125866889954
+  },
+  "model.language_model.layers.1.linear_attn.out_proj": {
+   "layer": 1,
+   "lam": 0.0,
+   "flips": 0.07014302909374237,
+   "entropy_joint": 3.110318422317505,
+   "dalpha_med": 0.007396702654659748,
+   "dense_rel_change": 0.26352015137672424
+  },
+  "model.language_model.layers.1.mlp.gate_proj": {
+   "layer": 1,
+   "lam": 0.4,
+   "flips": 0.6161603331565857,
+   "entropy_joint": 1.499976396560669,
+   "dalpha_med": 0.014994964003562927,
+   "dense_rel_change": 0.5042661428451538
+  },
+  "model.language_model.layers.1.mlp.up_proj": {
+   "layer": 1,
+   "lam": 0.4,
+   "flips": 0.6077425479888916,
+   "entropy_joint": 1.4989597797393799,
+   "dalpha_med": 0.01301519013941288,
+   "dense_rel_change": 0.5020648837089539
+  },
+  "model.language_model.layers.1.mlp.down_proj": {
+   "layer": 1,
+   "lam": 0.4,
+   "flips": 0.6321656703948975,
+   "entropy_joint": 1.5295295715332031,
+   "dalpha_med": 0.014132420532405376,
+   "dense_rel_change": 0.5125762820243835
+  },
+  "model.language_model.layers.2.linear_attn.in_proj_qkv": {
+   "layer": 2,
+   "lam": 0.4,
+   "flips": 0.5657644271850586,
+   "entropy_joint": 1.5009310245513916,
+   "dalpha_med": 0.007898312993347645,
+   "dense_rel_change": 0.4839632213115692
+  },
+  "model.language_model.layers.2.linear_attn.in_proj_z": {
+   "layer": 2,
+   "lam": 0.4,
+   "flips": 0.5849627256393433,
+   "entropy_joint": 1.3479000329971313,
+   "dalpha_med": 0.012058814987540245,
+   "dense_rel_change": 0.4879832863807678
+  },
+  "model.language_model.layers.2.linear_attn.out_proj": {
+   "layer": 2,
+   "lam": 0.0,
+   "flips": 0.047728441655635834,
+   "entropy_joint": 3.105255365371704,
+   "dalpha_med": 0.006002747919410467,
+   "dense_rel_change": 0.21793362498283386
+  },
+  "model.language_model.layers.2.mlp.gate_proj": {
+   "layer": 2,
+   "lam": 0.4,
+   "flips": 0.5819078087806702,
+   "entropy_joint": 1.4197542667388916,
+   "dalpha_med": 0.009948679246008396,
+   "dense_rel_change": 0.4907301068305969
+  },
+  "model.language_model.layers.2.mlp.up_proj": {
+   "layer": 2,
+   "lam": 0.4,
+   "flips": 0.5716825723648071,
+   "entropy_joint": 1.4648313522338867,
+   "dalpha_med": 0.008816435001790524,
+   "dense_rel_change": 0.4880716800689697
+  },
+  "model.language_model.layers.2.mlp.down_proj": {
+   "layer": 2,
+   "lam": 0.4,
+   "flips": 0.6003763675689697,
+   "entropy_joint": 1.4549949169158936,
+   "dalpha_med": 0.029835710301995277,
+   "dense_rel_change": 0.4976559281349182
+  }
+ },
+ "layers": {
+  "0": {
+   "err_hard0": 0.09213182430559017,
+   "err_hard": 0.13902568418193315
+  },
+  "1": {
+   "err_hard0": 0.08210091107482002,
+   "err_hard": 0.12439203871164482
+  },
+  "2": {
+   "err_hard0": 0.09972495981072539,
+   "err_hard": 0.15875836811275493
+  }
+ },
+ "ledger": {
+  "code_fixed": 3.2,
+  "code_entropy": 3.0377,
+  "code_entropy_joint": 2.9963,
+  "alpha": 0.5,
+  "beta": 0.0,
+  "r": 0.0,
+  "weights": 3565158400,
+  "total_fixed": 3.7,
+  "total_entropy": 3.5377,
+  "total_entropy_joint": 3.4963
+ },
+ "runtime_s": 523.4
+}

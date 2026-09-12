@@ -1,0 +1,23 @@
+{
+ "experiment": "E47-P A′ 軌跡鎖定臂:排水中停點旁路局部重擬合(pin),st47d 冠軍配方逐字 + 每4層×7 pin 單變因",
+ "status": "FROZEN(2026-08-23 用戶裁『開建,拉上排程』;A′ 第二波發射權已由用戶行使)",
+ "basis": {
+  "gate": "diag_drift_r2 BUILD——R² 中位 L12+ = 0.650,深層 L18-26 達 0.65-0.79(漂移的線性可預測度上界),64 列 131k tokens",
+  "mechanism": "E46 重蓄兩難第三路:局部函數匹配=no-op、端到端 KD=再分配不可吸收;A′ 學漂移差值 (W+B′A′/r)x_cur≈(W+BA_t0/r)x_ref,逐 target 閉式解+截秩 r=512 寫回 res——局部可吸收形狀,零漂移退化為恆等改寫",
+  "position": "唯一攻水側的活槓桿;D/E 勝(71.35/69.13)攻口徑側,剩餘排水稅 −7.39 的漂移成分即 A′ 的靶"
+ },
+ "design": {
+  "base": "st47d 逐字(gamma-field+beta 1.0+w_max 12+gsteps 8+τ0.5+tail 10/4+24-31:16+learn-theta+holdout 0.05+calib_drain_e42b)",
+  "single_variable": "唯一新增=每 4 層中停(L03/07/11/15/19/23/27,E46 同 cadence)執行 res_pin:雙模型常駐(CUR=已排前綴+現行旁路;REF=冠軍+res42 t0 滿水)64 列教師強制,正規方程 ridge 1e-3 閉式解,svd_lowrank 截秩 512,pin 後 --resume 續排(窗目標 Y=off+γ=1 即吃到 pin 旁路=機制閉合)",
+  "smoke_gate": "發射前 res_pin --smoke(qs_st46r 素材+--frozen-upto 3):接線/寫回重建 rel、R² 有限性;FAIL 則不發射回用戶"
+ },
+ "judges": {
+  "primary": "triage IFEval w128 vs 冠軍 st47d 71.35(>71.35=A′ 有效且封窗態新冠;>65.06 而 <71.35=漂移抵銷為真但不及口徑槓桿;<65.06=pin 有害)",
+  "kill": "55 殺閘;R_kill 附註:pin 後任一段 loss 非有限即斷",
+  "rho": "ρ_drain=triage/78.74 併報",
+  "monitors_not_judges": "pin R²/rank_energy/refit 殘差、val CE 一律 monitor-only(17 筆型態在案)"
+ },
+ "schedule": "E48 收官(~22:00 08-23)後 GPU 空檔即發射:煙測 ~10m → 排水+7 pin ~7.5h → triage 40m → E47P_TRIAGE ~06:30-07:00 08-24",
+ "follow_up": "若 >71.35:候選鏈尾對決(st47p e2e vs E48 結果);若機制成立但次於口徑:A′×W_max16 疊加另 prereg;位元政策終裁仍在用戶",
+ "date": "2026-08-23"
+}

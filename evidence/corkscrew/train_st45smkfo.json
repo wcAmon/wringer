@@ -1,0 +1,301 @@
+{
+ "tag": "st45smkfo",
+ "grid": "mix(state)",
+ "state_tag": "st41g_e2e",
+ "res_tag": "res42",
+ "seed": 20260806,
+ "equiv_gate_rel": 0.0,
+ "hparams": {
+  "tag": "st45smkfo",
+  "state_tag": "st41g_e2e",
+  "res_tag": "res42",
+  "n_calib": 32,
+  "calib": "evidence/p1_grouping/calib_drain_e42b.pt",
+  "batch": 4,
+  "win": 2,
+  "stride": 1,
+  "gsteps": 2,
+  "tau": 0.5,
+  "w_max": 1,
+  "comp_rounds": 3,
+  "comp_cap": 0.03,
+  "tail_soft": 2,
+  "tail_ste": 1,
+  "s0": 30.0,
+  "s_plateau": 2.0,
+  "lora_r": 64,
+  "lora_lr": 0.0006,
+  "factor_lr": 0.003,
+  "theta_lr": null,
+  "clip": 1.0,
+  "learn_theta": true,
+  "holdout_frac": 0.05,
+  "resume": false,
+  "res_zero": false,
+  "group_override": "24-31:16",
+  "strain_wmax": false,
+  "calib_domains": null,
+  "domain_weights": null,
+  "dom_exit": null,
+  "tau_dom": null,
+  "beta_denoise": 0.0,
+  "gamma_field": true,
+  "field_epochs": 0,
+  "smoke": true
+ },
+ "windows": [
+  {
+   "window": [
+    0,
+    2
+   ],
+   "finalized": [
+    0
+   ],
+   "w_max": 1,
+   "drain_epochs": 4,
+   "loss": [
+    6e-05,
+    4.6e-05,
+    3.6e-05,
+    2.6e-05,
+    3.3e-05,
+    2.2e-05,
+    1.6e-05
+   ],
+   "gdisc1_exit_rel": 0.001869,
+   "flips_vs_p0": 9313,
+   "final_level": 10467403.7572,
+   "drain_events": [
+    {
+     "gamma": null,
+     "flips": 7787,
+     "absorb": [
+      0.0069,
+      0.0185,
+      0.0123,
+      0.2236,
+      0.2449,
+      0.0024
+     ],
+     "obj": [
+      8964920.0,
+      843180.9375,
+      85.8566,
+      308478.4688,
+      232678.2656,
+      106.5279
+     ],
+     "ev_flips": 0,
+     "revisit": 0,
+     "ep": 0,
+     "level": 10349450.0564,
+     "wait": 0,
+     "gamma_now": 0.0,
+     "field": true
+    },
+    {
+     "gamma": null,
+     "flips": 4116,
+     "absorb": [
+      0.004,
+      0.0086,
+      0.2647,
+      0.1095,
+      0.0529,
+      0.0025
+     ],
+     "obj": [
+      8977157.0,
+      855164.125,
+      154.7468,
+      293955.2812,
+      238953.3906,
+      124.0184
+     ],
+     "ev_flips": 3931,
+     "revisit": 0,
+     "ep": 2,
+     "level": 10365508.5621,
+     "wait": 0,
+     "gamma_now": 0.0,
+     "field": true
+    },
+    {
+     "gamma": null,
+     "flips": 350,
+     "absorb": [
+      0.0053,
+      0.0189,
+      0.177,
+      0.0254,
+      0.0432,
+      0.0027
+     ],
+     "obj": [
+      9024870.0,
+      895069.125,
+      308.107,
+      303516.4688,
+      243501.75,
+      138.3064
+     ],
+     "ev_flips": 308,
+     "revisit": 125,
+     "ep": 4,
+     "level": 10467403.7572,
+     "wait": 0,
+     "gamma_now": 0.0,
+     "field": true
+    }
+   ]
+  },
+  {
+   "window": [
+    1,
+    3
+   ],
+   "finalized": [
+    1,
+    2
+   ],
+   "w_max": 1,
+   "drain_epochs": 4,
+   "loss": [
+    6.3e-05,
+    5.1e-05,
+    4.5e-05,
+    3.4e-05,
+    3.8e-05,
+    3.1e-05,
+    2.6e-05
+   ],
+   "gdisc1_exit_rel": 0.002285,
+   "flips_vs_p0": 21430,
+   "final_level": 4785750.1525,
+   "drain_events": [
+    {
+     "gamma": null,
+     "flips": 16052,
+     "absorb": [
+      0.174,
+      0.2408,
+      0.2027,
+      0.1473,
+      0.1168,
+      0.0071,
+      0.1468,
+      0.1975,
+      0.0134,
+      0.127,
+      0.0682,
+      0.0022
+     ],
+     "obj": [
+      891170.3125,
+      464009.375,
+      72.5486,
+      527474.9375,
+      295572.0625,
+      153.2021,
+      856235.125,
+      809511.8125,
+      119.355,
+      858024.75,
+      303807.5938,
+      230.9493
+     ],
+     "ev_flips": 0,
+     "revisit": 0,
+     "ep": 0,
+     "level": 5006382.0238,
+     "wait": 0,
+     "gamma_now": 0.0,
+     "field": true
+    },
+    {
+     "gamma": null,
+     "flips": 8082,
+     "absorb": [
+      0.0328,
+      0.0949,
+      0.0331,
+      0.0709,
+      0.0355,
+      0.0124,
+      0.0866,
+      0.1036,
+      0.0284,
+      0.1227,
+      0.03,
+      0.0335
+     ],
+     "obj": [
+      872818.8125,
+      423894.4375,
+      73.8462,
+      507509.375,
+      295735.3125,
+      162.0398,
+      810127.375,
+      729203.625,
+      136.8267,
+      817734.6875,
+      318173.125,
+      271.4816
+     ],
+     "ev_flips": 7417,
+     "revisit": 0,
+     "ep": 2,
+     "level": 4775840.9443,
+     "wait": 0,
+     "gamma_now": 0.0,
+     "field": true
+    },
+    {
+     "gamma": null,
+     "flips": 4119,
+     "absorb": [
+      0.042,
+      0.0353,
+      0.1614,
+      0.0135,
+      0.0327,
+      0.0099,
+      0.0256,
+      0.059,
+      0.0183,
+      0.0289,
+      0.0421,
+      0.0026
+     ],
+     "obj": [
+      862537.125,
+      417959.7812,
+      76.1162,
+      511823.5625,
+      292511.5,
+      169.5845,
+      831432.125,
+      710788.0,
+      152.7534,
+      836490.625,
+      321513.7188,
+      295.261
+     ],
+     "ev_flips": 3847,
+     "revisit": 695,
+     "ep": 4,
+     "level": 4785750.1525,
+     "wait": 0,
+     "gamma_now": 0.0,
+     "field": true
+    }
+   ]
+  }
+ ],
+ "post_drain_val_ce": 1.6003321334719658,
+ "t_flip_rate_vs_p0": 4.5e-05,
+ "runtime_s": 45.0,
+ "timestamp": "2026-08-21T07:35:46.381184"
+}

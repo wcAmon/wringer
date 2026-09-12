@@ -1,0 +1,24 @@
+{
+ "experiment": "E47-X D×E 組合臂(W_max 12 × comp_cap 0.06):終裁——排水軸封盤",
+ "date": "2026-08-24",
+ "verdict": "FAIL 負交互——triage IFEval w128 69.13 < 70.35(組合 −2.22 vs D 單獨 71.35);且與 E 單獨 69.13 逐位同分(374/541,instruction 計數亦同;responses 雜湊不同=真評兩模型,非評錯)——組合分數被 cap 臂完全鎖定",
+ "numbers": {
+  "triage": 69.13, "instruction_level": 71.10,
+  "prompt_exact": "374/541(st47e 同)",
+  "anchors": {"st47d_D": 71.35, "st47e_E": 69.13, "band": [70.35, 72.35], "kill": 55, "A_point": 78.74},
+  "rho_drain": 0.878,
+  "eval_integrity": "responses sha 前50列:st47e efeda7fa vs st47x ee3b2c09=不同模型確證"
+ },
+ "attribution": {
+  "primary": "串聯管線定律候選:兩口徑串聯時最窄者決定吞吐——cap 0.06 夾住每步幅度後,W_max 12 給的額外時間無事可做,組合終點=cap 單獨終點(逐位同分為極強指紋);名目可加性(+10.36)完全不成立",
+  "asymmetry": "D 單獨 +6.29 > E 單獨 +4.07,但 D+E=E——時間口徑的增益要求幅度自由;幅度口徑的增益不要求額外時間。兩者非獨立瓶頸,是同一瓶頸(修正吞吐)的兩種投影",
+  "e36_contrast": "與 E36 總虧欠負交互(净傷害級)不同型態:本案無傷害,只是增益不疊加=飽和偏負"
+ },
+ "consequences": {
+  "drain_axis_sealed": "排水軸封盤:最終冠軍配方=st47d(field×β + W_max 12 + 半 g16 24-31:16,無 cap);71.35、ρ_drain 0.906;剩餘排水稅 −7.39 無現行槓桿(水側 A′ 判死、口徑側飽和)",
+  "e49_calibration": "risk_calibration 讀數落地:組合負交互=口徑餘裕耗盡——E49 stage_rho 閘收緊,優先小水量臂;『水過富』風險讀法從嚴",
+  "slot_filled": "E49 prereg 槽位 1 填入:排水配方=st47d 逐字"
+ },
+ "artifacts": "exports/st47x_tri 刪(可重建);qs_st47x 7.2G 法證暫留",
+ "prereg": "prereg_e47x.json FROZEN @e3ea23a;判準逐字執行,FAIL 照實"
+}

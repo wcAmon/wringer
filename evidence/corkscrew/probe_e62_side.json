@@ -1,0 +1,694 @@
+{
+ "state": "st61c",
+ "calib": {
+  "rows": 32,
+  "seq": 8192
+ },
+ "modules": {
+  "model.language_model.layers.2.mlp.down_proj": {
+   "shape": [
+    2560,
+    9216
+   ],
+   "water_H": 4.456254005432129,
+   "cur": {
+    "resid_over_water": 0.7721,
+    "drift_over_water": 0.8294,
+    "cos_water_drift": 0.5521
+   },
+   "cur_gain_vs_I": 0.0728,
+   "resolve_X": {
+    "resid_over_water": 0.5406,
+    "drift_over_water": 0.7007,
+    "cos_water_drift": 0.6782
+   },
+   "L_only": {
+    "resid_over_water": 0.5501,
+    "drift_over_water": 0.7792,
+    "cos_water_drift": 0.6783
+   },
+   "L_only_XI": {
+    "resid_over_water": 0.7021,
+    "drift_over_water": 0.6488,
+    "cos_water_drift": 0.554
+   },
+   "L_plus_X": {
+    "resid_over_water": 0.477,
+    "drift_over_water": 0.7668,
+    "cos_water_drift": 0.7245
+   },
+   "monarch": {
+    "resid_over_water": 0.4652,
+    "drift_over_water": 0.7655,
+    "cos_water_drift": 0.7321
+   },
+   "gain_vs_cur": {
+    "resolve_X": 0.2999,
+    "L_only": 0.2876,
+    "L_only_XI": 0.0907,
+    "L_plus_X": 0.3823,
+    "monarch": 0.3976,
+    "L_plus_X_int8": 0.3823
+   },
+   "params": {
+    "X_bd128": 1179648,
+    "L_bd128": 327680,
+    "monarch_F": 663552
+   },
+   "bw_bf16": {
+    "X": 0.8,
+    "L": 0.2222
+   },
+   "cg": {
+    "X": {
+     "cg_iters": 60,
+     "cg_rel": 0.011852
+    },
+    "L": {
+     "cg_iters": 26,
+     "cg_rel": 0.000152
+    }
+   }
+  },
+  "model.language_model.layers.12.mlp.down_proj": {
+   "shape": [
+    2560,
+    9216
+   ],
+   "water_H": 4.644601821899414,
+   "cur": {
+    "resid_over_water": 0.664,
+    "drift_over_water": 0.9017,
+    "cos_water_drift": 0.6372
+   },
+   "cur_gain_vs_I": 0.0714,
+   "resolve_X": {
+    "resid_over_water": 0.4571,
+    "drift_over_water": 0.791,
+    "cos_water_drift": 0.7387
+   },
+   "L_only": {
+    "resid_over_water": 0.528,
+    "drift_over_water": 0.8915,
+    "cos_water_drift": 0.7105
+   },
+   "L_only_XI": {
+    "resid_over_water": 0.61,
+    "drift_over_water": 0.6808,
+    "cos_water_drift": 0.6268
+   },
+   "L_plus_X": {
+    "resid_over_water": 0.4207,
+    "drift_over_water": 0.8221,
+    "cos_water_drift": 0.7634
+   },
+   "monarch": {
+    "resid_over_water": 0.4086,
+    "drift_over_water": 0.8331,
+    "cos_water_drift": 0.7715
+   },
+   "gain_vs_cur": {
+    "resolve_X": 0.3117,
+    "L_only": 0.2048,
+    "L_only_XI": 0.0814,
+    "L_plus_X": 0.3664,
+    "monarch": 0.3846,
+    "L_plus_X_int8": 0.3664
+   },
+   "params": {
+    "X_bd128": 1179648,
+    "L_bd128": 327680,
+    "monarch_F": 663552
+   },
+   "bw_bf16": {
+    "X": 0.8,
+    "L": 0.2222
+   },
+   "cg": {
+    "X": {
+     "cg_iters": 60,
+     "cg_rel": 0.001352
+    },
+    "L": {
+     "cg_iters": 46,
+     "cg_rel": 0.0001
+    }
+   }
+  },
+  "model.language_model.layers.12.linear_attn.in_proj_qkv": {
+   "shape": [
+    8192,
+    2560
+   ],
+   "water_H": 27.892234802246094,
+   "cur": {
+    "resid_over_water": 0.2747,
+    "drift_over_water": 0.9394,
+    "cos_water_drift": 0.8557
+   },
+   "cur_gain_vs_I": 0.2577,
+   "resolve_X": {
+    "resid_over_water": 0.2485,
+    "drift_over_water": 0.9334,
+    "cos_water_drift": 0.8693
+   },
+   "L_only": {
+    "resid_over_water": 0.175,
+    "drift_over_water": 1.0411,
+    "cos_water_drift": 0.9168
+   },
+   "L_only_XI": {
+    "resid_over_water": 0.1719,
+    "drift_over_water": 1.0332,
+    "cos_water_drift": 0.9173
+   },
+   "L_plus_X": {
+    "resid_over_water": 0.1516,
+    "drift_over_water": 1.0167,
+    "cos_water_drift": 0.9256
+   },
+   "monarch": {
+    "resid_over_water": 0.2395,
+    "drift_over_water": 0.9322,
+    "cos_water_drift": 0.874
+   },
+   "gain_vs_cur": {
+    "resolve_X": 0.0954,
+    "L_only": 0.3631,
+    "L_only_XI": 0.3743,
+    "L_plus_X": 0.4482,
+    "monarch": 0.1282,
+    "L_plus_X_int8": 0.448
+   },
+   "params": {
+    "X_bd128": 327680,
+    "L_bd128": 1048576,
+    "monarch_F": 51200
+   },
+   "bw_bf16": {
+    "X": 0.25,
+    "L": 0.8
+   },
+   "cg": {
+    "X": {
+     "cg_iters": 60,
+     "cg_rel": 0.305414
+    },
+    "L": {
+     "cg_iters": 60,
+     "cg_rel": 0.036902
+    }
+   }
+  },
+  "model.language_model.layers.16.mlp.down_proj": {
+   "shape": [
+    2560,
+    9216
+   ],
+   "water_H": 4.935098171234131,
+   "cur": {
+    "resid_over_water": 0.705,
+    "drift_over_water": 0.9393,
+    "cos_water_drift": 0.6267
+   },
+   "cur_gain_vs_I": 0.0281,
+   "resolve_X": {
+    "resid_over_water": 0.4363,
+    "drift_over_water": 0.7945,
+    "cos_water_drift": 0.752
+   },
+   "L_only": {
+    "resid_over_water": 0.5471,
+    "drift_over_water": 0.9164,
+    "cos_water_drift": 0.7053
+   },
+   "L_only_XI": {
+    "resid_over_water": 0.5984,
+    "drift_over_water": 0.6971,
+    "cos_water_drift": 0.6366
+   },
+   "L_plus_X": {
+    "resid_over_water": 0.4008,
+    "drift_over_water": 0.8252,
+    "cos_water_drift": 0.7757
+   },
+   "monarch": {
+    "resid_over_water": 0.392,
+    "drift_over_water": 0.8346,
+    "cos_water_drift": 0.7815
+   },
+   "gain_vs_cur": {
+    "resolve_X": 0.3812,
+    "L_only": 0.224,
+    "L_only_XI": 0.1513,
+    "L_plus_X": 0.4315,
+    "monarch": 0.4439,
+    "L_plus_X_int8": 0.4315
+   },
+   "params": {
+    "X_bd128": 1179648,
+    "L_bd128": 327680,
+    "monarch_F": 663552
+   },
+   "bw_bf16": {
+    "X": 0.8,
+    "L": 0.2222
+   },
+   "cg": {
+    "X": {
+     "cg_iters": 60,
+     "cg_rel": 0.002782
+    },
+    "L": {
+     "cg_iters": 55,
+     "cg_rel": 0.000104
+    }
+   }
+  },
+  "model.language_model.layers.20.mlp.down_proj": {
+   "shape": [
+    2560,
+    9216
+   ],
+   "water_H": 4.494161605834961,
+   "cur": {
+    "resid_over_water": 0.941,
+    "drift_over_water": 0.9875,
+    "cos_water_drift": 0.5236
+   },
+   "cur_gain_vs_I": 0.0067,
+   "resolve_X": {
+    "resid_over_water": 0.6045,
+    "drift_over_water": 0.8562,
+    "cos_water_drift": 0.6591
+   },
+   "L_only": {
+    "resid_over_water": 0.7278,
+    "drift_over_water": 0.9544,
+    "cos_water_drift": 0.6198
+   },
+   "L_only_XI": {
+    "resid_over_water": 0.7681,
+    "drift_over_water": 0.7766,
+    "cos_water_drift": 0.5376
+   },
+   "L_plus_X": {
+    "resid_over_water": 0.5449,
+    "drift_over_water": 0.8749,
+    "cos_water_drift": 0.6975
+   },
+   "monarch": {
+    "resid_over_water": 0.5442,
+    "drift_over_water": 0.89,
+    "cos_water_drift": 0.7011
+   },
+   "gain_vs_cur": {
+    "resolve_X": 0.3576,
+    "L_only": 0.2265,
+    "L_only_XI": 0.1838,
+    "L_plus_X": 0.4209,
+    "monarch": 0.4217,
+    "L_plus_X_int8": 0.4209
+   },
+   "params": {
+    "X_bd128": 1179648,
+    "L_bd128": 327680,
+    "monarch_F": 663552
+   },
+   "bw_bf16": {
+    "X": 0.8,
+    "L": 0.2222
+   },
+   "cg": {
+    "X": {
+     "cg_iters": 60,
+     "cg_rel": 0.009041
+    },
+    "L": {
+     "cg_iters": 40,
+     "cg_rel": 0.000146
+    }
+   }
+  },
+  "model.language_model.layers.22.mlp.down_proj": {
+   "shape": [
+    2560,
+    9216
+   ],
+   "water_H": 3.0189108848571777,
+   "cur": {
+    "resid_over_water": 2.5761,
+    "drift_over_water": 1.6995,
+    "cos_water_drift": 0.386
+   },
+   "cur_gain_vs_I": -0.2658,
+   "resolve_X": {
+    "resid_over_water": 1.2784,
+    "drift_over_water": 1.2675,
+    "cos_water_drift": 0.5239
+   },
+   "L_only": {
+    "resid_over_water": 1.471,
+    "drift_over_water": 1.3713,
+    "cos_water_drift": 0.5139
+   },
+   "L_only_XI": {
+    "resid_over_water": 1.5395,
+    "drift_over_water": 1.2816,
+    "cos_water_drift": 0.4303
+   },
+   "L_plus_X": {
+    "resid_over_water": 1.1229,
+    "drift_over_water": 1.235,
+    "cos_water_drift": 0.5678
+   },
+   "monarch": {
+    "resid_over_water": 1.1466,
+    "drift_over_water": 1.2508,
+    "cos_water_drift": 0.5668
+   },
+   "gain_vs_cur": {
+    "resolve_X": 0.5038,
+    "L_only": 0.429,
+    "L_only_XI": 0.4024,
+    "L_plus_X": 0.5641,
+    "monarch": 0.5549,
+    "L_plus_X_int8": 0.5641
+   },
+   "params": {
+    "X_bd128": 1179648,
+    "L_bd128": 327680,
+    "monarch_F": 663552
+   },
+   "bw_bf16": {
+    "X": 0.8,
+    "L": 0.2222
+   },
+   "cg": {
+    "X": {
+     "cg_iters": 60,
+     "cg_rel": 0.007804
+    },
+    "L": {
+     "cg_iters": 41,
+     "cg_rel": 0.000205
+    }
+   }
+  },
+  "model.language_model.layers.22.linear_attn.in_proj_qkv": {
+   "shape": [
+    8192,
+    2560
+   ],
+   "water_H": 102.63981628417969,
+   "cur": {
+    "resid_over_water": 0.2322,
+    "drift_over_water": 0.9311,
+    "cos_water_drift": 0.8779
+   },
+   "cur_gain_vs_I": 0.2008,
+   "resolve_X": {
+    "resid_over_water": 0.1998,
+    "drift_over_water": 0.9193,
+    "cos_water_drift": 0.8949
+   },
+   "L_only": {
+    "resid_over_water": 0.141,
+    "drift_over_water": 1.0267,
+    "cos_water_drift": 0.9317
+   },
+   "L_only_XI": {
+    "resid_over_water": 0.1325,
+    "drift_over_water": 1.0125,
+    "cos_water_drift": 0.9347
+   },
+   "L_plus_X": {
+    "resid_over_water": 0.1195,
+    "drift_over_water": 1.0051,
+    "cos_water_drift": 0.9406
+   },
+   "monarch": {
+    "resid_over_water": 0.196,
+    "drift_over_water": 0.9218,
+    "cos_water_drift": 0.897
+   },
+   "gain_vs_cur": {
+    "resolve_X": 0.1394,
+    "L_only": 0.3925,
+    "L_only_XI": 0.4295,
+    "L_plus_X": 0.4855,
+    "monarch": 0.156,
+    "L_plus_X_int8": 0.4854
+   },
+   "params": {
+    "X_bd128": 327680,
+    "L_bd128": 1048576,
+    "monarch_F": 51200
+   },
+   "bw_bf16": {
+    "X": 0.25,
+    "L": 0.8
+   },
+   "cg": {
+    "X": {
+     "cg_iters": 60,
+     "cg_rel": 0.128414
+    },
+    "L": {
+     "cg_iters": 60,
+     "cg_rel": 0.042269
+    }
+   }
+  },
+  "model.language_model.layers.24.mlp.down_proj": {
+   "shape": [
+    2560,
+    9216
+   ],
+   "water_H": 3.336918354034424,
+   "cur": {
+    "resid_over_water": 1.6685,
+    "drift_over_water": 1.374,
+    "cos_water_drift": 0.4437
+   },
+   "cur_gain_vs_I": -0.0401,
+   "resolve_X": {
+    "resid_over_water": 1.0081,
+    "drift_over_water": 1.1309,
+    "cos_water_drift": 0.5619
+   },
+   "L_only": {
+    "resid_over_water": 1.1979,
+    "drift_over_water": 1.2367,
+    "cos_water_drift": 0.5383
+   },
+   "L_only_XI": {
+    "resid_over_water": 1.2402,
+    "drift_over_water": 1.1173,
+    "cos_water_drift": 0.4512
+   },
+   "L_plus_X": {
+    "resid_over_water": 0.8936,
+    "drift_over_water": 1.1155,
+    "cos_water_drift": 0.6054
+   },
+   "monarch": {
+    "resid_over_water": 0.9098,
+    "drift_over_water": 1.1338,
+    "cos_water_drift": 0.6067
+   },
+   "gain_vs_cur": {
+    "resolve_X": 0.3958,
+    "L_only": 0.2821,
+    "L_only_XI": 0.2567,
+    "L_plus_X": 0.4644,
+    "monarch": 0.4547,
+    "L_plus_X_int8": 0.4644
+   },
+   "params": {
+    "X_bd128": 1179648,
+    "L_bd128": 327680,
+    "monarch_F": 663552
+   },
+   "bw_bf16": {
+    "X": 0.8,
+    "L": 0.2222
+   },
+   "cg": {
+    "X": {
+     "cg_iters": 60,
+     "cg_rel": 0.015019
+    },
+    "L": {
+     "cg_iters": 51,
+     "cg_rel": 0.000201
+    }
+   }
+  },
+  "model.language_model.layers.28.mlp.down_proj": {
+   "shape": [
+    2560,
+    9216
+   ],
+   "water_H": 3.636913299560547,
+   "cur": {
+    "resid_over_water": 1.807,
+    "drift_over_water": 1.4681,
+    "cos_water_drift": 0.4592
+   },
+   "cur_gain_vs_I": -0.2702,
+   "resolve_X": {
+    "resid_over_water": 0.6782,
+    "drift_over_water": 1.0684,
+    "cos_water_drift": 0.6848
+   },
+   "L_only": {
+    "resid_over_water": 0.7566,
+    "drift_over_water": 1.1326,
+    "cos_water_drift": 0.6738
+   },
+   "L_only_XI": {
+    "resid_over_water": 0.8763,
+    "drift_over_water": 1.068,
+    "cos_water_drift": 0.5919
+   },
+   "L_plus_X": {
+    "resid_over_water": 0.553,
+    "drift_over_water": 1.047,
+    "cos_water_drift": 0.737
+   },
+   "monarch": {
+    "resid_over_water": 0.5971,
+    "drift_over_water": 1.0704,
+    "cos_water_drift": 0.7234
+   },
+   "gain_vs_cur": {
+    "resolve_X": 0.6247,
+    "L_only": 0.5813,
+    "L_only_XI": 0.515,
+    "L_plus_X": 0.694,
+    "monarch": 0.6695,
+    "L_plus_X_int8": 0.6939
+   },
+   "params": {
+    "X_bd128": 1179648,
+    "L_bd128": 327680,
+    "monarch_F": 663552
+   },
+   "bw_bf16": {
+    "X": 0.8,
+    "L": 0.2222
+   },
+   "cg": {
+    "X": {
+     "cg_iters": 60,
+     "cg_rel": 0.012618
+    },
+    "L": {
+     "cg_iters": 55,
+     "cg_rel": 0.000134
+    }
+   }
+  },
+  "model.language_model.layers.30.mlp.down_proj": {
+   "shape": [
+    2560,
+    9216
+   ],
+   "water_H": 10.690537452697754,
+   "cur": {
+    "resid_over_water": 0.5444,
+    "drift_over_water": 1.0315,
+    "cos_water_drift": 0.7366
+   },
+   "cur_gain_vs_I": 0.6507,
+   "resolve_X": {
+    "resid_over_water": 0.4347,
+    "drift_over_water": 1.0104,
+    "cos_water_drift": 0.7849
+   },
+   "L_only": {
+    "resid_over_water": 0.4269,
+    "drift_over_water": 1.056,
+    "cos_water_drift": 0.7994
+   },
+   "L_only_XI": {
+    "resid_over_water": 0.6436,
+    "drift_over_water": 1.0445,
+    "cos_water_drift": 0.6928
+   },
+   "L_plus_X": {
+    "resid_over_water": 0.3604,
+    "drift_over_water": 1.0205,
+    "cos_water_drift": 0.8236
+   },
+   "monarch": {
+    "resid_over_water": 0.3695,
+    "drift_over_water": 1.0193,
+    "cos_water_drift": 0.819
+   },
+   "gain_vs_cur": {
+    "resolve_X": 0.2015,
+    "L_only": 0.216,
+    "L_only_XI": -0.1822,
+    "L_plus_X": 0.338,
+    "monarch": 0.3214,
+    "L_plus_X_int8": 0.3379
+   },
+   "params": {
+    "X_bd128": 1179648,
+    "L_bd128": 327680,
+    "monarch_F": 663552
+   },
+   "bw_bf16": {
+    "X": 0.8,
+    "L": 0.2222
+   },
+   "cg": {
+    "X": {
+     "cg_iters": 60,
+     "cg_rel": 0.063325
+    },
+    "L": {
+     "cg_iters": 60,
+     "cg_rel": 0.000583
+    }
+   }
+  }
+ },
+ "act_drift_rel": [
+  0.0,
+  0.0472,
+  0.06046,
+  0.08661,
+  0.08195,
+  0.08902,
+  0.09104,
+  0.09794,
+  0.10426,
+  0.10955,
+  0.1121,
+  0.11676,
+  0.127,
+  0.13591,
+  0.13934,
+  0.14888,
+  0.16002,
+  0.17203,
+  0.17461,
+  0.18529,
+  0.18048,
+  0.18306,
+  0.19365,
+  0.19744,
+  0.2004,
+  0.20358,
+  0.21353,
+  0.20813,
+  0.20977,
+  0.21347,
+  0.21827,
+  0.22173
+ ],
+ "elapsed_s": 247
+}

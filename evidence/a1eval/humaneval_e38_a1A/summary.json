@@ -1,0 +1,17 @@
+{
+ "subject": "humaneval",
+ "n": 164,
+ "score": 0.335366,
+ "seed": 20260806,
+ "sampling": {
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "presence_penalty": 1.5,
+  "top_k": 20,
+  "min_p": 0.0,
+  "repetition_penalty": 1.0
+ },
+ "max_tokens": 16384,
+ "generation_s": 510.7,
+ "scoring": "self-built A1-protocol scorer(見模組 docstring)"
+}

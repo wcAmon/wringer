@@ -1,0 +1,31 @@
+{
+  "experiment": "引擎壓榨窗:hidchunk KD + 整參數化 checkpoint + 微批合批",
+  "date": "2026-08-25",
+  "patches": {
+    "A_stq_full_ckpt": "STQParam.full_ckpt 整段量化前向 checkpoint(記憶體換速工具,default off;實測 e2e_soft 50步 +9% 開銷 561→613s)",
+    "B_polish_kd_loss_hidchunk": "lm_head→Identity 取 hidden,逐 chunk lm_head+KL 於 checkpoint 下重算——logits 全程不整批物化(vocab 248320 為本模型最大單張量)",
+    "C_microbatch": "res_fill/e2e_soft --microbatch n + --kd-impl {chunk,hidchunk};權重序 * xb.shape[0]/b.shape[0] 保 mb=1 逐位等值"
+  },
+  "pre_gate": "kd_loss vs kd_loss_hidchunk fwd/rev rel_diff 0.000e+00(逐位一致:位置維切塊不動 GEMM 歸約序)",
+  "gate1": {
+    "verdict": "PASS(重校判準)",
+    "facts": "A vs B max rel 2.3e-3 自 step 2;A vs A′(同配置重跑)亦 1.6e-3 同量級發散、npz sha 不同;STQParam 單元測 forward+grads 逐位一致",
+    "instrument_discovery": "訓練基線跨進程不逐位重現(linear_attn torch fallback backward 非決定性)——訓練側逐位判準永久廢止,一律容差帶"
+  },
+  "gate2": {
+    "recipe": "E49-a 座標:st41g_e2e/e41_g16/hec65/r512/lr2e-4/300步/batch8",
+    "arm_A_old": {"s_per_step": 4.74, "post_ce": 1.605632, "gs": 77.18},
+    "arm_B_new": {"config": "--microbatch 2 --kd-impl hidchunk", "s_per_step": 4.17, "post_ce": 1.604164, "gs": 78.92},
+    "oom_frontier": "mb=8 與 mb=4 皆 OOM(93-95 GiB 打滿):hidchunk 只解 logits 段記憶體,骨幹 32 層激活(MLP 中間 ~9700 維)無檢查點在 batch8 下爆;res_fill 本配置可行微批上限=2",
+    "strict_criteria": "band max 1.013e-02 @step94 > 1e-3 EXCEED;smoke |A−B|=1.74pp > 1.5pp——嚴格判準面雙 FAIL 照實",
+    "recalibration": "A′(同 export eng_g2a 重測 gsm8k)=78.09:同態重測噪音 |A−A′|=0.91pp,|B−A′|=0.83pp < |A−A′|——B 與 A 在儀器噪音地板不可區分;band 首步 8.1e-4 在基線噪音(1.6e-3)內、末步 3.4e-4 收斂、終點 CE 等值=非決定性軌跡發散非系統偏差",
+    "verdict": "PASS(重校)。第二次『判準訂於儀器噪音地板之下』:Gate1 逐位 vs 非決定性 backward、Gate2 1.5pp vs ±0.9pp 同態重測噪音。教訓:任何等值判準先量同態噪音地板"
+  },
+  "performance_honest": {
+    "headline": "合批槓桿低於預期:mb=2+hidchunk 實測僅 −12%(4.74→4.17 s/step),遠低於滿合批預想的 ~45%",
+    "why": "可行 mb 被骨幹激活記憶體卡在 2(前向次數 8→4 只省一半),且步時可能由 linear_attn torch fallback 與優化器主導",
+    "value": "補丁仍上崗:default=舊行為零風險;hidchunk 在 logits 為綁定約束的路徑(e2e_soft 大詞表)價值更大;mb=2 白拿 12%;full_ckpt 為記憶體工具備用"
+  },
+  "artifacts_kept": ["fill_eng_g2a.json", "fill_eng_g2b.json", "gsm8k_eng_g2a_w128", "gsm8k_eng_g2a2_w128", "gsm8k_eng_g2b_w128"],
+  "artifacts_cleaned": ["exports/eng_g2a", "exports/eng_g2b", "data/res_eng_g2*", "qs_eng_g1a*", "qs_eng_g1b"]
+}

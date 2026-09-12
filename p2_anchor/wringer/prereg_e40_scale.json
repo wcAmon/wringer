@@ -1,0 +1,55 @@
+{
+ "experiment": "E40 規模化:cal5(10× on-manifold 老師軌跡)全鏈 + O1 排空對照 + e2e 反向 KL 互補臂",
+ "status": "FROZEN",
+ "date_frozen": "2026-08-14",
+ "amendment_v2": "2026-08-14 語料節重寫(v1 @3533324 fill 220 步中止,無偷看官方分數):cal5 改 gen_cal5v2 分域流水+bleachers 題庫(Max 出題自解+程序驗證,4B 唯一 KD 老師),tilt 50/25/25→35/15/25/25 新增 ifshape 域;判準逐字不動(gate/R1-R6/H_rkl/H_tax 同 v1);H_scale 附註:語料軸為規模+形狀(ifshape 域)複合變因,PASS 歸因到軸不到成分,成分歸因需消融另 prereg",
+ "design_provenance": "用戶已裁路線:IFEval 首要、QAT recovery 進入規模化階段(大規模產料+迭代排水);E39 H_richcap FAIL=rank 軸關閉、槓桿在語料;−3.3pp 固定轉寫稅候選→O1 首選控制;RKL 互補臂用戶三問定案(fill/drain 不改、僅 e2e 單變因);新舊混料授權來自 O5 accumulate 紀律非 RKL",
+ "motivation": {
+  "scale": "cal4 僅 ~2M token,QAD(2601.20088)外錨 0.3–6B;E39 H_form +8.32pp 證老師軌跡流邊際價值陡峭;fill KD 尾段 0.068 無 plateau=同配方餵更多料仍有坡",
+  "iterate": "E39 B 54.90 > E38 A 50.65=迭代排水正迴圈成立,本輪從冠軍態起跳",
+  "hypotheses": {
+   "H_scale": "10× 語料抬 A 天花板(判:A-IFEval > 0.5923 = E39 A 58.23 +1pp)",
+   "H_rkl": "欠容量端 mode-seeking 互補(判:B_rkl-IFEval > B_fkl-IFEval +1pp 成立;< −1pp 淨負;其間無差)",
+   "H_tax": "O1 排空鏈裁 −3.3pp 稅歸屬(判:tax_o1 = 0.5490 − O1-IFEval;≥2pp=機器稅為主(content-independent)→O3 QA-LoRA 升 E41 首選;≤1pp=內容依賴→O2 DARE 過濾優先;其間=混合)"
+  }
+ },
+ "base": {
+  "state": "data/qs_st39r_e2e(E39 冠軍態 54.90,碼凍結)",
+  "ref_export": "exports/e39_3g(P0 gate)",
+  "teacher": "bf16 snapshot 945c40a4(全程不動,承 E37 D7)"
+ },
+ "corpus": {
+  "cal5": "gen_cal5v2.py 分域流水:10240 列×2048(agentic 3584/ifshape 1536/code 2560/math 2560=35/15/25/25);題面來自 bleachers-20260814 四庫(@36ff4ae:if 2047 sha 3d9caea/code 1244 sha e4da2f11/code_mbpp 927 sha 6cb748f5/math 2031 sha aed5135f)+人寫庫(agentic 種子 256tok 前綴、MBPP k3、starcoder k3、gsm8k-train);4B bf16 作答打包;同題多 run=per-request seed dseed+done+idx 獨立採樣;全列 8-gram 除汙;assembled sha 50b1d76e(CAL5_MANIFEST)",
+  "train": "calib_e40_train.pt = concat(cal5v2 10240, cal4 1023) 列級 shuffle(seed 20260814)shape [11263,2048] sha 208587b2(E40_TRAIN_MANIFEST)",
+  "o5_accumulate": "歷代合成(cal4 9.1%)+人寫成分(agentic 種子前綴 256tok+MBPP/gsm8k 人寫 prompt+bleachers spec 可重驗題面)並存,不 replace;manifest sha256 留痕"
+ },
+ "chain": {
+  "fill": "res_fill --tag res40 --state-tag st39r_e2e --ref-export exports/e39_3g --out exports/e40_A --r-res 512 --data calib_e40_train.pt --steps 3600 --batch 8 --lr 2e-4 --plateau-every 1e9(rank 512 定格=H_richcap FAIL;3600 步≈2.6 epoch,KD 尾段仍陡則記欠訓訊號不加步)",
+  "judge_A": "三科官方;gate:A-IFEval > 0.5490(冠軍線,ρ<1 下 B 奪冠必要條件)→ 排水;不過閘收卷歸因",
+  "drain": "train_res --tag st40r --state-tag st39r_e2e --res-tag res40 --calib calib_drain_e40.pt(train 前 128 列)--gsteps 5 --tau 0.5 --w-max 4 --tail-soft 10 --tail-ste 4 --learn-theta --holdout-frac 0.05 --resume",
+  "e2e_fkl": "e2e_soft --tag st40r_e2e --state-tag st40r --steps 600 --data train(對照臂)→ export e40_3g → B 三科",
+  "e2e_rkl": "e2e_soft --tag st40r_e2eR --state-tag st40r --kd-dir rev --steps 600 --data train(互補臂,與 FKL 同起點單變因)→ export e40_3gR → B 三科",
+  "o1": "train_res --tag st40o1 --state-tag st39r_e2e --res-tag res40 --res-zero(B≡0)同參排水 → e2e_soft --tag st40o1_e2e(fwd)→ export e40_o1 → IFEval only"
+ },
+ "judge_B": {
+  "R1_new_champion": "max(B_fkl, B_rkl)-IFEval > 0.5490 → 新冠軍(兩臂皆官方座標,IFEval 可比)",
+  "R2_rho": "ρ_if=(B_fkl−0.4455)/(A−0.4455) vs 0.757;A→B 固定稅絕對值 vs −3.33pp(E39)/−3.14pp(E38)",
+  "R3_h_rkl": "B_rkl vs B_fkl 三科並列;he/gs 為 RKL『合法拋棄』的落點量測(敘事預測:RKL 犧牲多樣性軸,IFEval 主行為軸不應受損)",
+  "R4_o1_tax": "H_tax 判準見上;O1 排水紀錄 comp/gdisc1 一併歸檔(機器行為在空水下的形態=歸因證據)",
+  "R5_measurements": "humaneval 降量測無地板(用戶裁定);gsm8k-B vs 77.10;RKL 臂若 600 步 kd 曲線未收斂→記『加步候補』不判死",
+  "R6_stability": "gdisc1_exit_rel ≤ 0.1724、nonfinite=0、holdout 無擴口(31/31 finalize)"
+ },
+ "discipline": {
+  "official_only": "判準只認官方科目;val CE/KD/水位 monitor-only(九筆反轉+型十+型十一在案)",
+  "no_cross_loss_compare": "FKL 與 RKL 的 kd_log 數值不可比(不同泛函);跨語料 loss 不可比照舊",
+  "single_var": "RKL 臂唯一變因=e2e 損失方向(同 drained 態、同步數、同料);fill/drain 損失形狀不動(fill=FKL 蓄廣度、drain=Huber 轉寫,用戶三問已裁)",
+  "fail_honest": "FAIL 照實;鏈斷點 E40_FAIL:<段>;RKL 臂失敗不汙染 FKL 臂結果(FKL 先行)",
+  "no_pt_in_git": ".pt/.npz 不進 git;manifest+sha256 留痕"
+ },
+ "budget_estimate": "cal5 v2 已產完(分域流水,GPU 空檔預產)→ 鏈餘:fill 3600 步 ~4.6h + A 三科 ~1.7h + drain ~1.5h + e2e×2 ~3.6h + export×3 ~0.6h + B 三科×2 ~2.4h + O1(drain+e2e+IFEval)~4h ≈ 19h",
+ "artifacts_plan": {
+  "evidence": ["CAL5_MANIFEST.json", "E40_TRAIN_MANIFEST.json", "fill_res40.json", "a1eval/{ifeval,humaneval,gsm8k}_e40_A/", "train_st40r.json", "train_st40r_e2e.json", "train_st40r_e2eR.json", "train_st40o1.json", "train_st40o1_e2e.json", "a1eval/*_e40_{3g,3gR}/", "a1eval/ifeval_e40_o1/"],
+  "states": "data/res_res40、data/qs_st40{r,r_e2e,r_e2eR,o1,o1_e2e}、exports/e40_{A,3g,3gR,o1}(.pt 不進 git)"
+ },
+ "next_ladder": "E41 候選(依 H_tax 分岔):機器稅→O3 QA-LoRA 組尺度水庫;內容稅→O2 DARE/TIES 過濾;H_rkl 成立→RKL 步數階梯+skew-KL;皆另 prereg。輪次推進:R1 過→下輪 cal6 以新冠軍態重生成(O6 GKD 學生軌跡入候選)"
+}

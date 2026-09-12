@@ -1,0 +1,26 @@
+{
+  "purpose": "同 export(st51c_e2e_x)同協議三科重跑=空回應翻騰同態基線+甲噪音地板(儀器地板紀律第三次應用)",
+  "date": "2026-08-25",
+  "runs": {
+    "r1": {"ifeval": 75.97, "humaneval": 54.88, "gsm8k": 80.36, "comp": 0.7469, "empties": {"ifeval": 35, "humaneval": 35, "gsm8k": 47, "total": 117}},
+    "r2": {"ifeval": 75.97, "humaneval": 51.83, "gsm8k": 78.77, "comp": 0.7306, "empties": {"ifeval": 36, "humaneval": 25, "gsm8k": 51, "total": 112}}
+  },
+  "noise_floor": {
+    "comp_band": [0.7306, 0.7469],
+    "comp_mean": 0.7388,
+    "per_subject_swing_pp": {"ifeval": 0.0, "humaneval": 3.05, "gsm8k": 1.59},
+    "doctrine": "0.80 里程碑裁決自此改兩跑均值制;單跑甲不再有里程碑裁決資格;換防裁決要求 Δ甲 > 0.016 噪音帶"
+  },
+  "empties_churn": {
+    "ifeval": {"r1": 35, "r2": 36, "stable": 13, "only_r1": 22, "only_r2": 23},
+    "humaneval": {"r1": 35, "r2": 25, "stable": 16, "only_r1": 19, "only_r2": 9},
+    "gsm8k": {"r1": 47, "r2": 51, "stable": 21, "only_r1": 26, "only_r2": 30},
+    "stable_total": 50,
+    "reading": "硬空核 50/117=43%;~57% 為臨界隨機態(IF 交集僅 13/35 最鬆)。E51 的 61 題『新發』大半即此隨機流動。修復策略=把閉合傾向推離臨界(語料軸),非逐題打靶;E52 機制閘應以兩跑交集(stable empties)裁,不用單跑總數"
+  },
+  "milestone_arithmetic_revision": {
+    "empties_full_elimination_ceiling": {"on_r1": 0.829, "on_r2": 0.794, "mean_basis": "~0.81"},
+    "implication": "均值制下空回應軸單獨過 0.80 為壓線;he 答題正確率(r1 69.8/r2 61.2 亦大擺)為第二引擎——E52 code 閉合完整重生成兼顧兩者"
+  },
+  "dossiers": "a1eval/{ifeval,humaneval,gsm8k}_st51c_e2e_w128r2"
+}

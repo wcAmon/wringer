@@ -1,0 +1,12 @@
+{
+ "seed": 20260806,
+ "hidden": 2560,
+ "ce_bf16": 2.0032389611005783,
+ "ce_rot": 2.0011804699897766,
+ "gate": 0.01,
+ "out": "exports/a1_rotL2_bf16",
+ "snapshot": "~/.cache/huggingface/hub/models--InternScience--Agents-A1-4B/snapshots/945c40a4aa6f534d434a353207b8d42ecf7a5293",
+ "Q_src": "evidence/p1_grouping/corkscrew/rot_Q_L2.pt",
+ "note": "R1 全局旋轉;text-only;RMSNorm (1+γ) 已折歸零;lm_head 解綁",
+ "timestamp": "2026-09-03T00:46:58.461922"
+}

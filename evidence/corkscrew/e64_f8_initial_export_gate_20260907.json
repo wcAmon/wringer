@@ -1,0 +1,47 @@
+{
+  "gate": "initial_full_export",
+  "complete": true,
+  "formal_training_or_benchmark": false,
+  "export_dir": "$REPO/exports/pe64_f8_direct_qatverified_20260907",
+  "source_state_tag": "pe64_f8_direct",
+  "source_commit": "b0bd3609e40d2dec454f841b75c9d21f45104a3d",
+  "source_state_identity_sha256": "56685cfb0dcebe5ba9ed93aec07fa464621214b33b839708307c7004656a48c9",
+  "source_state_identity_definition": "SHA256 of json.dumps(sorted layer filename-to-file-SHA256 mapping, sort_keys=True)",
+  "model_id": "InternScience/Agents-A1-4B",
+  "model_revision": "945c40a4aa6f534d434a353207b8d42ecf7a5293",
+  "source_layers": 32,
+  "target_tensors": 200,
+  "target_values": 3565158400,
+  "source_to_hf_bit_exact": true,
+  "packed_to_hf_verified": true,
+  "non_target_tensors": 523,
+  "non_target_values": 974107136,
+  "non_targets_equal_pinned_bf16": true,
+  "payload_bytes": 1086259200,
+  "codebook_bytes": 104000,
+  "permutation_bytes": 6193152,
+  "packed_npz_file": {
+    "bytes": 1062357295,
+    "sha256": "3bef0d05238d5e5fc57074c783a570d845a98d30ec9c41df123198c81109351f"
+  },
+  "all_export_files_bytes": 10160981785,
+  "manifest_sha256": "4c1292606fb06d1d6fec6cc3f963ae5222bde66545b4017e885efdb4c9a58a7d",
+  "export_wall_seconds": 106.58,
+  "export_peak_rss_KiB": 18311924,
+  "independent_source_and_non_target_audit_seconds": 18.99,
+  "storage_scope": {
+    "target_raw_payload_bits_per_weight": 2.4375,
+    "pinned_snapshot_serialized_bf16_values": 4539265536,
+    "embedding_values": 635699200,
+    "vision_values": 333514240,
+    "text_only_values": 4205751296,
+    "whole_hybrid_raw_bits_per_value_before_codebooks_permutations_container": 5.3479549903995744,
+    "text_only_hybrid_raw_bits_per_value_before_codebooks_permutations_container": 4.50325247572604,
+    "native_runtime_or_gguf_size_measurement": false,
+    "note": "The HF evaluation model is BF16 materialization from the packed archive. Archive compression, raw packed-target cost, and analytical hybrid-model cost are separate measurements. Non-target tensors remain BF16."
+  },
+  "limitations": [
+    "No benchmark or trained recovery result is represented by this gate.",
+    "A subsequently found off-grid soft-annealing defect is being fixed before backward smoke; initial hard export and its equalities are unaffected."
+  ]
+}

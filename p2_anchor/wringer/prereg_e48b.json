@@ -1,0 +1,24 @@
+{
+ "experiment": "E48b 鏈尾雙臂:he 加重混料 e2e(GPU)+ O1 固定稅 eval 側法證(零 GPU)",
+ "status": "FROZEN(2026-08-24;用戶排程總授權『目前排程我都同意,排程到達自動發射』;排水軸封盤 @9c1b61d 後之佇列第 3 級)",
+ "arm_A_hecode_tail": {
+  "single_variable": "鏈尾 e2e 資料混比:cal6 code 52.5% → 65.0%(code part 12,600 全保;agentic 1831/ifshape 2202/math 2143/cal4 609 等比縮;總 19,385 列)。劑量不變:steps 1200 × batch 8(檔案大小不進劑量帳)",
+  "assembly": "純 CPU 從既有 part 檔重合裝(gen_hecode_mix.py,seed 20260824,列級 shuffle;無新生成=除汙繼承 part 級 8-gram 切除)",
+  "command": "e2e_soft --tag st47d_hec_e2e --state-tag st47d --data evidence/p1_grouping/calib_e42_train_hec65.pt --steps 1200 --batch 8(其餘超參=e2e_soft 預設,與 E48 逐字同)",
+  "duel": "同態對決:st47d_hec_e2e vs st47d_e2e(甲 0.6982;IF 69.87/he 48.78/gs 78.85)——差異唯一來源=混比",
+  "judges": {
+   "primary": "甲 composite vs 0.6982(>即封新冠+E49 stage_tail 槽位改填 hec65)",
+   "he_axis": "he vs 48.78(stretch 線;+1.22 過 50 即 he 軸新高)",
+   "no_regress": "IF ≥ 67、gs ≥ 76(容忍鏈尾分岔型態內的既知交換,超出即記損傷)",
+   "kill": "甲 < 0.60 或任一科崩塌(he<40/IF<55/gs<70)",
+   "monitors": "train loss/val CE 一律 monitor-only(17 筆在案)"
+  },
+  "budget": "~3.5h e2e + ~1.5h 三科 = ~5h"
+ },
+ "arm_B_o1_evaltax": {
+  "nature": "零 GPU 法證,與臂 A 平行:解剖現任冠軍 st47d_e2e 的 IFEval strict 失敗案(541-374=167 案)+ 窗態 st47d(155 案),分類:eval 側工件(截斷/空回應/思考未閉合/解析器切壞)vs 真違規",
+  "hypothesis": "E39 −3.33 ≈ E38 −3.14 跨臂恆定殘差的 eval 側成分;若工件占比 ≥3pp(~16 prompts)→ 固定稅部分坐實,量尺修正候選回用戶;<1pp → eval 側否證,殘差歸模型損傷",
+  "judges": "分類計數為主證;修 runner 與否是量尺變更=回用戶裁,不自行動量尺"
+ },
+ "date": "2026-08-24"
+}

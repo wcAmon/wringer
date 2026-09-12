@@ -1,0 +1,56 @@
+{
+ "experiment": "E35 形變降元第二級:7→3 單走廊(c: 0.5→0,c 收歸 α=態三)",
+ "status": "FROZEN",
+ "smoke_result": "GPU smoke PASS(08-12 13:0x):2窗×2ep 訓練+collapse+extract ✓;state 落盤 grid=3/c=0/T2≡0 ✓;morph3_flow/logit_c_final/loss_holdout/ridge_traj_to_one 欄位齊 ✓;resume 3元 材化(k2_weight c=0)resume-skip ✓",
+ "user_directive": "用戶 08-12:「E35維持你的設計」——7→3 滑動走廊、走廊拉長至少 2×;E34 已收卷不重編號",
+ "hypothesis": "訓練驅趕(herding)可在 3.4× 於 E34 的容量落差(2.807→1.585 b/w)下保住超線性律的能力保留;7元 ±0.5α 檔(ridge,41.4% 質量)漸近坐在 3元 終態決策邊界上,分流由梯度決定而非投影",
+ "math": {
+  "layout_7": "[−(1+c), −1, −c, 0, c, 1, 1+c],定義域 (0,1) 值序穩定,無 9→3 直通的 c=0.5 換位點",
+  "collapse": "c→0:±c 併 0、±(1+c) 併 ±1;終值 = T1,c 收歸 α(態三);dθ 間隙寬 [c,1−c,c,c,1−c,c] → 存活遮罩 [1,4]",
+  "terminal_boundary": "θ = (1+c)/2 → 0.5α(+dθ)",
+  "msc_gradient": "C5 實測 ∂MSE/∂c|₇,₀.₃ = −0.264 背對 0——合併逆 MSE 梯度,課程強制必要(同 E34 C4 結論)"
+ },
+ "p0_diagnostics": {
+  "source": "diag_e35_p0.json(st7m,CPU)",
+  "occupancy": {"v0": 0.2408, "v05": 0.4137, "v1": 0.2256, "v15": 0.1199},
+  "moving_mass": 0.5336,
+  "blocks_outer_dominant_frac": 1.4e-05,
+  "reading": "過半質量須搬運(E34 僅搬單盆地)→ 佐證 2× 走廊;α 補償壓力可忽略"
+ },
+ "start_state": {
+  "state_tag": "st7m",
+  "rationale": "窗態非 e2e 態:用戶 E33 已裁「e2e 屬飄移域不插中間」;且 train_st resume 不消費 LoRA 載體,自 e2e 態起跑會靜默丟棄其修復"
+ },
+ "curriculum": {
+  "epochs": 60, "win": 2, "stride": 1, "gamma": 0.9,
+  "plateau_frac": 0.62, "s_plateau": 2.0, "s0": 30.0,
+  "morph_lo": 3.0, "morph_hi": 33.0, "m_schedule": "linear",
+  "segments": "平台 ep0-36(s=2)| 走廊 [3,33](30ep,5× E34 的 6ep,全程在平台內)| 收斂緩衝 ep33-36(E34 沒有的段:collapse 不直撞退火)| s 退火 ep37-53(2→30,17ep≈E34 的 18)| STE ep54-59",
+  "corridor_rate_rationale": "用戶 08-12 終裁 5×:st9 實測 E34 moving_mass 59.0%(±0.4 26.8%+±0.6 21.1%+±1.6 11.1%)≈ E35 的 53.4%,差異全在位移(0.1α vs 0.5α=5×);α 歸一化位移速率:E34 實證安全 0.0167α/ep,5×(30ep)→ 0.0167α/ep=完全速率匹配——E35 不賭任何速率餘裕,失敗歸因純落路線而非排程;速率-損傷曲線第二點由 loss 跳變+holdout gap 提供,後續降元走廊查表定",
+  "lora_r": 64, "learn_theta": true,
+  "calib_sweep": "calib_train.pt(cal1,實測 128×2048=262k tokens,同 E28/E33/E34;不擴增不合併 cal2)",
+  "cal3_calculation": "用戶 08-12 問是否需 cal3,計算裁定不需:①容量比 49:1(每窗可訓 ~13.6M=LoRA 7.3M+α 6.3M vs 每 epoch ~6.7e8 稠密激活約束);②決定性:st9s2 已是『加倍優化+全新 4× 語料(cal2)』實驗,窗 loss 31/31 改善官方仍 −4.07pp=失敗模式在目標函數層級非樣本層級,cal3 解錯題;③走廊 epoch 追移動目標(c 在滑),非 sweep2 式靜態過度打磨;④sweep/e2e 語料分離=衛生性質。觸發條件:收卷時 holdout gap 在走廊段系統性擴大 → v2 管線(換 seed+第三組不相交源檔)建 cal3 作後續臂",
+  "holdout_frac": 0.05,
+  "single_variable_note": "僅動目標檔位+走廊長度;凹形 m(§6c 候選二)留作失敗後第二臂,不混入"
+ },
+ "run_cmd": "PYTHONPATH=. .venv/bin/python -m p2_anchor.corkscrew.train_st --grid 7 --tag st3m --state-tag st7m --epochs 60 --win 2 --stride 1 --gamma 0.9 --plateau-frac 0.62 --s-plateau 2.0 --morph-to 3 --morph-lo 3 --morph-hi 33 --learn-theta --holdout-frac 0.05 --resume",
+ "chain": "sweep(st7m→st3m)→ e2e_soft(--tag st3m_e2e --state-tag st3m --steps 600 --batch 8 --data calib_train_512_v2.pt)→ export exports/e35_3m --verify → 官方 IFEval(主判)+ humaneval(記錄)同台",
+ "criteria": {
+  "M1_survival": "官方 IFEval strict(e35_3m)> 0.375(= E31 3元 e2e 冠軍 0.3549 + 2pp,同時擊敗線性律座標 0.355=39%×bf16 0.90943)→ 路線存續",
+  "M1plus_narrative": "≥ 0.45471(50% 保留)→ 線性律質變破壞(對照:混元 2.06 b/w 才 49% 保留);與 M1 分開裁,不綁存續",
+  "M2_record": "humaneval 照跑照記,不設門檻(3元 容量 régime 下 85% 懸崖無意義,誠實記錄劣化)",
+  "M3_measurement_duty": "不設 PASS/FAIL(E34 M3 判別力失敗的誠實處置)。必存三件:①morph3_flow(ridge/outer 流向+null_flip_frac:終碼 vs 起始 u 直投 3元 的翻轉率,null=靜態投影預測≈0)+ ridge_traj_to_one 逐 epoch 軌跡;②logit_c_final 逐模組(修 E34 量測缺口);③loss 逐 epoch 曲線(collapse 前後跳變)+ loss_holdout gap(過擬合偵測)",
+  "M4_stability": "gdisc1 median ≤ 0.1724(2× E34 median 0.0862)且 nonfinite=0;banding 監測不裁決"
+ },
+ "anchors": {
+  "bf16_ifeval_strict": 0.9094269870609981,
+  "e31_3gon_e2e_champion": 0.3549,
+  "linear_law": "36.8 點/b·w;3元 1.585b 座標 ≈39% 保留 ≈0.355",
+  "e34_7gon_endpoint": 0.8650646950092421,
+  "delta_bits": "2.807→1.585 = 1.222b(E34 的 3.4×)"
+ },
+ "budget_statement": "sweep ~115min(E34 54min × 60/30 + holdout ~5%)+ e2e ~3.5h + 導出/裁判 ~0.7h + humaneval ~0.2h ≈ 7h;無同預算 from-scratch 3元 對照臂(E31 35.49 為歷史錨,非同代同預算)",
+ "engineering_notes": "stq.py _MORPH_STEPS 泛化(9→7 / 7→3);train_st C_K2 洩漏修復(SoftGrid/STQParam c 一律從 state 讀,E34 未爆因 st9 c 恰=0.6);下游稽核:k2_weight/export 位面包/e2e_soft 對 c=0、n=3 全安全;CPU 三檢全過(morph C1-C5、STQParam 7→3 全生命週期 smoke、P0)",
+ "freeze_condition": "GPU smoke(--smoke + --holdout-frac 0.2,E33b 收卷後)通過 → status: FROZEN → 上機",
+ "timestamp": "2026-08-12T11:05+08:00"
+}

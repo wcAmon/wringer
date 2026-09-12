@@ -1,0 +1,46 @@
+{
+  "experiment": "E53 整軌長窗:8k×b1 四科整軌(截斷保留),訓練分佈=推理分佈",
+  "status": "FROZEN",
+  "date": "2026-08-26",
+  "user_rulings": {
+    "production": "max_tokens 8192,截斷不丟棄——(1) 每域截斷率=P(bf16 思考>8k @temp1.0) 模型特性儀器;(2) 截斷前綴 KD=student 在長思考區段貼齊老師表徵(8k 截斷處 logits 表徵可望部分外插對齊老師 8k 後行為)",
+    "D1_dose": "A 案:純整軌 + λ_close 256→32 下調(曝險天然高);λ_post 16×8 不變",
+    "D2_mix": "四科均分 900/域",
+    "D3_scale": "8k 檔(引擎閘裁定);16k 升級路徑保留(需 mb 級骨幹激活工程)"
+  },
+  "hypothesis": {
+    "H_regime": "失律發生於 8-16k 深思考=2048 訓練域外;整軌長窗納入長弧收尾+消滅堆砌偽影(截斷示範拼貼/跨文件狀態汙染/抖動帶人工位置)",
+    "H_domain_full": "全科各自閉合整軌 → E52 蹺蹺板(買 he 賣 IF)改全升(E38 域餵料定律)",
+    "falsifier": "8k 整軌仍推不動 he stable 空核 16 → 空核正式歸量化殘留軸,語料軸封盤"
+  },
+  "engine_gates_adjudicated": {
+    "smoke_8k_b1": "PASS(full-ckpt+hidchunk,3.8s/step 12步實測)",
+    "smoke_16k_b1": "OOM×2(裸差 288MiB;expandable_segments 仍差 90MiB)→ 16k 關閉",
+    "mask_unit_test": "PASS(closure×pad mask 乘積、/w.sum() 歸一,pad 位零權重)"
+  },
+  "production": {
+    "gen": "gen_e53_longtraj.py:四科 bank(gen_cal6 BUILDERS)各 900 題、bf16 教師(釘定 revision)temp 1.0/top_p 0.95/max_tokens 8192;全數保留(閉合+截斷雙群體);row=prompt+gen 前 8192 token、pad 0、lens 另存;8-gram 除汙列級切除;SEED 20260827",
+    "instruments": "per-domain closure_rate_8k / p_exceed_8k(主儀器,終結 E52 高溫長尾懸案:3072 時 6.3%)/ 軌長四分位 / closed_in_window",
+    "no_gates": "產線無 hard gate(全保留設計);數字照實入卷"
+  },
+  "main_arm": {
+    "tag": "st53_e2e",
+    "coords": "state st47d、--data calib_e53_traj.pt --lengths calib_e53_len.pt、steps 1200、batch 2 microbatch 1(=grad-accum 2,16384 tok/優化步冠軍等值)、gamma 0.8、s0 30、lora_r 64、lr 1e-4/3e-4、clip 1.0、kd fwd、--full-ckpt --kd-impl hidchunk、λ_close 32 / λ_post 16×8",
+    "engine_patch": "e2e_soft --lengths(pad 位 loss 權重歸零,default None=舊行為零風險)",
+    "single_principle_note": "vs 冠軍改動=語料生成域+窗長+λ 下調;合併敘事:訓練分佈對齊真實生成分佈;誠實記多參數"
+  },
+  "judges": {
+    "protocol": "雙跑均值制(σ_mean≈0.006,churn 基線 @c2dc640);官方 benchmark 唯一裁判",
+    "primary": "mean 甲(兩跑)> 0.750 → 換防",
+    "milestone": "mean 甲 ≥ 0.80 = 計劃收官",
+    "mechanism": "stable 空(兩跑交集)< 44(E52 值)且 he stable < 16(首次擊穿=語料軸勝訴)",
+    "kill": "任一科 mean < 冠軍科 mean − 5pp(if<70.97 / he<48.36 / gs<74.57)→ FAIL,st51c 衛冕",
+    "monitor_only": "訓練曲線/val CE/閉合率/p_exceed_8k 不參與裁決"
+  },
+  "consolidation": {
+    "if_win": "16k 引擎工程解鎖 → 同配方升檔重跑",
+    "if_fail_he_core_unmoved": "falsifier 觸發:語料軸封盤,轉迴圈硬核小臂/量化殘留軸",
+    "not_scattered": "單矛;E53 裁決前不開平行臂"
+  },
+  "schedule_est": "gen 3600 題×8k 預算 ~1.5-2.5h → 合裝(含產線內)→ e2e 1200 步×~7.6s ≈ 2.6h → export ~10min → 雙跑 eval ~1.2h;總 ~5.5-7h"
+}

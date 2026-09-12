@@ -1,0 +1,49 @@
+{
+ "experiment": "E32 v3 混合多元+細窗整合配方(Corkscrew-Mix,g32 基座,穩定路線)",
+ "preregistered": "2026-08-10",
+ "frozen_before_gpu": true,
+ "supersedes": "prereg_e32v2_mixk.json @d713548(未上 GPU 即 amend,乾淨取代)",
+ "amend_reason": "E31 e2e 開牌 flip_vs_input=0.0000:全域 KD 梯度在 lr 1e-4 下零翻轉 → 搜索路線(γ0.9 慢退火買翻轉時間、r128 買重指派容量)證據失效,旋鈕剔除;e2e 退化為全域 α 打磨器,改條件保留。細窗(win2/stride1)收進:更密的 bf16 中間態錨定 = 穩定路線,wall-clock 持平(2×31=62 vs 4×15=60 層次epoch)",
+ "user_directive": "E32 成立多元量化+逐窗退火+細窗(用戶 08-10);整合式非分散;g32 基座;檔位補在窗 loss 斷崖處(末窗 72× 首窗)",
+ "hypothesis": "翻轉熵框架(三重實證:E30 flip 8.81%/E31 窗段 8.40%/E31 e2e 0.0000):3元恢復=指派搜索問題,本地預算搜不動;9元檔位夠密→免搜索。混合多元把檔位加在敏感度斷崖處+細窗把重建錨定加密,同位元預算下應勝過均勻 3元+細粒 α(E31 zt 28.65)與均勻 3元 g32(E30 st3 27.54)",
+ "recipe": {
+  "quantize": "quantize --grid 3 --grid-map '0-15:3,16-27:5,28-31:9' --block 32 --tag gmix32(斷崖分配:窗 loss 於層16起爬升、層28-31爆炸)",
+  "train_st": "train_st --grid 3 --tag stmix --state-tag gmix32 --learn-theta --resume --n-calib 512 --calib calib_train_512.pt --win 2 --stride 1(γ=0.8 預設、r64 全域預設;LoRA 保留=唯一逐權重翻轉通道,不砍)",
+  "e2e_conditional": "若 E31 e2e strict > E31 zt strict(28.65)→ e2e_soft --tag stmix_e2e --state-tag stmix --steps 600 --batch 8(α 打磨器有效,保留);否則砍 e2e,窗段直接匯出,省 ~1.5h。條件於 E31 開牌前凍結,鏈內自動判",
+  "export": "export --verify(位面包 meta.grid=0 混合,逐 tensor .grid)",
+  "judge": "官方 IFEval strict prompt-level,vLLM 鏈,錨 bf16 90.94"
+ },
+ "bit_budget": {
+  "e32v3": "T:(16*1.585+12*2.322+4*3.170)/32=2.06 + α g32 0.5 = 2.56 b/w",
+  "e31_ref": "T 1.585 + α g16 1.0 = 2.585 b/w",
+  "note": "同預算對決:檔位派 vs 粒度派;位面包實體儲存同為 4b idx,此為理論表示位元"
+ },
+ "baselines_backfilled": {
+  "e31_zt_strict": 28.65,
+  "e31_e2e_strict": "開牌後回填(裁判進行中);回填不改判準",
+  "e30_st3_strict": 27.54,
+  "lp300_strict": 30.68,
+  "bf16_anchor_strict": 90.94,
+  "e31_window_ce": 2.8186,
+  "e31_g3b16_zerotrain_ce": 2.494,
+  "e31_winlast_loss": 0.035118
+ },
+ "criteria": {
+  "Y1_init": "gmix32 零訓練 val CE < 2.494(g3b16)——檔位在 init 即應勝細粒 α",
+  "Y2_cliff": "stmix 深段窗(層28+)末 loss < 0.0351 的 1/5——檔位修斷崖的機制證據;揭露:win2 與 E31 win4 窗定義非同構,此為 proxy 判準非嚴格同構比較",
+  "Y3_zt": "e32_zt strict > 28.65(E31 zt)",
+  "Y4_main": "e32 最佳臂 strict > max(E31 e2e strict, 30.68) + 2.0(541 題,+2≈11 題超抖動;E31 e2e 開牌後代入)",
+  "Y5_honest_band": "最佳臂保留率 ∈ [40%, 80%](vs 90.94)",
+  "Y6_stability": "訓練 loss 全程有限;無帶化連發;若跑 e2e:STE 段 kd < soft 末段 ×2"
+ },
+ "escape_clause_g16": "E31 e2e strict ≥ 55.0(進帶=大幅打臉 g32 判斷)→ 起跑前 amend:3元段(層0-15)改 block 16(+0.25 → 2.81 b/w),amend 入檔並揭露;鏈腳本內建 guard,觸發即停不自動改",
+ "branches": {
+  "Y4_pass_ge55": "Corkscrew-Mix 定為主配方 → 四科實評該臂 + IFBench;後續消融歸因(win2 vs win4、gmix vs 均勻)與 5/9 邊界掃描",
+  "Y4_pass_lt55": "邊界上移掃描(16→12 或 28→24,位元預算重算揭露)",
+  "Y4_fail_Y1Y2_pass": "機制過但分數不動 → 補償/還原分析(冗餘假說),轉資料軸或全參",
+  "Y4_fail_Y1Y2_fail": "混合分配實作疑點,查 grid 傳播與 GPTQ 逐檔行為後單臂重跑"
+ },
+ "queue_order": "E31 收卷判 V1-V6 → E32v3 鏈(quantize ~5min + 冒煙 + 窗訓 win2×31 ~2.7h + 條件 e2e ~1.5h + 裁判 ~0.75h/臂)→ 四科錨定過夜(bf16/e28_qat/當日最佳 3元系臂/lp300)",
+ "disclosure": "混合 grid 引擎與 CPU 冒煙同 v2 @d713548;win/stride 為既有參數,零程式碼變更;鏈內 2 窗 GPU 冒煙(獨立 tag 即刪,不裁決);γ0.9/r128 旋鈕之剔除依零翻轉證據,非結果揀選(兩旋鈕從未上 GPU)",
+ "seed": 20260806
+}

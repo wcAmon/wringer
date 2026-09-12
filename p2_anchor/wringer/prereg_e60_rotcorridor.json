@@ -1,0 +1,79 @@
+{
+ "id": "E60",
+ "status": "KILLED @S0′(H_carrier 探針級 FAIL:KD 儀器 r_KL 0.272 vs 隨機 0.237 <0.50;旋轉軸封盤,S2/S3 不點火;S1 工具保留)",
+ "date": "2026-09-03",
+ "title": "旋轉載體走廊:T2 退火 × 可學習全局旋轉當共適應載體(非前處理)",
+ "origin": {
+  "user_hypothesis": "三元後 hidden 平面高峰低谷被切除故吸不進更多殘差;多一個旋轉自由度讓平地凸起補峰=一樓(T1)轉方向去接二樓(T2/LoRA)壓下來的東西",
+  "E60_probe": "隨機 Q 零訓練 comp 0.0896=直投地板 1.31×(PARTIAL);配對 CE −0.31;逐模組誤差量級不降(中位比 1.052)而 CE 降=增益在誤差幾何",
+  "E60_L": "@dde22ea MID:凍碼學旋轉 r_frozen 0.82→0.88(val CE 2.146/2.103)vs 折入重解 r_learned 0.468(+0.08 vs 隨機 0.388,一輪飽和、迭代不累積)。分岔=旋轉只有『與固定碼共適應的連續載體』用法有大期望值;前處理用法小。旋角 RMS ~0.10 rad。",
+  "literature": "QuIP/QuIP# 不相干性(幾何型增益,吻合)、SpinQuant 學>隨機(成立但小)、QuaRot R1 全局折疊(等價閘工具已建);文獻增益=旋轉+適應,本鏈坐實兩者不可拆"
+ },
+ "hypothesis": {
+  "H_carrier": "全局正交 Q(3.3M 參數,線上乘或材化)作為與三元碼共適應的連續載體,可承接 E37 系『儲存軸可修』的角色,且比 r128 旁路更小、可與碼一起退火(碼可翻)而非只在凍碼上補",
+  "H_stage": "9→3 的 −1.58b 劑量拆成 9→5(−0.85b)→3(−0.74b)兩段,落在 E35 劑量律 −0.36b OK / −1.22b 反噬之間的未知帶;旋轉載體在每段吸收,對照 E35 單走廊 28.65 與 E59 直解 17.74",
+  "falsifiable_by": "S0 官方讀數(proxy 反轉第 13 型候選)、旋轉開關消融臂(Q 凍結 vs 可學)、逐段官方讀數"
+ },
+ "stages": {
+  "S0_carrier_official": {
+   "what": "零訓練:載體態(codes g3rotL1 + Q_L2,凍碼 val CE 2.1028,r_frozen 0.876)材化 dense(export_rot.py,等價閘 |Δ|=0.0001 PASS)→ vLLM 三科",
+   "status": "RUNNING(01:01 起,~03:30 收;Monitor 已掛)",
+   "bands": "PASS_STRONG comp≥0.50(旋轉載體單獨已達 E32 級)/ PASS ≥0.25(≥2.8× 隨機旋轉,proxy 方向坐實)/ PARTIAL 0.15-0.25 回用戶 / FAIL <0.15(第 13 型 proxy 反轉,旋轉降格為固定 Hadamard 前處理,S1 起不點火)",
+   "reads": "分科=載體對 IF/he/gs 的不均勻性(E38 分科解耦定律同構);空回應數=失律共現讀數"
+  },
+  "S1_engineering": {
+   "est": "~1d",
+   "items": [
+    "(a) stq/e2e_soft 接 Q 載體:全局 Ctx.Q=Q0·Cayley(A) 施於每個 STQParam 目標的激活側(讀 x@Q、寫 @Qᵀ),A 為獨立 lr 群;與 LoRA/logit/dθ 並存;extract 後 Q 隨 qs 狀態落盤(rot_Q_<tag>.pt),export_rot 材化",
+    "(b) t2drain --grid {5,3} 分段:GPTQ 直解 gptq_grid(W, Sig, 5) 走 9→5,再 5→3;窗內 H 於當前 Q 基底累積(x@Q);窗階段 Q 凍結(引擎 X 快取語義不容全局參數中途變動),段間 e2e 共適應",
+    "(c) 儀器欄(診斷,不裁決):全局 Q 主角 RMS 軌跡;逐層 μ_l(讀者入口激活不相干性 max|x|√H/‖x‖,Q 前/後)、逐層 err_H 比值(proberr)、逐層碼翻轉率;逐層旋角需逐層 Q_l——列入 S1 探針 rot_learn v3(per-layer Q_l,val CE only,~5min×2)量『逐層旋角分佈 vs 全局單 Q 的 CE 差』,決定主臂是否需逐層 Q(部署帳 32×6.5MB=420MB vs 全局 6.5MB)",
+    "(d) 等價閘三處:Q=Q0 起點 val CE≈載體態;窗鏈 vs 全模型 rel≤1e-6(既有);材化 vs 線上 |Δ|<0.01",
+    "(e) 折 γ 基底底模 exports/a1_fold_bf16(rot_fold --identity)+ 9元 藍圖 g9f 同基底重解 + L9(9元 上凍碼學旋轉=S3 段一 Q 起點)"
+   ],
+   "status": "CODE READY @本 commit:rot_carrier.py(RotCarrier/attach 單槽記憶/surgery)、e2e_soft --rot-q/--rot-lr/--rot-frozen、rot_fold --identity、rot_learn --per-layer、t2drain --grid 5/--base-dir/--rot-q、quantize --base-dir;煙測鏈 e60_s1s2_chain.sh 排隊等 S0"
+  },
+  "S2_ablation_arm_alpha": {
+   "what": "旋轉開關消融雙臂(3元 直接;Hadamard 支已裁省):起點=載體態(g3rotL1+Q_L2),e2e_soft grid3 + bf16 老師 KD 冠軍配方(E51:calib_e42_train_hec65、1200 步、batch 8、λ_close 256);α1 Q 可學(lr 1e-4)+LoRA、α0 Q 凍結+LoRA(=E37 系對照)",
+   "est": "每支 ~3.5h 訓練(冠軍 e2e 實測 12788s)+ 2.5h 官方 = ~12h 雙臂",
+   "judge": "主判 α1 comp vs α0 = 旋轉載體在退火中的邊際貢獻(旋轉開關);α1 vs 冠軍 st51c_e2e 甲 0.7469 作絕對參考;he ≥ 冠軍 54.88 為第二判準(碼軸兩票定罪帶)",
+   "falsifier": "α1 ≤ α0 + 噪音帶(±0.016)⇒ 旋轉載體在可翻碼退火中無邊際價值(增益已被 LoRA 載體吞掉),H_carrier FAIL,S3 不點火"
+  },
+  "S3_corridor_beta": {
+   "what": "T2 退火分段走廊 9→5→3 × Q:起點 qs_g9(comp 0.9226);段一 t2drain grid5(Q 凍結於 Q_L2 同構之 9元 版,S1 另學)+段間 e2e(Q 可學)→ 5元 官方;段二 grid3 + e2e → 3元 官方",
+   "est": "每段 ~1d 鏈 + 2.5h 官方 = ~2.5d",
+   "judge": "段一 ρ_5=comp_5/0.9226 ≥0.85 才進段二(劑量律中點讀數,任何結果入卷);段二 主判 comp_3 > 冠軍 0.7469、he ≥ 0.70×he_9(61.9);對照 E35 28.65/E59 17.74",
+   "falsifier": "段一 ρ_5 < 0.70 ⇒ −0.85b 已反噬,分段假說 FAIL;段二 落點探針 agree_g3 ≥0.99 ⇒ 沒跳出盆地一,判死(沿 E59 閘)",
+   "gating": "僅在 S0 ≥PASS 且 S2 α1 > α0 時點火"
+  },
+  "S0_prime": {
+   "what": "KD 儀器重做載體探針:codes g3rotL1、Q0=Q_L1,KD 對 bf16 老師(fwd KL,λ_close 256/16/K8)150 步;量測 held-out KL(calib_val)r_KL=1−KL/KL_ctl;閉合 logP 儀器",
+   "gate": "r_KL≥0.50 且 closure logp med ≥ −0.03(不劣於直投 −0.028)→ 官方;帶同 S0",
+   "falsifier": "r_KL<0.50 = 正確目標下旋轉載體收不回半個 KL 缺口 → H_carrier 探針級 FAIL,走廊封盤"
+  }
+ },
+ "kill_gates": {
+  "S0": "FAIL 帶 ⇒ 全走廊不點火,旋轉封為前處理配件",
+  "S2": "α1 ≤ α0+0.016 ⇒ S3 不點火",
+  "S3": "段一 ρ_5<0.70 或 落點未跳 ⇒ 停",
+  "fault": "故障=修理+resume,不算裁決;鏈逐階段冪等"
+ },
+ "judges_summary": {
+  "primary": "官方三科 comp(IFEval strict prompt / humaneval / gsm8k 對 92.79/94.51/95.53);val CE 與逐層儀器一律診斷不裁決(第 5-12 型反轉紀律)",
+  "champion_line": "st51c_e2e 甲 0.7469(IF 75.97/he 54.88/gs 80.36);任何臂封冠須雙跑均值制(churn ±0.016)"
+ },
+ "deployment_account": "三元碼 + Q(2560² bf16=6.5MB,線上每子層入口/出口各一次 2560² 乘,~5-10% 算力;或折成 dense 僅供評測);Hadamard 版可退化為 n log n",
+ "cost": "S0 3h(運行中)/S1 ~1h 煙測/S2 ~12h/S3 2.5d;零新語料",
+ "deferred": [
+  "逐層 Q_l 主臂(視 S1 探針)",
+  "MLP 中間維 online Hadamard(R4 型)",
+  "9元 上 Q 蓄水(Phase A 倒轉次序仍守:先證管道)",
+  "E55 #70"
+ ],
+ "relation": "冠軍 st51c_e2e 不動;E59 藍圖臂封存;E60-probe/E60-L 為本 prereg 的期望值探針(已裁)",
+ "user_rulings_embedded": [
+  "先零訓練探針再投注(09-02)",
+  "T2 退火時 T1 多一個旋轉自由度(09-02)",
+  "記錄旋轉角度逐層及平均對應能力恢復(09-02)=S1(c) 儀器欄",
+  "選項 2 起草走廊 prereg(09-03)"
+ ]
+}

@@ -1,0 +1,450 @@
+{
+ "experiment": "E62a 窗尾 M 重解(tail-LS)+ holdout 回退閘",
+ "verdict": "FAIL_FALSIFIER(P3):27/27 窗回退閘全撤;用戶裁中止於窗 26(2026-09-05 08:0x,用戶「停 改跑E62b改版」);位元=st61c(逐位還原),官方分數未跑(必為 0.889 復現)",
+ "prereg": "p2_anchor/corkscrew/prereg_e62a.json(FROZEN @a2839db)",
+ "state": "st62a 中止(qs_st62a 層 00–26 位元=st61c);未 export",
+ "windows_done": 27,
+ "reverted": 27,
+ "tailLS_gain": {
+  "mean": 0.1802,
+  "min": 0.107,
+  "max": 0.309
+ },
+ "hold_ratio": {
+  "mean": 1.3735,
+  "min": 1.194,
+  "max": 1.724,
+  "gate": 1.02
+ },
+ "corr_gain_vs_hold": 0.064,
+ "predictions": {
+  "P1 ρ∈[0.895,0.910]": "N/A(未跑官方;位元=st61c ⇒ ρ=0.889 復現)",
+  "P2 final_level<0.9×st61c": "FAIL(全撤 ⇒ final_level=st61c)",
+  "P3 回退≤3/31;≥8 ⇒ 系統性背離": "FALSIFIER 達成:27/27,hold× 1.19–1.72,無一窗低於 1.02",
+  "P4 he/IF 不退": "N/A"
+ },
+ "attribution": {
+  "mechanism": "尾段 14 ep(soft 10+STE 4)梯度已把 M 放在『終態碼下前向窗損失』極小;tail-LS 換成逐模組 W 空間 ‖W_t−C·M‖_H 極小,兩極小點不同;LS 解拆掉跨模組/離水向補償(探針 2 §1.3),holdout 惡化 19–72%",
+  "why_inrun_LS_works": "comp 事件 LS 後有梯度 epoch 修補,LS 供起點方向而非終解(st61c +0.017 來自組合);尾段無修補段",
+  "proxy_failure_type": "第 12 型:W 空間局部殘差 gain(探針 @c892036 +16%)對『終解』無預測力,對『事件中間解』才成立;窗間 corr(gain, hold×)=0.064 ⇒ 前向惡化幅度與 W 空間吸水量無關=結構性背離而非過度擬合量的函數",
+  "gate_integrity": "閘門邏輯正確:clone 還原、碼/α 不動;單變因設計使 FAIL 乾淨(壞的是『時機修正』假說,非引擎)"
+ },
+ "consequences_for_e62b": [
+  "輸出側 L 必須進 comp 事件(L/X 交替 LS)並由後續梯度 epoch 修補;不做尾段重解",
+  "探針 @555428f 的 L +31%/L+X +46% 為 W 空間讀數,需打折;E62b 探針補前向 holdout 讀數(解後跑一次窗前向)才有預測力",
+  "tail-LS 旗標保留於 train_res 但預設關;LS-then-repair 小臂不優先(與 comp 事件等價)"
+ ],
+ "gpu_hours_spent": 7.6,
+ "windows": [
+  {
+   "window": [
+    0,
+    1
+   ],
+   "epochs": 22,
+   "loss_end": 0.0,
+   "gdisc1": 0.0039,
+   "flips": 35476,
+   "tailLS_gain": 0.107,
+   "hold_ratio": 1.41,
+   "decision": "REVERT"
+  },
+  {
+   "window": [
+    1,
+    2
+   ],
+   "epochs": 22,
+   "loss_end": 0.0,
+   "gdisc1": 0.0047,
+   "flips": 48189,
+   "tailLS_gain": 0.127,
+   "hold_ratio": 1.511,
+   "decision": "REVERT"
+  },
+  {
+   "window": [
+    2,
+    3
+   ],
+   "epochs": 22,
+   "loss_end": 0.0,
+   "gdisc1": 0.0045,
+   "flips": 49572,
+   "tailLS_gain": 0.114,
+   "hold_ratio": 1.46,
+   "decision": "REVERT"
+  },
+  {
+   "window": [
+    3,
+    4
+   ],
+   "epochs": 22,
+   "loss_end": 0.0,
+   "gdisc1": 0.0044,
+   "flips": 71961,
+   "tailLS_gain": 0.155,
+   "hold_ratio": 1.357,
+   "decision": "REVERT"
+  },
+  {
+   "window": [
+    4,
+    5
+   ],
+   "epochs": 22,
+   "loss_end": 0.0,
+   "gdisc1": 0.0048,
+   "flips": 94519,
+   "tailLS_gain": 0.123,
+   "hold_ratio": 1.376,
+   "decision": "REVERT"
+  },
+  {
+   "window": [
+    5,
+    6
+   ],
+   "epochs": 22,
+   "loss_end": 1e-05,
+   "gdisc1": 0.0044,
+   "flips": 64468,
+   "tailLS_gain": 0.114,
+   "hold_ratio": 1.386,
+   "decision": "REVERT"
+  },
+  {
+   "window": [
+    6,
+    7
+   ],
+   "epochs": 22,
+   "loss_end": 1e-05,
+   "gdisc1": 0.0041,
+   "flips": 42369,
+   "tailLS_gain": 0.145,
+   "hold_ratio": 1.455,
+   "decision": "REVERT"
+  },
+  {
+   "window": [
+    7,
+    8
+   ],
+   "epochs": 22,
+   "loss_end": 1e-05,
+   "gdisc1": 0.0061,
+   "flips": 53351,
+   "tailLS_gain": 0.199,
+   "hold_ratio": 1.392,
+   "decision": "REVERT"
+  },
+  {
+   "window": [
+    8,
+    9
+   ],
+   "epochs": 22,
+   "loss_end": 1e-05,
+   "gdisc1": 0.0055,
+   "flips": 53138,
+   "tailLS_gain": 0.125,
+   "hold_ratio": 1.32,
+   "decision": "REVERT"
+  },
+  {
+   "window": [
+    9,
+    10
+   ],
+   "epochs": 22,
+   "loss_end": 1e-05,
+   "gdisc1": 0.0045,
+   "flips": 70570,
+   "tailLS_gain": 0.131,
+   "hold_ratio": 1.282,
+   "decision": "REVERT"
+  },
+  {
+   "window": [
+    10,
+    11
+   ],
+   "epochs": 22,
+   "loss_end": 1e-05,
+   "gdisc1": 0.0043,
+   "flips": 38224,
+   "tailLS_gain": 0.157,
+   "hold_ratio": 1.418,
+   "decision": "REVERT"
+  },
+  {
+   "window": [
+    11,
+    12
+   ],
+   "epochs": 22,
+   "loss_end": 1e-05,
+   "gdisc1": 0.0117,
+   "flips": 54604,
+   "tailLS_gain": 0.245,
+   "hold_ratio": 1.575,
+   "decision": "REVERT"
+  },
+  {
+   "window": [
+    12,
+    13
+   ],
+   "epochs": 25,
+   "loss_end": 1e-05,
+   "gdisc1": 0.0041,
+   "flips": 58285,
+   "tailLS_gain": 0.141,
+   "hold_ratio": 1.271,
+   "decision": "REVERT"
+  },
+  {
+   "window": [
+    13,
+    14
+   ],
+   "epochs": 25,
+   "loss_end": 1e-05,
+   "gdisc1": 0.0043,
+   "flips": 80922,
+   "tailLS_gain": 0.131,
+   "hold_ratio": 1.279,
+   "decision": "REVERT"
+  },
+  {
+   "window": [
+    14,
+    15
+   ],
+   "epochs": 25,
+   "loss_end": 1e-05,
+   "gdisc1": 0.0046,
+   "flips": 42242,
+   "tailLS_gain": 0.163,
+   "hold_ratio": 1.41,
+   "decision": "REVERT"
+  },
+  {
+   "window": [
+    15,
+    16
+   ],
+   "epochs": 22,
+   "loss_end": 2e-05,
+   "gdisc1": 0.0078,
+   "flips": 54547,
+   "tailLS_gain": 0.184,
+   "hold_ratio": 1.371,
+   "decision": "REVERT"
+  },
+  {
+   "window": [
+    16,
+    17
+   ],
+   "epochs": 25,
+   "loss_end": 2e-05,
+   "gdisc1": 0.0069,
+   "flips": 64028,
+   "tailLS_gain": 0.161,
+   "hold_ratio": 1.314,
+   "decision": "REVERT"
+  },
+  {
+   "window": [
+    17,
+    18
+   ],
+   "epochs": 25,
+   "loss_end": 3e-05,
+   "gdisc1": 0.0066,
+   "flips": 75260,
+   "tailLS_gain": 0.171,
+   "hold_ratio": 1.397,
+   "decision": "REVERT"
+  },
+  {
+   "window": [
+    18,
+    19
+   ],
+   "epochs": 25,
+   "loss_end": 4e-05,
+   "gdisc1": 0.016,
+   "flips": 59723,
+   "tailLS_gain": 0.218,
+   "hold_ratio": 1.536,
+   "decision": "REVERT"
+  },
+  {
+   "window": [
+    19,
+    20
+   ],
+   "epochs": 25,
+   "loss_end": 7e-05,
+   "gdisc1": 0.0322,
+   "flips": 119337,
+   "tailLS_gain": 0.213,
+   "hold_ratio": 1.211,
+   "decision": "REVERT"
+  },
+  {
+   "window": [
+    20,
+    21
+   ],
+   "epochs": 25,
+   "loss_end": 7e-05,
+   "gdisc1": 0.0378,
+   "flips": 180332,
+   "tailLS_gain": 0.207,
+   "hold_ratio": 1.194,
+   "decision": "REVERT"
+  },
+  {
+   "window": [
+    21,
+    22
+   ],
+   "epochs": 25,
+   "loss_end": 9e-05,
+   "gdisc1": 0.0372,
+   "flips": 236802,
+   "tailLS_gain": 0.247,
+   "hold_ratio": 1.331,
+   "decision": "REVERT"
+  },
+  {
+   "window": [
+    22,
+    23
+   ],
+   "epochs": 25,
+   "loss_end": 0.00012,
+   "gdisc1": 0.0365,
+   "flips": 260395,
+   "tailLS_gain": 0.229,
+   "hold_ratio": 1.362,
+   "decision": "REVERT"
+  },
+  {
+   "window": [
+    23,
+    24
+   ],
+   "epochs": 22,
+   "loss_end": 0.0001,
+   "gdisc1": 0.0325,
+   "flips": 238690,
+   "tailLS_gain": 0.231,
+   "hold_ratio": 1.255,
+   "decision": "REVERT"
+  },
+  {
+   "window": [
+    24,
+    25
+   ],
+   "epochs": 22,
+   "loss_end": 9e-05,
+   "gdisc1": 0.0298,
+   "flips": 265241,
+   "tailLS_gain": 0.226,
+   "hold_ratio": 1.269,
+   "decision": "REVERT"
+  },
+  {
+   "window": [
+    25,
+    26
+   ],
+   "epochs": 22,
+   "loss_end": 0.00011,
+   "gdisc1": 0.0258,
+   "flips": 203334,
+   "tailLS_gain": 0.309,
+   "hold_ratio": 1.219,
+   "decision": "REVERT"
+  },
+  {
+   "window": [
+    26,
+    27
+   ],
+   "epochs": 22,
+   "loss_end": 0.00012,
+   "gdisc1": 0.0247,
+   "flips": 222412,
+   "tailLS_gain": 0.293,
+   "hold_ratio": 1.724,
+   "decision": "REVERT"
+  }
+ ],
+ "window0_reproduction": {
+  "tag": "st62a_w0",
+  "tail_ls": {
+   "hold_before": 2.4e-06,
+   "hold_after": 3.5e-06,
+   "hold_ratio": 1.4103,
+   "reverted": true,
+   "gain_mean": 0.1067,
+   "gain_min": 0.0319,
+   "t_min": 1.0,
+   "per": {
+    "0.linear_attn.in_proj_qkv": {
+     "ls_gain": 0.0702,
+     "step_max": 0.01647,
+     "t": 1.0,
+     "sv_min": 0.7431,
+     "cg_iters": 40
+    },
+    "0.linear_attn.in_proj_z": {
+     "ls_gain": 0.1389,
+     "step_max": 0.01223,
+     "t": 1.0,
+     "sv_min": 0.8346,
+     "cg_iters": 40
+    },
+    "0.linear_attn.out_proj": {
+     "ls_gain": 0.1732,
+     "step_max": 0.01022,
+     "t": 1.0,
+     "sv_min": 0.5854,
+     "cg_iters": 40
+    },
+    "0.mlp.gate_proj": {
+     "ls_gain": 0.0319,
+     "step_max": 0.02155,
+     "t": 1.0,
+     "sv_min": 0.5831,
+     "cg_iters": 40
+    },
+    "0.mlp.up_proj": {
+     "ls_gain": 0.0333,
+     "step_max": 0.0226,
+     "t": 1.0,
+     "sv_min": 0.6353,
+     "cg_iters": 40
+    },
+    "0.mlp.down_proj": {
+     "ls_gain": 0.1925,
+     "step_max": 0.01557,
+     "t": 1.0,
+     "sv_min": 0.8162,
+     "cg_iters": 40
+    }
+   },
+   "secs": 13.9
+  },
+  "note": "單窗全參數決定論復現(gain/hold/flips 逐字相同);per-module t=1、gain 3–19%"
+ },
+ "probe_followup": "probe_e62b_win(@1e8a61c):共適應稅+W 空間帳幻象+夥伴層狀態(窗 11 夥伴=理想 X_H 1.421 vs E62a 1.575);見 STRATEGY_e62 §1.5"
+}

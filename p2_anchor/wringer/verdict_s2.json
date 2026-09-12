@@ -1,0 +1,78 @@
+{
+ "experiment": "S2 第一步 —— 冠軍 st51c_e2e 蓄水 r128(res62s2)→ 官方 A 閘(排水典範天花板)",
+ "date": "2026-09-06 14:3x",
+ "chain": "p2_anchor/corkscrew/chain_s2_fill.sh(S2_START 09-05 23:53 → S2_FILL_DONE 09-06 13:52 → S2_CHAIN_DONE 14:3x)",
+ "platform": {
+  "codes": "st51c_e2e(冠軍,comp 0.7469;碼凍結)",
+  "reservoir": "res62s2 r128 fresh,鏡射 res58r1 配方",
+  "data": "calib_e58r1_traj 5741 步 batch 2 hidchunk KD",
+  "runtime_h": 13.98,
+  "stop_reason": "steps"
+ },
+ "official": {
+  "scores": {
+   "ifeval": 85.4,
+   "humaneval": 61.59,
+   "gsm8k": 85.29
+  },
+  "empties": {
+   "ifeval": 20,
+   "humaneval": 17,
+   "gsm8k": 34
+  },
+  "comp": 0.8216,
+  "vs_champion": {
+   "delta_comp": 0.0747,
+   "by": {
+    "ifeval": 9.43,
+    "humaneval": 6.71,
+    "gsm8k": 4.93
+   },
+   "empties_champion_total": 117,
+   "empties_now_total": 71
+  },
+  "gate": {
+   "threshold": 0.7629,
+   "result": "PASS"
+  },
+  "band": "CEILING_SHORT(0.80 ≤ A < 0.90)",
+  "headroom_to_north_star": 0.0784
+ },
+ "verdict": "A 閘 PASS(+0.0747,三科齊升、空回應 117→71);天花板 0.8216 = 歷來水庫最高(A4 res58r1@st54r 0.7038、E39 A IFEval 58.23),但低於北極星 0.90 ⇒ CEILING_SHORT:碼凍結 + 滿水庫 仍不足 0.90,天花板本身受碼限制(蓄水段只動水不動碼)",
+ "drain_arithmetic": {
+  "rho_needed_to_beat_champion": 0.9091,
+  "rho_needed_to_beat_champion_plus_band": 0.9285,
+  "engines_measured_on_A4": {
+   "st61b_pure_code": 0.872,
+   "st61c_alpha_M_closed": 0.889,
+   "st62b_noL_with_M": 0.916
+  },
+  "projected_B_if_rho_transfers": {
+   "st61b": 0.7164,
+   "st61c": 0.7304,
+   "st62b_noL(M 常駐,非純碼)": 0.7526
+  },
+  "reading": "純碼引擎 ρ(0.872/0.889)皆低於 0.909 ⇒ 若 ρ 可跨台轉移,排水段預測 B < 0.7469(falsifier 觸發);唯一 >0.909 者 st62b_noL 依賴 M 常駐載體(北極星已封);ρ 是否從 A4 台(0.7038)轉移到冠軍台(0.8216)未測——E37 ρ 0.969(低天花板)vs E38 ρ₂ 0.485(r256)顯示 ρ 隨吞吐/天花板變動,不可假設常數"
+ },
+ "proxy_note": "同族 val CE 蓄水前 1.634 → 後 1.681(+0.047 惡化;300 步後即平台)而官方 +0.0747 ⇒ val CE 再次反向(與 E37 第九筆同型),蓄水段 proxy 僅作停機儀器不作判讀",
+ "kd_curve": {
+  "first": 0.179957,
+  "last_mean_100": 0.0947,
+  "n": 5741
+ },
+ "predictions_scored": {
+  "STRATEGY_e62 S2": "A > 0.76 PASS(0.8216);B ≥ 0.75 未測(排水未點火)"
+ },
+ "options_for_user": {
+  "a": "照鏈以 st61b 純碼引擎排水 res62s2(~9h 排水 + 1.5h 官方;E63 鏈後 GPU 才空,最早 ~18:30 起):預測 B ≈ 0.716 < 0.7469 falsifier;價值=實測 ρ 跨台轉移與高天花板下的排水吞吐,結果為北極星路線定生死",
+  "b": "先等 E63 S0 官方(~18:00 收):POS ⇒ S1 引擎(α, r_q 閉式)有機會把 ρ 抬過 0.909,再以 S1 引擎排水;NEG/NULL ⇒ 回 (a) 或 (c)",
+  "c": "抬天花板:E38/E54 已示儲存軸與 token 量都非主因(r256 天花板 +0.19、42M token 饑荒),不建議先走"
+ },
+ "recommendation": "(b):E63 官方 3.5h 內裁出,GPU 在此期間本就被占,零成本等待;排水引擎待 E63 裁後一併呈裁,不自主點火",
+ "evidence": [
+  "evidence/p1_grouping/corkscrew/fill_res62s2.json",
+  "evidence/p1_grouping/a1eval/{ifeval,humaneval,gsm8k}_e62_s2_A",
+  "exports/e62_s2_resA(合併 fp 模型,不進 git)"
+ ],
+ "erratum_2026-09-06": "st61b 非純碼:exports/e61_st61b 位面含 .mix(M 72×128×128,偏 I 0.0013;hparams mix_block 128)。純碼訓練基線=甲 st58rb ρ 0.777;零訓練非對稱 pa63_asymblkq2 0.820。本檔中『st61b 純碼 0.872』讀作『碼+M(近單位陣)』;排水算術以 0.777/0.820 重讀(詳 prereg_e63_s1.json erratum_baseline)。"
+}

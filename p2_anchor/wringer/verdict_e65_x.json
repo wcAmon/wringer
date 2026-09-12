@@ -1,0 +1,104 @@
+{
+ "experiment": "E65-X 兩端夾擊階梯(零訓練;全部 he 單科裁)",
+ "refs": {
+  "pa64": {
+   "ifeval": 83.55,
+   "humaneval": 64.02,
+   "gsm8k": 85.29,
+   "comp": 0.8235,
+   "code_fixed": 2.07,
+   "total_fixed": 2.78
+  },
+  "g9": {
+   "ifeval": 78.56,
+   "humaneval": 88.41,
+   "gsm8k": 94.16,
+   "comp": 0.9226,
+   "code_fixed": 3.2,
+   "total_fixed": 3.7
+  }
+ },
+ "rows": {
+  "ux_u0": {
+   "arm": "U",
+   "he": 88.41,
+   "empties_he": 4,
+   "code_fixed": 3.2,
+   "code_entropy": 3.1382,
+   "alpha": 0.5,
+   "beta": 0.0,
+   "r": 0.0,
+   "total_fixed": 3.7,
+   "total_entropy": 3.6382
+  },
+  "ux_u1": {
+   "arm": "U",
+   "he": 0.0,
+   "empties_he": 17,
+   "code_fixed": 2.4,
+   "code_entropy": 2.3498,
+   "alpha": 0.5,
+   "beta": 0.0,
+   "r": 0.0312,
+   "total_fixed": 2.9312,
+   "total_entropy": 2.8811
+  },
+  "ux_u1w": {
+   "arm": "U",
+   "he": 0.61,
+   "empties_he": 41,
+   "code_fixed": 2.4,
+   "code_entropy": 2.3516,
+   "alpha": 0.5,
+   "beta": 0.0,
+   "r": 0.0312,
+   "total_fixed": 2.9312,
+   "total_entropy": 2.8828
+  },
+  "ux_d1": {
+   "arm": "D",
+   "he": 62.8,
+   "empties_he": 19,
+   "code_fixed": 2.2444,
+   "code_entropy": 2.2645,
+   "alpha": 0.625,
+   "beta": 0.0529,
+   "r": 0.0781,
+   "total_fixed": 3.0005,
+   "total_entropy": 3.0205
+  },
+  "ux_d2": {
+   "arm": "D",
+   "he": 60.98,
+   "empties_he": 22,
+   "code_fixed": 2.5597,
+   "code_entropy": 2.5513,
+   "alpha": 0.625,
+   "beta": 0.1515,
+   "r": 0.0781,
+   "total_fixed": 3.4143,
+   "total_entropy": 3.4059
+  },
+  "ux_d3": {
+   "arm": "D",
+   "he": 58.54,
+   "empties_he": 17,
+   "code_fixed": 2.875,
+   "code_entropy": 2.8388,
+   "alpha": 0.625,
+   "beta": 0.25,
+   "r": 0.0781,
+   "total_fixed": 3.8281,
+   "total_entropy": 3.792
+  }
+ },
+ "judges": {
+  "J_TARGET": "cross−w9 Δhe=-0.61(>3 交叉補償有效 / <−3 有害 / 帶內 NULL)",
+  "J_U1": "FALSIFIER_U(淺層 T2 不可閉式分離)",
+  "J_D3": "FALSIFIER_D(三元血統 he 天花板=盆地)",
+  "collect": "NONE(帶內無 he≥86 點 ⇒ 位元配置無零訓練解,轉訓練)",
+  "meeting_note": "he–code_fixed 表見 rows;U 曲線(從上折)與 D 曲線(從下加)在相近 code_fixed 的 he 差 = 血統盆地差"
+ },
+ "he_target": 86.0,
+ "budget_total_fixed": 2.75
+}

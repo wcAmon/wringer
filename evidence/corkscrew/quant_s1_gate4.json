@@ -1,0 +1,30 @@
+{
+ "tag": "s1_gate4",
+ "grid": 8,
+ "grid_map": null,
+ "c": 0.6,
+ "solver": "gptq",
+ "alpha_init": "auto",
+ "prior_lam": 0.01,
+ "module_map": "self_attn.k_proj:256:row,self_attn.v_proj:256:row,self_attn.o_proj:16:128,mlp.gate_proj:4:128",
+ "ledger": {
+  "code_fixed": 2.8706,
+  "code_entropy": 2.635,
+  "code_entropy_joint": 2.635,
+  "alpha": 0.1236,
+  "beta": 0.0,
+  "r": 0.0,
+  "weights": 3565158400,
+  "total_fixed": 2.9942,
+  "total_entropy": 2.7586,
+  "total_entropy_joint": 2.7586
+ },
+ "block": 128,
+ "n_calib": 128,
+ "seed": 20260806,
+ "zerotrain_val_ce": 1.8042677491903305,
+ "t1_nonzero": 0.74,
+ "t2_nonzero": 0.0,
+ "runtime_s": 1704.4,
+ "timestamp": "2026-09-10T08:55:04.985150"
+}

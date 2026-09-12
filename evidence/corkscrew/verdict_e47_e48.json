@@ -1,0 +1,25 @@
+{
+ "experiment": "E47 吸收口徑雙桿+A′ 前置閘+全 g16 評估 → E48 終局鏈尾:終裁",
+ "date": "2026-08-23",
+ "verdicts": {
+  "diag_A_prime_gate": "BUILD——R² 中位 L12+ 0.650(64 列/131k tokens;深層 L18-26 0.65-0.79=漂移高度線性可預測);A′ 建案有據,用戶已行使發射權(E47-P FROZEN @27646f9)",
+  "D_rhythm(W_max 12)": "PASS 大勝——triage IFEval w128 71.35 = 窗態新紀錄(+6.29 vs 場+β 65.06;+7.39 vs 標準 63.96);ρ_drain 0.906(現任 0.826);排水稅 −13.68→−7.39 近砍半;史上最大單變因窗態增益",
+  "E_cap(comp_cap 0.06)": "PASS——69.13(+4.07;ρ 0.878);兩口徑皆真瓶頸,時間口徑更大;D−E 差 2.22>1pp 無 top-2,僅 D 入鏈尾",
+  "g16_eval(全模型 0-31:16 單變因)": "FAIL——66.17,Δ −5.18 vs 71.35 遠低於 +1 價值閘=全 g16 淨反噬;半 g16(24-31:16,3.63 b/w)維持;容量反噬第三案(E42b 水庫/E38 水量/本案碼容量):口徑只在損傷集中處擴張有效,全域擴張給淺層造不必要解算自由度",
+  "E48_G1_balanced(主判)": "PASS 封冠——st47d_e2e 甲 composite 0.6982 vs 現任 e42b_r1 0.6677 = +0.0305,新均衡冠軍;IF 69.87/he 48.78/gs 78.85(recovery 0.753/0.516/0.825)",
+  "E48_R_he": "PASS——48.78 ≥ 地板 46.95,並觸及 stretch 線 48.78(與 st44f_e2e 並列 he 史上最高)",
+  "E48_tail_delta": "鏈尾科目分岔重演:IF −1.48(71.35→69.87)、he/gs 大幅上行(gs 78.85 為冠軍態史上最高);與 st44f 鏈尾(IF−2.58/he+3.66)同型態=e2e 犧牲少量 IF 換 code/math 連續軸;t_flip 5e-06 純連續載體(E37 型態)"
+ },
+ "numbers": {
+  "window": {"st47d": 71.35, "st47e": 69.13, "st47dg16": 66.17, "anchors": {"field_beta": 65.06, "std": 63.96, "A_point": 78.74, "kill": 55}},
+  "e48": {"if": 69.87, "he": 48.78, "gs": 78.85, "comp": 0.6982, "incumbent": 0.6677, "bf16": [92.79, 94.51, 95.53]},
+  "e2e": {"steps": 1200, "runtime_h": 3.55, "t_flip": 5e-06, "recipe": "e42b_r1 同配方(calib_e42_train/batch8/γ0.8/s0 30/fkl 無快取)"}
+ },
+ "mechanism_notes": {
+  "time_aperture": "第16筆『翻轉=修正機會』獲建設性證實:E46 同樣深層 flips 爆量卻 −6.29,場×β 局部水+W_max 12 時間口徑 +6.29——同 churn 型態吸收結局相反=水形×口徑匹配決定正負號,churn 只有殺方向有效再證",
+  "aperture_follows_damage": "跨軸定律候選:口徑擴張只在損傷地圖熱區有效(深層 24-31 g16 ✓/全域 g16 ✗/cap 0.06 於場基座 ✓ 於 E36 régime ✗)",
+  "additivity_open": "D+E 名目 +10.36 > 剩餘稅 7.39=必次可加;D×E 組合臂候選待 prereg"
+ },
+ "champion": {"state": "st47d_e2e", "export": "exports/st47d_e2e_x", "lineage": "st41g_e2e → field×β drain W_max12 (st47d) → e2e 1200"},
+ "next": "E47-P A′ 臂即發(prereg @27646f9,判 vs 71.35);候選:D×E 組合、W_max 16 階梯、蓄水稅軸(A 點 78.74);位元政策資料閉合(半 g16 勝)終裁在用戶"
+}

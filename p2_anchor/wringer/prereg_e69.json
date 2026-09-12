@@ -1,0 +1,219 @@
+{
+ "experiment": "E69 純碼 2.7 打 GGUF(八元 g128 配方下探:級數分配 + α 帳 + 訓練換恢復)",
+ "status": "S3 p3b 線 CLOSED(J_final PASS,北極星達成 @69c1d9c);p3a 線用戶裁停;下一步討論中",
+ "goal": "純碼(碼+α,不含水)total_fixed <= 2.70,官方 comp 高於 GGUF U 曲線同帳內插;北極星 0.90",
+ "champion_in": {
+  "tag": "p1gptq",
+  "total_fixed": 3.206,
+  "official": {
+   "if": 89.46,
+   "he": 90.24,
+   "gs": 94.54,
+   "comp": 0.9695
+  },
+  "he_alpha": 90.85
+ },
+ "ledger_rule": "固定帳:4 級=2.0 / 8 級=3.0 / 16 級=4.0 / int8=8.0 b/w + α(fp16/B 或 int8/B + 逐列 fp16 16/K);水為訓練鷹架,推論前全排,不入帳",
+ "base_format": "P1:8 級 {-4..3} g128 fp16 α;k/v int8 逐列;o_proj 16 級 g128;閉式排水(alpha_search 雙向 → gptq_grid → scale_joint prior λ0.01,前綴量化 Σ)",
+ "calib": {
+  "data": "evidence/p1_grouping/calib_e58r1b_traj.pt",
+  "n": 128,
+  "note": "分科 code 66 / ifshape 33 / math 29,16k 無截斷"
+ },
+ "stage1_sensitivity": {
+  "purpose": "每個帳面動作單獨施加於 P1,零訓練閉式 → he;得「每省 1 b/w 付幾 pp」代價表(RCO 輸入;he 為裁判,不用 block 誤差)",
+  "probes": {
+   "s1_a8": {
+    "delta": "α fp16→int8 逐列尺度(全模組)",
+    "save_bw": 0.057,
+    "est_total": 3.149
+   },
+   "s1_b256": {
+    "delta": "MLP 三張 block 128→256",
+    "save_bw": 0.02,
+    "est_total": 3.186
+   },
+   "s1_down4": {
+    "delta": "mlp.down_proj 8→4 級",
+    "save_bw": 0.212,
+    "est_total": 2.994
+   },
+   "s1_up4": {
+    "delta": "mlp.up_proj 8→4 級",
+    "save_bw": 0.212,
+    "est_total": 2.994
+   },
+   "s1_gate4": {
+    "delta": "mlp.gate_proj 8→4 級",
+    "save_bw": 0.212,
+    "est_total": 2.994
+   },
+   "s1_qkv4": {
+    "delta": "linear_attn.in_proj_qkv 8→4 級",
+    "save_bw": 0.141,
+    "est_total": 3.065
+   },
+   "s1_z4": {
+    "delta": "linear_attn.in_proj_z 8→4 級",
+    "save_bw": 0.071,
+    "est_total": 3.135
+   },
+   "s1_out4": {
+    "delta": "linear_attn.out_proj 8→4 級(E67 保護模組,預期最貴)",
+    "save_bw": 0.071,
+    "est_total": 3.135
+   }
+  },
+  "u26": {
+   "delta": "GGUF IQ2_XS + 保護(ssm_out/attn_v iq3_s,blk0-1 ffn_down q4_k)",
+   "subjects": "he,if,gs",
+   "purpose": "U 曲線 2.5-2.6 錨,使 2.7 落內插段",
+   "deviation": "實測 IQ2_XS+保護 主幹 2.744(≈U27 2.763,llama.cpp 混合表把多數 ffn_down 抬到 Q4_K),不符 2.5-2.6 錨目的 → 11:2x 中止其評測,改 U25 = IQ2_XXS+保護 主幹 2.558(IQ2_XS 186/IQ3_S 32/Q4_K 27/Q2_K 4)三科;chain_e69_u25.sh",
+   "deviation_2": "09-10 16:2x:U25 崩塌錨(he 20.12)IF/GS 幾乎每題撞 16k 上限(IF 中位 n_tokens 16.7k;GS 1319 題估 ~7h)。U25 三科只供 J3 comp 內插,與 S2 量測無關 → chain_e69_u25_handoff.sh:IF 收完即殺 U25 鏈、寫 E69S1_CHAIN_DONE 交棒 S2;GS 延到 E69S2_CHAIN_DONE 後由 chain_e69_u25gs.sh 補收(E69S1_POINT:u25gs)。量測協定不變(max_tokens 16384),只改順序。"
+  },
+  "cost_metric": "cost = (he(P1) - he(probe)) / save_bw  [pp per b/w];同時記 he 對 U 同帳 dU",
+  "falsifier_s1": "三張 MLP 4 級探針 he 全部 < U 同帳 - 10 ⇒ 4 級閉式排水在本模型不可用;E69 改走小刀(α/b256/z4/qkv4)且 2.7 目標下修為 2.9,回報用戶",
+  "est_time_h": 11.5,
+  "result_cost_table_pp_per_bw": {
+   "s1_z4": -26,
+   "s1_qkv4": 17,
+   "s1_gate4": 26,
+   "s1_a8": 32,
+   "s1_up4": 34,
+   "s1_out4": 34,
+   "s1_down4": 40,
+   "s1_b256": 61,
+   "U_slope_top": 47,
+   "note": "8 探針全收(@1c7866f);z4 免費(+1.83 噪音帶)、b256 唯一高於曲線出局;falsifier 未觸發;U26 三科進行中"
+  }
+ },
+ "stage2_compose": {
+  "purpose": "由代價表做預算分配(貪婪 knapsack:cost 低者先),組出 total_fixed <= 2.70 的 1-2 個配置 P3a/P3b;零訓練閉式 → he → 官方三科(用戶「Ok」已含)",
+  "candidates_prior": [
+   "a8 + down4 + up4 + b256 ≈ 2.70",
+   "a8 + gate4 + up4 + b256 ≈ 2.70",
+   "a8 + down4 + qkv4 + z4 + b256 ≈ 2.77(若 MLP 只能降一張)"
+  ],
+  "judge_J3": "comp(P3) - U_comp(total 內插 U26/U27/U30) > 0 PASS;> +0.03 STRONG",
+  "he_gate": "he(P3) > U_he(total 內插);未過閘則第三段仍跑(訓練換恢復正是為此)",
+  "est_time_h": 8,
+  "candidates_final": {
+   "p3a": {
+    "delta": "z4 + qkv4 + gate4 + up4(α fp16)",
+    "est_total": 2.57,
+    "pred_he_additive": 76.8
+   },
+   "p3b": {
+    "delta": "z4 + qkv4 + gate4 + out4 + α int8",
+    "est_total": 2.654,
+    "pred_he_additive": 79.9
+   }
+  },
+  "additivity": "加成性檢驗:he(P3) − 單項加總預測;|Δ| > 3 pp ⇒ 代價表不可線性疊加,S3 起點仍取 he 高者但記錄交互作用",
+  "chain": "p2_anchor/corkscrew/chain_e69_s2.sh(等 E69S1_CHAIN_DONE;未點火;he 高者先官方 IF+GS)",
+  "result_p3a": {
+   "total_fixed": 2.5707,
+   "he": 70.73,
+   "pred_additive": 76.8,
+   "delta_additivity": -6.07,
+   "note": "|Δ|>3 ⇒ 交互作用:四項 4 級同施(z4+qkv4+gate4+up4)非線性疊加,額外 −6 pp;U he 同帳內插(U25 20.12@2.558 / U27 63.41@2.763)≈22.8 ⇒ dU_he ≈ +48;P1→p3a 代價 30.7 pp/(b/w)<U 頂坡 47"
+  },
+  "result_p3b": {
+   "total_fixed": 2.6551,
+   "he": 70.73,
+   "pred_additive": 79.9,
+   "delta_additivity": -9.17,
+   "note": "與 p3a 同分 116/164(同 seed 同題集);α int8(−0.057)+out4(−0.071)換 up4(−0.212)多花 0.084 b/w 未買到 he;U 同帳 ~40.6 ⇒ dU_he ≈ +30;ORDER p3a 先官方"
+  },
+  "verdict": "S2 全收 @7ab114d:p3a comp 0.7724 @2.571 / p3b comp 0.8144 @2.655,兩點 J3 STRONG(U comp 外插 +0.147/+0.132;U25 GS 補收後內插);he 同分 116/164、p3b IF +8.3/GS +3.5 ⇒ S3 起點 p3b(comp 高、帳留 0.045),p3a 接跑同流程作 ρ 配置對照(用戶裁)"
+ },
+ "stage3_recovery": {
+  "purpose": "帳面不動,用訓練把 P3 推回;三檔遞增,每檔量 he(+官方三科於最終檔)",
+  "arms": {
+   "R-alpha": {
+    "what": "α-only e2e 800 步(碼凍;翻碼須 0)",
+    "expect": "小(P1-alpha 僅 +0.61)",
+    "cost_h": 4,
+    "deferred": "e2e_soft alpha-only 不認 int8 α(p3b 會推到 2.712);預期 +0.6,R-water 後視需要補"
+   },
+   "R-water": {
+    "what": "碼凍 r128 KD 蓄水(hidchunk,閉合加權 32/16/8,grad-ckpt)→ A 閘(含水 he)→ E64 機制:W_eff 閉式重量化回 P3 同配置(水全排)→ B 閘 he;ρ = (B - P3)/(A - P3)",
+    "expect": "主力;E37 儲存軸 +5.9,ρ 0.969",
+    "cost_h": 16,
+    "config": {
+     "fill": "res_fill r128、bf16 自身老師、calib_e58r1b 128 列 16k、閉合加權 32/16/8、3000 步 batch 2 固定步數(val CE 平台判停關)、hidchunk、grad-ckpt",
+     "A_gate": "vLLM he(含水 fp)",
+     "drain": "quantize --base-dir resA 同 P3 配置(p3b 含 --alpha-bits 8)閉式重解,帳回 2.655/2.571",
+     "B_gate": "he;ρ=(B−P3)/(A−P3)",
+     "order": "p3b → p3a"
+    }
+   },
+   "R-flip": {
+    "what": "STE 翻碼 e2e(碼可訓,4/8 級格內翻;無率項,帳固定)",
+    "condition": "R-water B 閘仍低於 U",
+    "cost_h": 8
+   }
+  },
+  "judge_J_final": "最佳檔 comp 對 U 同帳 > 0 且 total_fixed <= 2.70;主判官方三科",
+  "falsifier_s3": "R-water ρ < 0.5(E38 型排水吞吐崩塌)⇒ 記錄,R-flip 接手;R-flip he 仍 < U ⇒ 2.7 在本配方封盤,回報 2.9 檔",
+  "not_judges": [
+   "區塊誤差",
+   "val CE",
+   "KD loss",
+   "碼熵"
+  ],
+  "incident": "09-11 03:00→12:00 鏈空等 9.5h:發射指令殘殼 cmdline 含 heredoc 關鍵字被 idle() pgrep 匹配(feedback-monitor-pipeline 第三例);12:00 殺殘殼後起跑。量測無影響,時程順延 9h",
+  "result_p3b": {
+   "A_he": 79.88,
+   "B_he": 84.15,
+   "P3_he": 70.73,
+   "rho": 1.467,
+   "total_fixed": 2.6551,
+   "note": "B > A:閉式排水以 resA W_eff 為目標重解,增益超過含水 fp 模型本身(E64 同型:閉式吸收);falsifier_s3 未觸;R-flip 條件(B<U)未觸 ⇒ p3b_w 為 p3b 線最終檔,官方三科依 prereg『最終檔官方』先跑",
+   "reorder": "19:5x 09-11:p3a fill 剛起跑即中止(損失 ~5 min,partial 已清),改 chain_e69_s3b.sh:official p3b_w → water p3a;idle() 改行首錨定 pattern(^\\S*python -m p2_anchor|^\\S*vllm serve|^\\S*/llama-server),不再被殘殼 heredoc 互鎖",
+   "official": {
+    "if": 87.8,
+    "he": 84.15,
+    "gs": 92.95,
+    "comp": 0.9365,
+    "U_comp_interp": 0.527,
+    "dU_comp": 0.4095,
+    "J3": "STRONG",
+    "vs_P1gptq": "comp 0.9695 @3.206 → 0.9365 @2.655:省 0.551 b/w 付 0.033 comp",
+    "north_star": "0.90 達成(@69c1d9c);IF 87.80 vs 純碼 67.65→p3b 75.97:水軸買 IF +11.8,he +13.4,GS +9.3"
+   }
+  },
+  "p3a_line": "20:5x 09-11 用戶裁停(p3b_w 已過北極星);fill 中止、partial 已清;ρ 配置對照未做"
+ },
+ "engineering": {
+  "done": [
+   "ktier INT_LEVELS[4]=(-2,1)",
+   "ladder FIXED_RATE[4]=2.0 + α int8 逐列尺度入帳",
+   "quantize --grid 4 / --alpha-bits 8",
+   "煙測:4 級 gptq_grid/alpha_search/scale_joint OK,int8 α 誤差不變",
+   "CPU 煙測:SoftGrid n=4 θ[-1.5,-0.5,0.5]、AlphaOnlyParam/STQParam hard 對 4 級態 bit-exact;e2e_soft 逐模組建 SoftGrid(grid,c)→ R-alpha/R-flip 可直接讀混合 4/8/16 態",
+   "res_fill 閉合加權 @8452485"
+  ],
+  "chains": {
+   "stage1": "p2_anchor/corkscrew/chain_e69_s1.sh(06:39 09-10 點火,pid 254647)",
+   "u25": "chain_e69_u25.sh(he+IF)→ chain_e69_u25_handoff.sh(交棒)→ chain_e69_u25gs.sh(GS 延後)",
+   "stage2": "chain_e69_s2.sh(11:5x 點火,pid 278099;等 E69S1_CHAIN_DONE)",
+   "stage3": "chain_e69_s3w.sh(09-10 21:xx 點火;等 E69S1_POINT:u25gs;哨兵 E69S3_*;log $S/e69s3_chain.log)",
+   "stage3b": "chain_e69_s3b.sh(19:5x 09-11;哨兵 E69S3_OFFICIAL/OFFICIAL_DONE + 同 s3w;log $S/e69s3b_chain.log;Monitor b7su0t9km)"
+  },
+  "todo_stage3": [
+   "R-water 管線已存在:export P3 → res_fill --state-tag p3 --ref-export exports/e69_p3 --out exports/e69_p3_resA(碼材化凍結、r128 旁路 KD、--grad-ckpt --kd-impl hidchunk)→ A 閘 he → quantize --tag p3w --base-dir exports/e69_p3_resA --module-map <P3>(E64 排水)→ export → B 閘 he;待確認 res_fill 閉合加權支援"
+  ]
+ },
+ "schedule": {
+  "stage1": "E68C 收(~08:00 09-10)後點火 → ~19:30",
+  "stage2": "U25 IF ~16:40 交棒 → p3a/p3b he ~20:00 → 官方兩點 ~09-11 01:00;U25 GS 之後 ~7h",
+  "stage3": "p3b_w 官方 IF+GS ~23:00 09-11 → p3a fill ~07:00 09-12 → A → 排水 → B ~11:00 09-12"
+ },
+ "rules": [
+  "點火前呈用戶",
+  "官方三科:P3 與最終檔(用戶「Ok」已含);其他點只 he",
+  "不用 block 誤差/val CE 裁判",
+  "長鏈 nohup setsid + Monitor;16k e2e 帶 --grad-ckpt"
+ ]
+}

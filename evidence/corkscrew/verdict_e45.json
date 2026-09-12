@@ -1,0 +1,39 @@
+{
+ "experiment": "E45 v3 總終裁:B 案(場態 st44f 三桿 e2e:cache/MTP/span)+ C 案(γ-field 單桿歸因)+ st44f 排水態三科補測(用戶裁=E46 地基)",
+ "prereg": "FROZEN @6a422b1;鏈 @158d597 修 torch.quantile 2^24 後重啟;全程 w128 座標",
+ "phase_B": {
+  "A1_std_cache_K512": {"scores": [62.29, 43.29, 74.15], "comp_equal": 0.6352,
+   "H_cache": "PASS(IFEval 座標:62.29 vs 62.48,Δ−0.19 ∈ ±1)——但僅 IFEval 座標成立;he 43.29 vs 48.78 = −5.49 單變因定罪(A1 vs st44f_e2e 唯一差=快取),gs 亦微降;top-512 尾桶近似選擇性傷 code 軸(低機率精確 token 的梯度方向資訊被壓成單桶)。新目標下快取=戴罪之身:E46 凡帶快取臂必須老師常駐或大幅升 K 並過 he 閘"},
+  "A2_mtp_k3": {"scores": [34.01, 13.41, 54.74], "comp_equal": 0.3605,
+   "H_mtp": "崩塌級反噬 FAIL(−28.28pp):aux 量級失配(step-1 aux ~14.8 nats vs 主 KD 0.15,λ_eff 梯度比 ~25:1 洪流入主幹);U 零初始化只保證輸出連續、不保證損失連續;val CE 1.5903 全家族最佳而官方崩塌=第14筆 proxy 反轉候選;specaccept 0.810 量級盲"},
+  "A3_span_m16": {"scores": [65.06, 43.90, 71.80], "comp_equal": 0.6391,
+   "H_span": "+2.77 成立(65.06 vs A1 62.29):放鬆逐 token 約束=正確方向",
+   "H_rescue": "逐字:65.06 不 > 65.06 = 部分修復帶正上緣——e2e 傷害精確歸零,未轉正;IFEval +2.77 由 gsm8k −2.35 支付,composite vs A1 僅 +0.004 = 目標形式軸在均衡判準下近零和"}
+ },
+ "phase_C": {
+  "ne_anchor_w128": 63.96,
+  "note_anchor": "e42b_ne 同日同座標重錨(舊 63.22 作廢);場+β 排水段淨勝差修正 +1.10(65.06−63.96),IFEval 噪聲帶邊緣",
+  "st45fo_triage": 33.27,
+  "H_field_alone_drain": "-30.69 = 災難級淨負,場獨立價值否證;E44/E45 四格拼圖完整:β 單獨 53.97(殺)、場單獨 33.27(慘死)、合體 65.06(全系排水態最佳)——場×β 強交互,引擎+煞車模型:β 供高應力探索、場阻尼防失控;單裝煞車車不動",
+  "instrument_miss": "churn 儀器首筆前瞻誤判(凍結 ALIVE @7f8aa5e、實際 33.27,回填 @4f0669a):st45fo sum_flips 2.59e7 全家族最低卻官方最慘=『平靜塌縮≠好塌縮』,低翻轉=探索不足(翻轉=修正機會);第16種 proxy 反轉型態候選;儀器殺閘方向(st44d 回溯)未失效、存活方向作廢",
+  "e2e_compat_n2": "N/A(殺閘跳過 e2e 段)——場態專屬性 vs 泛化未測,照實記 n=1"
+ },
+ "backfill_st44f": {
+  "scores": [65.06, 45.12, 74.30], "comp_equal": 0.6521,
+  "narrative_correction": "『e2e 淨負』敘事修正為座標依賴:場態標準 e2e IFEval −2.58 / he +3.66(45.12→48.78)/ gs +0.15,甲 composite +0.0042 = 均衡判準下場態 e2e 實為微正;he 共同主判線維持 48.78(st44f_e2e)"
+ },
+ "standings_dual": {
+  "甲_equal_recovery": {"e42b_r1": 0.6677, "e41_g16": 0.6639, "st44f_e2e": 0.6563, "st44f": 0.6521, "e45_a3": 0.6391, "e45_a1": 0.6352},
+  "乙_if_primary_he_floor45": "e42b_r1(67.47,he 46.95 過地板)同為乙冠軍;e41_g16 he 39.02 地板 FAIL",
+  "ceiling_arithmetic": "場線理想尾端天花板(排水 IF 65.06 全保 + 已觀測最佳 he 48.78/gs 74.45)甲 comp = 0.6655 < e42b_r1 實測 0.6677 —— 場線以既有觀測件拼裝打不過標準線;要贏需尾端 IF 淨轉正(>65.7)或 he 超越 48.78,E46 必須正視此算術"
+ },
+ "e46_lookup_applied": {
+  "span_zeroed": "(v) 阻尼 e2e 首發不變;E46 主判升級為『(v) 或 span+阻尼疊加能否轉正(而非僅歸零)』",
+  "C_crashed_below_anchor": "(i) γ-remelt 重降格(重開場座標無獨立盆地可回,場價值綁定 β 交互);(iii) 熔化幾何連帶降權",
+  "cache_ruling": "E46 凡帶快取臂:老師常駐或升 K,he 閘必過",
+  "base_state_tension": "用戶裁補測=E46 地基已執行;但雙判準下 e42b_r1 均為現任均衡冠軍,場線天花板算術見上——base_state 裁項升級為真分岔,呈報用戶"
+ },
+ "proxy_ledger_additions": ["第14筆候選:A2 val CE 家族最佳/官方崩塌", "第15種型態候選:場態窗損失深處高20×/官方反高(E44 解剖)", "第16種型態候選:churn 最低/官方最慘(st45fo 前瞻誤判)"],
+ "runtime": "鏈 2026-08-21 21:0x 起至 08-22 ~10:0x(B 三桿+C 錨+drain 16350s+triage)+補測 ~1h;C 案 e2e 段因殺閘節省 ~5h",
+ "date": "2026-08-22"
+}

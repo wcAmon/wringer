@@ -1,0 +1,174 @@
+{
+ "0.1": {
+  "mod_mean_flips": {
+   "in_proj_q": 0.0001,
+   "in_proj_z": 0.0016,
+   "out_proj": 0.0005,
+   "gate_proj": 0.0001,
+   "up_proj": 0.0001,
+   "down_proj": 0.0003
+  },
+  "mod_mean_H": {
+   "in_proj_q": 3.105,
+   "in_proj_z": 3.104,
+   "out_proj": 3.1,
+   "gate_proj": 3.104,
+   "up_proj": 3.102,
+   "down_proj": 3.105
+  },
+  "err_hard": [
+   [
+    0.0921,
+    0.0642
+   ],
+   [
+    0.0846,
+    0.0667
+   ],
+   [
+    0.1036,
+    0.0822
+   ]
+  ]
+ },
+ "0.3": {
+  "mod_mean_flips": {
+   "in_proj_q": 0.003,
+   "in_proj_z": 0.2949,
+   "out_proj": 0.0002,
+   "gate_proj": 0.0018,
+   "up_proj": 0.0029,
+   "down_proj": 0.0061
+  },
+  "mod_mean_H": {
+   "in_proj_q": 3.102,
+   "in_proj_z": 2.403,
+   "out_proj": 3.1,
+   "gate_proj": 3.102,
+   "up_proj": 3.1,
+   "down_proj": 3.099
+  },
+  "err_hard": [
+   [
+    0.0921,
+    0.0723
+   ],
+   [
+    0.0844,
+    0.0715
+   ],
+   [
+    0.103,
+    0.0838
+   ]
+  ]
+ },
+ "1.0": {
+  "mod_mean_flips": {
+   "in_proj_q": 0.5212,
+   "in_proj_z": 0.5844,
+   "out_proj": 0.0006,
+   "gate_proj": 0.3585,
+   "up_proj": 0.3643,
+   "down_proj": 0.3753
+  },
+  "mod_mean_H": {
+   "in_proj_q": 1.688,
+   "in_proj_z": 1.329,
+   "out_proj": 3.1,
+   "gate_proj": 2.135,
+   "up_proj": 2.123,
+   "down_proj": 2.106
+  },
+  "err_hard": [
+   [
+    0.0921,
+    0.1372
+   ],
+   [
+    0.0845,
+    0.1394
+   ],
+   [
+    0.1019,
+    0.1669
+   ]
+  ]
+ },
+ "0.4": {
+  "layers": "L0 only (crash --out)",
+  "mod_flips": {
+   "in_proj_q": 0.069,
+   "in_proj_z": 0.3219,
+   "out_proj": 0.0002,
+   "gate_proj": 0.0445,
+   "up_proj": 0.043,
+   "down_proj": 0.0521
+  },
+  "mod_H": {
+   "in_proj_q": 3.0,
+   "in_proj_z": 2.32,
+   "out_proj": 3.098,
+   "gate_proj": 3.05,
+   "up_proj": 3.051,
+   "down_proj": 3.041
+  },
+  "err_hard": [
+   [
+    0.0921,
+    0.0817
+   ]
+  ]
+ },
+ "0.55": {
+  "layers": "L0 only (crash --out)",
+  "mod_flips": {
+   "in_proj_q": 0.154,
+   "in_proj_z": 0.5294,
+   "out_proj": 0.0004,
+   "gate_proj": 0.1258,
+   "up_proj": 0.1243,
+   "down_proj": 0.1295
+  },
+  "mod_H": {
+   "in_proj_q": 2.821,
+   "in_proj_z": 1.675,
+   "out_proj": 3.098,
+   "gate_proj": 2.794,
+   "up_proj": 2.799,
+   "down_proj": 2.798
+  },
+  "err_hard": [
+   [
+    0.0921,
+    0.1019
+   ]
+  ]
+ },
+ "0.7": {
+  "layers": "L0 only (crash --out)",
+  "mod_flips": {
+   "in_proj_q": 0.3059,
+   "in_proj_z": 0.5698,
+   "out_proj": 0.0006,
+   "gate_proj": 0.3319,
+   "up_proj": 0.3299,
+   "down_proj": 0.3352
+  },
+  "mod_H": {
+   "in_proj_q": 2.372,
+   "in_proj_z": 1.447,
+   "out_proj": 3.098,
+   "gate_proj": 2.214,
+   "up_proj": 2.223,
+   "down_proj": 2.21
+  },
+  "err_hard": [
+   [
+    0.0921,
+    0.1405
+   ]
+  ]
+ },
+ "_note": "Adam, no-gumbel, 300 steps, L0-2 (0.1/0.3/1.0) or L0 (0.4/0.55/0.7); tsgd scan separate"
+}

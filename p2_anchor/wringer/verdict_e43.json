@@ -1,0 +1,22 @@
+{
+ "experiment": "E43 域加權排水終裁(prereg FROZEN @681902b 逐字執行)",
+ "date": "2026-08-20",
+ "scores": {
+  "arm1_st43w": {"ifeval_strict_prompt": 0.5360, "gsm8k": 0.6611, "humaneval": 0.3354},
+  "arm2_st43s": {"ifeval_strict_prompt": 0.5213, "gsm8k": 0.6937, "humaneval": 0.3780},
+  "champion_e41_g16": 0.7227, "best_non_champion_qs_st42r_e2e": 0.6802
+ },
+ "judges": {
+  "G1_champion": "FAIL:max(53.60, 52.13)=53.60 < 72.27,e41_g16 衛冕",
+  "H_weight_主判": "+1.47pp(53.60−52.13)——逐字判『>+1pp 域加權有效(方向分配軸成立)』;誠實限定:效度僅在崩塌域內成立,加權確實用遲鈍軸買了 IFEval(gs −3.26、he −4.27 對價),但兩臂皆離冠軍 ~20pp,方向分配救不了劑量毒性",
+  "H_size": "−15.89pp(52.13−68.02)——prereg 僅預定 >+1/−1~+1 兩帶,實測遠低於下界:512 列分層 calib 對 256 列是崩塌級反噬;規模軸不是飽和而是有毒",
+  "R_he_tax": "臂1 he 33.54 < 34.98 地板 → 不承接冠軍錨定;臂2 he 37.80 過地板、低於 44.51 高標",
+  "R6_stability": "臂1:gdisc 0.1731 > 0.1724 邊界 FAIL(已於臂1 段記錄);臂2:PASS——gdisc1 出口最大 0.1627 ≤ 0.1724、31/31 窗定案(32 層收齊)、holdout 中位 1.013(單窗 2.21× 註記,臂1 最大 1.63×)、e2e 碼凍結 t_flip 6e-06"
+ },
+ "bet_resolution": "codex 賭局裁定:S2=52.13 ≤ 60 → sample-wise double-descent 臨界域假說(本席)得分;codex『加權+劑量共謀、S2≥66』落空",
+ "churn_coherence": "排水攪動指紋兩臂同形(總 flips 163.6M/163.1M、event flips 62.9M/66.9M 皆在崩塌帶、窗 16-27 高原 10-15M/窗)且兩臂官方分皆崩——churn 首次正確預報,維持『充分警訊、非完備儀器』定位;非第 13 筆 proxy 失效",
+ "attribution": "毒性變因=512 列 calib 劑量(唯一與 E42b 臂1 的共享差異);加權(臂1 獨有槓桿)只解釋 +1.47pp IFEval 內部重分配,不解釋 −15.89pp 崩塌;窗 16 起的攪動高原為劑量簽名",
+ "next_ladder_prereg": "H_weight 逐字有效未封冠 → prereg 預定『權重掃描或蓄排一體化』;誠實修正:劑量毒性主宰,512 域上掃權重無意義;E44/E45 隊列(底座回 256)交用戶裁",
+ "e44_e45_base_fill": "S2=52.13 < 68.02 → E44 底座=E42b 臂1 配方(256 列 calib_drain_e42b);E45 base_state=qs_st42r_e2e 同窗態(68.02 現成基線)",
+ "discipline": "官方三科唯一判準;churn/gdisc/dom_loss monitor-only;FAIL 照實"
+}

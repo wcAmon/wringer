@@ -1,0 +1,187 @@
+{
+ "experiment": "E68-P",
+ "rows": {
+  "p0rtn": {
+   "ledger": {
+    "code_fixed": 3.0,
+    "code_entropy": 2.7533,
+    "code_entropy_joint": 2.7533,
+    "alpha": 0.125,
+    "beta": 0.0,
+    "r": 0.0,
+    "weights": 3565158400,
+    "total_fixed": 3.125,
+    "total_entropy": 2.8783,
+    "total_entropy_joint": 2.8783
+   },
+   "he": 78.05,
+   "H_joint": 2.75372382615282,
+   "total_fixed": 3.125,
+   "U_at": 84.66,
+   "dU": -6.61,
+   "U_kind": "interp"
+  },
+  "p0gptq": {
+   "ledger": {
+    "code_fixed": 3.0,
+    "code_entropy": 2.7621,
+    "code_entropy_joint": 2.7621,
+    "alpha": 0.125,
+    "beta": 0.0,
+    "r": 0.0,
+    "weights": 3565158400,
+    "total_fixed": 3.125,
+    "total_entropy": 2.8871,
+    "total_entropy_joint": 2.8871
+   },
+   "he": 86.59,
+   "H_joint": 2.7625441494586997,
+   "total_fixed": 3.125,
+   "U_at": 84.66,
+   "dU": 1.93,
+   "U_kind": "interp"
+  },
+  "p1gptq": {
+   "ledger": {
+    "code_fixed": 3.0824,
+    "code_entropy": 2.8309,
+    "code_entropy_joint": 2.8309,
+    "alpha": 0.1236,
+    "beta": 0.0,
+    "r": 0.0,
+    "weights": 3565158400,
+    "total_fixed": 3.206,
+    "total_entropy": 2.9545,
+    "total_entropy_joint": 2.9545
+   },
+   "he": 90.24,
+   "H_joint": 2.7621358823275473,
+   "total_fixed": 3.206,
+   "U_at": 88.48,
+   "dU": 1.76,
+   "U_kind": "interp",
+   "official": {
+    "if": 89.46,
+    "he": 90.24,
+    "gs": 94.54,
+    "comp": 0.9695
+   },
+   "U_comp_at": 0.9607,
+   "dU_comp": 0.0088
+  },
+  "p1alpha": {
+   "ledger": {
+    "code_fixed": 3.0824,
+    "code_entropy": 2.8309,
+    "code_entropy_joint": 2.8309,
+    "alpha": 0.1236,
+    "beta": 0.0,
+    "r": 0.0,
+    "weights": 3565158400,
+    "total_fixed": 3.206,
+    "total_entropy": 2.9545,
+    "total_entropy_joint": 2.9545
+   },
+   "he": 90.85,
+   "H_joint": 2.7621358823275473,
+   "total_fixed": 3.206,
+   "U_at": 88.48,
+   "dU": 2.37,
+   "U_kind": "interp",
+   "official": {
+    "if": 90.94,
+    "he": 90.85,
+    "gs": 95.38,
+    "comp": 0.9799
+   },
+   "U_comp_at": 0.9607,
+   "dU_comp": 0.0192
+  },
+  "p2champ": {
+   "ledger": {
+    "code_fixed": 3.0824,
+    "code_entropy": 2.4716,
+    "code_entropy_joint": 2.4716,
+    "alpha": 0.1236,
+    "beta": 0.0,
+    "r": 0.0,
+    "weights": 3565158400,
+    "total_fixed": 3.206,
+    "total_entropy": 2.5952,
+    "total_entropy_joint": 2.5952
+   },
+   "he": 58.54,
+   "H_joint": 2.6202358938745554,
+   "total_fixed": 3.206,
+   "U_at": 88.48,
+   "dU": -29.94,
+   "U_kind": "interp"
+  }
+ },
+ "judges": {
+  "J_P": "PASS(p1alpha he 90.85 vs U 88.48 @ 3.206 ⇒ +2.37)",
+  "J_S": "SOLVER_WINS(gptq 86.59 − rtn 78.05 = +8.54)",
+  "falsifier": "clear(p0gptq 86.59 vs 79.9)",
+  "vs_U_p0rtn": -6.61,
+  "vs_U_p0gptq": 1.93,
+  "vs_U_p2champ": -29.94,
+  "vs_U_p1alpha": 2.37,
+  "alpha_gain_pp": 0.61,
+  "J_C_p1gptq": "PASS(comp 0.9695 vs U 0.9607 @ 3.206 interp ⇒ +0.0088; northstar ✓ 0.90)",
+  "J_C_p1alpha": "PASS(comp 0.9799 vs U 0.9607 @ 3.206 interp ⇒ +0.0192; northstar ✓ 0.90)"
+ },
+ "anchors": {
+  "U": [
+   [
+    2.763,
+    63.41
+   ],
+   [
+    2.972,
+    77.44
+   ],
+   [
+    3.295,
+    92.68
+   ]
+  ],
+  "R1": [
+   3.003,
+   82.93
+  ],
+  "U_three": {
+   "u27": {
+    "if": 73.38,
+    "he": 63.41,
+    "gs": 76.65,
+    "comp": 0.7547
+   },
+   "u30": {
+    "if": 85.03,
+    "he": 77.44,
+    "gs": 90.83,
+    "comp": 0.8955
+   },
+   "u34": {
+    "if": 91.87,
+    "he": 92.68,
+    "gs": 94.16,
+    "comp": 0.9855
+   }
+  },
+  "U_comp": [
+   [
+    2.763,
+    0.7547
+   ],
+   [
+    2.972,
+    0.8955
+   ],
+   [
+    3.295,
+    0.9855
+   ]
+  ]
+ }
+}

@@ -1,0 +1,53 @@
+{
+ "experiment": "E64-PL S2 位元放置(A4 零訓練):T2β 深層讀者端 L21–31(占比 0.2162)+ r vs down_proj 全層(0.2118)+ r",
+ "arm": {
+  "scores": {
+   "ifeval": 70.61,
+   "humaneval": 31.1,
+   "gsm8k": 61.41
+  },
+  "comp": 0.5776220134122914,
+  "rho": 0.8207189733053302,
+  "empties": {
+   "ifeval": 54,
+   "humaneval": 34,
+   "gsm8k": 78
+  }
+ },
+ "refs": {
+  "pt63_t2beta_dp_asym": {
+   "ifeval": 73.75,
+   "humaneval": 37.2,
+   "gsm8k": 61.64,
+   "comp": 0.6112,
+   "rho": 0.868,
+   "empties": {
+    "ifeval": 51,
+    "humaneval": 41,
+    "gsm8k": 76
+   }
+  },
+  "pa63_asymblkq2": {
+   "ifeval": 69.69,
+   "humaneval": 34.15,
+   "gsm8k": 59.14,
+   "comp": 0.5772,
+   "rho": 0.82,
+   "empties": {
+    "ifeval": 44,
+    "humaneval": 34,
+    "gsm8k": 93
+   }
+  }
+ },
+ "judges": {
+  "J4": "NEG",
+  "delta_place": -0.0336,
+  "delta_vs_asym": 0.0004,
+  "by_subject_vs_dp": {
+   "ifeval": -3.14,
+   "humaneval": -6.1,
+   "gsm8k": -0.23
+  }
+ }
+}

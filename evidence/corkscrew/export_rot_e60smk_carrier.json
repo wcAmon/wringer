@@ -1,0 +1,13 @@
+{
+ "codes": "e60smk",
+ "Q": "evidence/p1_grouping/corkscrew/rot_Q_e60smk.pt",
+ "Q_step": 20,
+ "ce_ref_frozen": 2.108567550778389,
+ "ce_materialized": 2.109411433339119,
+ "gate": 0.01,
+ "out": "exports/e60smk_carrier",
+ "readers": 136,
+ "writers": 64,
+ "note": "dense=W_q·Qᵀ(讀)/Q·W_q(寫);殘差原基底;γ 折歸零;lm_head 解綁",
+ "timestamp": "2026-09-03T02:20:06.614990"
+}

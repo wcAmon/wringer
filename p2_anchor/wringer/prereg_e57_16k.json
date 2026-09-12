@@ -1,0 +1,59 @@
+{
+ "experiment": "E57 16k 全鏈:cal10(四科 16k 整軌)重產 → st54r 基底蓄排 → 梯尾 e2e 16k;修正 cal8 的 8k 列窗截斷毒性(閉合訊號缺失=he 失律病灶的教材根因候選)",
+ "status": "FROZEN(2026-08-28 19:0x 用戶四裁全採推薦:①warm-start res54c2 ②2 epochs 步數主導 ③丟無閉合列 ④一鏈到底自動 e2e;全鏈自主哨兵接續,異常/殺閘推播)",
+ "frozen_pipeline_2026-08-28": {
+  "corpus": "e57f=cal10 丟無閉合 1051 列 → 5927 列/76.5M tokens,sha 55753b54(E57F_MANIFEST)",
+  "fill": "res_fill --tag res57 --state-tag st54r --ref-export exports/e54_r --res-init res54c2 --out exports/e57_resA3 --data calib_e57f_traj.pt --lengths calib_e57f_len.pt --batch 2 --microbatch 1 --kd-impl hidchunk --grad-ckpt --steps 5928 --plateau-eps 0.002(2 epochs 步數主導,eps 0.2% 保底)",
+  "A3": "serve exports/e57_resA3 → 三科單跑 e57_A3_w128;A₃-gate:A₃ ≤ A₂−0.02(16k 料反傷)→ 停鏈推播",
+  "drain": "train_res --tag st57r --state-tag st54r --res-tag res57 --calib e57f --n-calib 128 --batch 8 --learn-theta --holdout-frac 0.05 --resume(128×16k=2.1M 與 E54 等劑量;b8 −12%)",
+  "B3": "export st57r → exports/e57_r --verify → 三科單跑 e57_B3_w128",
+  "e2e": "e2e_soft --tag st57r_e2e --state-tag st57r --data e57f --steps 1200 --batch 2 --microbatch 2 --gamma 0.8 --s0 30 --lora-r 64 --lora-lr 1e-4 --factor-lr 3e-4 --clip 1.0 --kd-dir fwd --full-ckpt --grad-ckpt --kd-impl hidchunk --close-weight 256 --close-post-weight 16 --close-post-k 8",
+  "B4": "export st57r_e2e → exports/e57_3g --verify → 雙跑 w128/w128r2 → mean+stable 空核",
+  "judges_final": "A₃−A₂(0.3557)=16k 料淨增量;B₃−B1_bare(0.2874)同座標;he 判別:A₃ he−15.85 ≥ +1.8pp(≥3 題)=內容軸定罪、|Δhe|<1 題=持平→碼軸/量化殘留軸移交;B₄_mean 甲 對冠軍 0.7388 照實並列(換防線不變);形態分類三讀數全做",
+  "schedule_est": "19:1x 點火:fill ~15h(~10:20 08-29)→A₃ ~12:30→drain ~20:20→B₃ ~22:30→e2e ~01:55 08-30→B₄ 雙跑 ~06:00 08-30 收卷(全程 ~35h)"
+ },
+ "origin": {
+  "user_ruling_2026-08-28": "①E56 cycle-2 立即中止轉 16k ②cal10 全科 16k 重產(四科 PER_DOMAIN 1800 全量,非定向兩科、非先 probe)③磁碟清理(E54 候清四 exports+st54r2 半成品已刪,釋 41G)",
+  "evidence": "cal8 開箱:78.7% 列頂格 8192、26.7% 列無 </think>、完整終止示範僅 21.3% 列;分科閉合率×A₂−A₁ 單調對應(math 94.1%↔gs +4.78/ifshape 75.8%↔if +2.77/code 53.5%↔he ±0.00);Qwen 長思考體質(P1 驗屍:失律=46/46 </think> 不觸發)下 8k 窗 KD 教「持續思考不落地」",
+  "regime_note": "E53 的 16k 撤案=冠軍帶語料軸封盤之連帶,非 16k 被否證;其無閉合列毒性歸因反而支持升 16k(把毒列轉化為閉合列);代理效度不跨 régime 紀律下不衝突"
+ },
+ "hypotheses": {
+  "H_window": "16k 列窗使 code/agentic 閉合率大幅上修(E53 劑量曲線 6.3%@3072→53.3%@8192 外推 16k ~85% 帶,配對同 seed 直接量測),KD 教材含完整「思考→</think>→作答→終止」示範 → he 首度脫離 ±0 帶、全科天花板上移",
+  "H_he_discriminant": "he 若在 16k 料下仍 ±0 ⇒ 內容軸(②)排除,歸因移交碼軸(③,E37 式局部重解碼)或量化殘留軸;若動 ⇒ ② 定罪成立",
+  "falsifier_corpus": "cal10 code 閉合率 16k 仍 <70%(長尾超 16k)⇒ 16k 不足,回用戶議 24k/32k 或閉合篩選策略,訓練鏈不點",
+  "coscaling_carry": "E56 配比法則沿用:每輪 tokens ≳1-2× 旁路參數(r128=244M);cal10 有效 token 量以 manifest 實測入帳"
+ },
+ "pipeline": {
+  "P0_gen": "gen_e57_longtraj(cal8 同配方同 SEED 20260826,MAX_TOK/ROW_LEN 16384,截斷保留照實計數)→ calib_e57_traj/len.pt + E57_TRAJ_MANIFEST;serve bf16 teacher;產料段=已授權,收 manifest 後閉合率過閘再議訓練鏈",
+  "P1_fill": "res_fill 基於 st54r,cal10 料;--lengths mask;判停準則待議(cycle-2 已錄 proxy 鈍化:val CE plateau 時官方仍 +0.0266 上行)",
+  "P2_drain": "train_res 凍結 E54 S3 參數;n-calib 待議(16k 列 2× 窗數,256 列≈17h;128 列≈8.8h 持平)",
+  "P3_tail": "梯尾單次 e2e 16k(λ_close 256 凍結配方)→ 雙跑終裁",
+  "judges_sketch": "官方三科唯一裁判;A₃ vs A₂ 0.3557(16k 料增量)、B₃ vs B1_bare 0.2874(同座標)、he 判別讀數單列(H_he_discriminant)"
+ },
+ "open_questions_for_freeze": [
+  "fill 起點:fresh reservoir on st54r(歸因乾淨) vs warm-start res54c2(保 cycle-2 24.6M 收益;需 res_fill 加 A/B 載入小補丁)",
+  "fill 劑量:1 epoch(92.9M,0.38 t/p,~8.8h) vs 2 epochs(0.76 t/p 達 co-scaling 帶,~17.6h);判停=步數主導(plateau 鈍化第 12 型),plateau 線降 0.2% 僅作保底",
+  "無閉合殘列處置:丟棄 1051 列(15.1%,E53 毒性帶) vs 保留照實 vs EOS 手術(閉列截答補 EOS,零 GPU 另立小臂);agentic 配額隨閉合篩選自然下修 1800→1177",
+  "鏈尾:B₃ 後自動接 e2e(16k λ_close 256) vs 強制回用戶再點"
+ ],
+ "deviation_repair_2026-08-28_plateau300": {
+  "fault": "fill 於 step 300 被 plateau 誤停(2584.5s):val CE @300 1.940691 vs ce0 1.935431(+0.27%,warm-start 換 16k 語料的過渡期上行),eps 0.002 保底線首檢即觸發=第12型 proxy 鈍化重演(cycle-2 為 fresh 起點 1500 步觸發;本次 warm 起點 300 步觸發,雙點實證相對改善判停在 warm-start 下結構性失效);違反凍結意圖『2 epochs 步數主導、eps 僅保底』",
+  "repair": "①res_fill 加 --plateau-min-steps(default 0=舊行為),min-steps 前 plateau 僅監控不判停;另設發散真保底 ce > last_ce*1.05 恆生效;②300 步產物誠實保留(fill_res57_p300.json、data/res_res57p300),刪錯劑量 export e57_resA3;③續跑=--res-init res57p300 --steps 5628 --plateau-min-steps 5628(300+5628=5928 步等劑量;Adam 動量重置+重洗牌前段列重複曝光一次,與 E56 梯級邊界同語義,監控級誤差)",
+  "discipline": "中途故障=修理+resume 不算裁決;凍結文本之 fill 命令列因此更動,屬回歸凍結意圖(步數主導)之修理,非假說變更;判準/判官/劑量不變"
+ },
+ "deviation_repair_2026-08-29_drain_oom": {
+  "fault": "drain b8 於窗0 backward OOM(93.6G/94.97G,alloc 84.25G+碎片 8.38G);A₃ 讀數已收(0.4558)不受影響",
+  "root_cause": "吞吐探針幽靈量測:train_res --smoke 強制覆寫 n_calib=32、batch=4(train_res.py:144),探針的 b6/b8 兩檔實際全跑 b4@32 列——『三檔 post-drain CE 逐位同 2.008343=數值等價實證』宣稱撤銷(同一配置跑三次的平凡結果);b8 峰 53.8G 為假讀數,真 b8 峰 >93.6G;fill mb2/e2e mb2 探針不走 smoke 覆寫路徑,量測仍有效",
+  "repair": "drain 回 E54 實戰檔位 batch 4(窗 backward 活化 ∝ batch×seq,主導項減半,估峰 ~55-65G)+ PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True 抗碎片;n-calib 128/token 劑量/判準不變;--resume 續跑(窗0 未落盤,自窗0 重來)",
+  "lesson": "『判準低於儀器地板』家族新型態:探針必須驗證關鍵參數真的生效(印出 effective config),smoke 模式的參數覆寫要在探針設計時排除;時序 b4 126.7 vs b8 111.5 之差全是噪音(同配置),當時未起疑=第二個失察點"
+ },
+ "engineering_receipts_2026-08-28": {
+  "grad_ckpt_patch": "res_fill/e2e_soft 新增 --grad-ckpt(HF 骨幹梯度檢查點 non-reentrant+model.train;dropout 全 0 語義不變;default 關=舊行為)——16k 學生活化圖 95G OOM 兩段診斷:①骨幹活化無 ckpt ②HF ckpt 需 training=True",
+  "smoke_16k": "三段全綠:fill mb1 峰 47.9G 9.1s/步(3.6k tok/s 與 8k 持平)、drain b4 峰 54.1G、e2e mb1 峰 56.0G;P0 閘 PASS、flip_vs_p0 0.0000",
+  "throughput_probe": "fill mb2 9.3s/步 持平(16k GEMM 飽和,8k mb=2 −12% 判例不轉移)→維持 mb1;e2e mb2 10.2s/步 −5% 採用(峰 59.4G);drain b6 112.6s/b8 111.5s vs b4 126.7s → b8 −12% 採用(峰 53.8G 持平);三檔 post-drain CE 逐位同 2.008343=數值等價實證",
+  "wall_clock_16k": "fill ~8.8h/epoch;drain n-calib 256@b8 ~15.5h、128@b8 ~7.8h(128×16k=2.1M tokens 與 E54 256×8k 等劑量,推薦 128);e2e 1200 步 ~3.4h",
+  "decided": "drain n-calib=128(token 等劑量)+batch 8;fill mb1;e2e mb2"
+ },
+ "budget_est": "gen ~5-9h(96 workers,~2× cal8);fill/drain/eval 依凍結參數另計;磁碟:cal10 tensor ~944MB(.pt 不入 git)",
+ "artifacts_policy": ".pt/.npz 不入 git;calib_e57_* 入 evidence/p1_grouping(檔案系統),manifest json 入 git"
+}

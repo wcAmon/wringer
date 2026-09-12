@@ -1,0 +1,51 @@
+{
+  "experiment": "E59",
+  "prereg": "prereg_e59.json FROZEN @cb1c2bb",
+  "date": "2026-09-02",
+  "chain": "t2drain(9→3 GPTQ 逐窗直解+吸收) → export e59_t3 → 三科官方",
+  "verdict": "FAIL_FALSIFIER",
+  "scores": {
+    "ifeval": 17.74, "humaneval": 5.49, "gsm8k": 13.12,
+    "comp": 0.1289,
+    "empties": {"ifeval": 125, "humaneval": 57, "gsm8k": 319},
+    "anchors": {"ifeval": 92.79, "humaneval": 94.51, "gsm8k": 95.53}
+  },
+  "rho_conv": {
+    "comp": 0.1397, "ifeval": 0.2258, "humaneval": 0.0621, "gsm8k": 0.1393,
+    "gates": {"main_pass": "≥0.85 FAIL", "falsifier": "<0.70 TRIGGERED", "he_special": "≥0.70 FAIL (0.0621)"},
+    "g9_floor_ref": {"comp9": 0.9226, "ifeval": 78.56, "humaneval": 88.41, "gsm8k": 94.16}
+  },
+  "convert_stats": {
+    "windows": 31, "runtime_s": 21355, "reverted_total": 0,
+    "post_convert_val_ce": 2.9043, "g9_source_val_ce": 2.0304,
+    "flip_vs_solved_rate": 0.001839, "agree_g3_final": 0.7902,
+    "landing_probe": "PASS @window4 (agree_g3 0.787 << 0.99) — 確實跳出盆地一",
+    "err_solver_vs_control": "每層 err_s 約 err_c 的 1/4～1/5（窗 31 例：q_proj 9.3e8 vs 4.3e9），31 窗全部模組零回退",
+    "tail_morphology": "末窗進場 3.57e-2（E58 飽和線 2.5×）吸收壓回 1.33e-2（−63%）；載體全鏈壓得動，與 E58 尾段飽和形態不同源"
+  },
+  "landing_fork_attribution": {
+    "fork": "跳了但低（agree_g3 0.79 ≠ 盆地一，分數却崩）",
+    "reading": [
+      "藍圖軸定罪：17.74 IFEval 低於 E31 零訓練直投臂 35.49、低於 E35 7→3 的 28.65 —— 9元 T1 排列是為雙平面加法設計的，壓成單平面後比 bf16 直投更差＝「磚格式藍圖可移植」假設在此劑量被否證",
+      "E35 教訓再確認（升級版）：逐層 Σ-加權局部最优（err_s 全面 4-5× 優於控制臂）+ 載體吸收有效收斂，仍然全局災難 —— 局部重建誤差是第 11 型 proxy 失效候選（方向同、量級失真：val CE 僅 +0.87 但官方 −80%）",
+      "雙凹假說未被否證但本臂的具體主張死亡：確實跳出盆地一，但 GPTQ 局部解落在的新盆地是壞盆地，非盆地二；『跳出去』本身不夠，要『跳對地方』",
+      "失律形態共現：空回應 24%（319/1319 gs）、max len 45k 思考不終止；非空樣本流暢但算術錯誤（首題 16-3-4 算成 12）＝同時命中終止軸與能力軸"
+    ]
+  },
+  "basin_readout": {
+    "st54r_vs_g3b32": 0.9994, "g9_vs_g3": 0.634, "e59_vs_g3b32": 0.7902,
+    "note": "全史第一個確實離開盆地一的可評態；讀數：盆地一外不等於優"
+  },
+  "assets": {
+    "state": "data/qs_st59", "export": "exports/e59_t3",
+    "train_log": "evidence/p1_grouping/corkscrew/train_st59.json",
+    "alphas": "evidence/p1_grouping/corkscrew/alphas_st59.npz",
+    "evals": "evidence/p1_grouping/a1eval/{ifeval,humaneval,gsm8k}_e59_t3"
+  },
+  "champion_unchanged": "st51c_e2e 甲 0.7469 衛冕",
+  "next_candidates_for_user": [
+    "(a) 藍圖軸修正：不拿 9元 當藍圖，改先對 9元 做單平面化訓練（在 9元 上逐步約束 T2→0 再轉），讓排列在高容量態先適應單平面",
+    "(b) 盆地二搜索改用全局目標：逐窗局部解已兩次定罪（E35/E59），e2e KD 從零重解碼需 BitNet 級量能＝token 飢荒軸",
+    "(c) 回防線：凍結碼軸單修連續軸（E37 系）於現冠軍，碼軸封盤維持"
+  ]
+}

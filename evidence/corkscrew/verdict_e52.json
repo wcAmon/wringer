@@ -1,0 +1,42 @@
+{
+  "experiment": "E52 語料根因修復:code 閉合完整重生成(prereg_e52 FROZEN @0a8be54)",
+  "status": "ADJUDICATED",
+  "date": "2026-08-26",
+  "chain": "gen 15:46-21:50(37,376 題提前收滿)→ fill → main 21:55-01:28(3h33m,10.7-11s/step)→ export → 雙跑 eval → 03:0x 全收;無中斷",
+  "production_gates": {
+    "codeclose_rows": {"value": 3200, "gate": ">=2500", "verdict": "PASS", "note": "原始 3689,除汙切除 188;閉合位四分位 [1378,1555,1727] 落抖動帶內"},
+    "closure_yield": {"value": 0.0634, "gate": ">=0.30", "verdict": "FAIL 照實", "note": "截斷假說方向成立(800→1.5% vs 3072→6.34%=4.2×)但幅度短缺;教師 temp1.0 思考長尾共因入卷(benchmark=低溫+16384 預算,教師本身收得完)"},
+    "fill_transition_share": {"value": 0.3005, "gate": "<=0.32", "verdict": "PASS", "note": "hec65 19385 + 補集 1535 + codeclose 3200 = 24120"}
+  },
+  "scores": {
+    "w128":   {"ifeval": 70.98, "humaneval": 57.32, "gsm8k": 81.05, "comp": 0.7400, "empties": {"ifeval": 45, "humaneval": 24, "gsm8k": 29}},
+    "w128r2": {"ifeval": 72.46, "humaneval": 55.49, "gsm8k": 78.92, "comp": 0.7314, "empties": {"ifeval": 36, "humaneval": 31, "gsm8k": 40}},
+    "mean":   {"ifeval": 71.72, "humaneval": 56.41, "gsm8k": 79.98, "comp": 0.7357},
+    "stable_empties": {"ifeval": 18, "humaneval": 16, "gsm8k": 10, "total": 44},
+    "champion_ref": {"mean_comp": 0.7388, "subject_means": {"ifeval": 75.97, "humaneval": 53.36, "gsm8k": 79.57}, "stable": {"ifeval": 13, "humaneval": 16, "gsm8k": 21, "total": 50}}
+  },
+  "gates": {
+    "primary":   {"verdict": "FAIL", "detail": "mean 甲 0.7357 < 0.750 換防線;vs 冠軍均值 0.7388 差 −0.0031,在 σ_mean≈0.006 帶內=統計平手非退步"},
+    "milestone": {"verdict": "FAIL", "detail": "0.7357 < 0.80"},
+    "mechanism": {"verdict": "FAIL", "detail": "stable 總 44<50 達標,但 he stable 16 未 <16(原地不動)——半過"},
+    "discriminator": {"verdict": "PARTIAL(中間帶照實)", "detail": "he mean 56.405≥56.4 過線但邊際 0.005 遠低於 he 科噪音 ±3pp=判別力有限降權;he stable 16>8 未達。裁讀:H_corpus 在答對率軸部分支持(he +3.05 新高、方向正中),H_quant_residue 保留 stable 空核主張(16 紋絲不動)——雙病結構具體化"},
+    "kill": {"verdict": "NOT_TRIGGERED", "detail": "if 71.72 > 70.97 邊際僅 0.75pp(亦低於儀器地板,照實記);he/gs 遠離殺線"}
+  },
+  "axis_reading": {
+    "humaneval": "+3.05(53.36→56.41)冠軍態均值新高——codeclose 教材預測方向正中;但 he stable 空核 16→16 未動",
+    "ifeval": "−4.25(75.97→71.72),stable 空 13→18 惡化——code 料稀釋稅重演(E38 分科解耦定律:raw code 反傷 IF 的第二次實證,這次是閉合完整的 code 料仍傷 IF)",
+    "gsm8k": "+0.41 噪音帶;stable 空 21→10 大幅改善(未預註冊,照實記觀察)",
+    "stable_total": "50→44(−6),結構重排:gs 大修、if 惡化、he 不動"
+  },
+  "interpretation": "語料修復是分科定向武器不是全科藥:閉合完整 code 料買 he 賣 IF,曝險再平衡的稀釋稅與域增益同時成立;he stable 核不動=閉合教學修得動答對率修不動空核,H_corpus_ceiling 與 H_quant_residue 各佔一軸。單變量設計乾淨歸因:與 E51 唯一差異為 --data,故 he +3.05/IF −4.25 全記語料帳",
+  "routing": {
+    "champion": "st51c_e2e 衛冕(mean 0.7388)",
+    "per_mandate": "FAIL → 推播回報用戶,候選待裁",
+    "candidates": [
+      "(a) cal7 全域閉合完整重生成:math 600→33%/ifshape 900→20% 同病;E38 域餵料定律預測 IF 域自己的閉合料可同時救 IF 稀釋稅——本案 IF 失血正是其反面證據",
+      "(b) 迴圈硬核小臂:he stable 16 空核既然語料修不動,回量化殘留軸(上限 ~0.02 甲)",
+      "(c) 窗長 4096 軸(E53 候選,可併入 cal7 重生成)"
+    ]
+  },
+  "instruments": {"train_json": "corkscrew/train_st52c_e2e.json", "data_sha": "e0fa4362af619967", "t_flip": 3.9e-05, "val_ce": "1.6236→1.6286(monitor-only)", "runtime_s": 12791.6}
+}

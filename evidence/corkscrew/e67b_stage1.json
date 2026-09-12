@@ -1,0 +1,24 @@
+{
+ "experiment": "E67-B stage1",
+ "J_A": "FAIL(GSQ 機制不轉移) Δhe_vs_R={'gsq_a30': -9.89, 'gsq_a29': -10.5}",
+ "B0": "rd_b0",
+ "he0": 0.664634,
+ "he1": 0.762195,
+ "H0": 2.6806,
+ "H1": 2.6806,
+ "dH": 0.0,
+ "falsifier_he1_le_he0p3": false,
+ "entropy_kept": true,
+ "verdict": "GO(he1 76.22 > he0 66.46 + 3 pp;熵帳不動 H1=H0=2.6806、翻碼 0.0000 ⇒ 增益全在 α 尺度軸;蓄水待用戶裁)",
+ "recipe": {
+  "e2e": "800 步 batch2 γ0.8 hidchunk full_ckpt close 32/16/8 rate_lam 0.05 corpus e58r1b"
+ },
+ "dhe_pp": 9.76,
+ "errata": "鏈原判 STOP 為單位 bug(分數 0–1 卻用 +3 pp 門檻);15:5x 依 he1<=he0+0.03 更正為 GO",
+ "flip_vs_input": 0.0,
+ "val_ce": {
+  "pre": 2.017369,
+  "post": 1.874263
+ },
+ "rate_traj": "2.74→2.70 held"
+}

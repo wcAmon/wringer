@@ -1,0 +1,27 @@
+{
+ "name": "verdict_e30_t3",
+ "date": "2026-08-10",
+ "prereg": ["prereg_e30_t3.json", "prereg_e30_t3_amend1.json"],
+ "judge": "官方 A1 框架 IFEval strict prompt-level,同機 bf16 錨 90.94(evidence/p1_grouping/a1eval/ifeval_bf16)",
+ "arms_official_ifeval": {
+  "g3_zt":     {"strict_prompt": 0.11460, "strict_inst": 0.20624, "loose_prompt": 0.11645, "generation_s": 3975.8},
+  "st3_zt":    {"strict_prompt": 0.20887, "strict_inst": 0.31894, "loose_prompt": 0.26248, "generation_s": 1733.8},
+  "st3_pol50": {"strict_prompt": 0.27542, "strict_inst": 0.38249, "loose_prompt": 0.30129, "generation_s": 968.8}
+ },
+ "retention_best_arm": 0.3029,
+ "tests": {
+  "T1": {"verdict": "PASS", "evidence": "等價閘 rel=0.00e+00(逐位);g3 GPTQ 可重建,val CE 2.808 有限;匯出位面 200/200 bit-exact"},
+  "T2": {"verdict": "PASS", "evidence": "st3_zt 20.89 > g3_zt 11.46(官方 strict,近翻倍)——退火在粗網格有真增益;惟 g3 基線近全毀,門檻極低"},
+  "T3": {"verdict": "FAIL_LOW", "evidence": "st3_pol50 保留 30.3%,遠低於預註冊帶 [55%, 88%]"},
+  "T4": {"verdict": "FAIL_LOW", "evidence": "T 翻轉率 8.81% < 帶下限 15%;合併 g3 官方近全毀(11.46)判讀:退火探索不足、黏死於官方軸上已損壞的 GPTQ init,非 init 已優"},
+  "T5": {"verdict": "PASS", "evidence": "θ 可學生效:200 模組 |θ_eff−mid| 中位數的中位數 0.0217 > 0.01,75.5% 模組超線(min 0.0008 / max 0.0745)"},
+  "T6": {"verdict": "WARNING", "evidence": "全程 loss 有限(未觸發停機);末窗終值 0.0409 vs 首窗終值 0.00052 ≈ 78×,遠超 1.5× 警告帶——深層激活重建困難隨深度陡增(V5 帶化)"}
+ },
+ "novel_findings": {
+  "polish_isolated_effect": "首次同輪嚴格對照隔離 polish 淨效應:st3_zt 20.89 → st3_pol50 27.54(+6.65 strict),官方軸「有益」;同時 val CE 2.879→1.759 穿透教師 2.004。⇒ t9 侵蝕假說在重損 régime 未重演;CE 穿透教師本身不是官方軸侵蝕的診斷特徵(proxy #5 補充第六筆:CE 與官方分同向脫鉤兩方向皆有實錄)。侵蝕假說改判 régime 依賴:近恢復模型(t9)疑受害、重損模型(t3)受益,t9 歸因仍待 ste9_zt 無打磨臂隔離",
+  "generation_time_as_damage_proxy": "生成時間單調隨配方恢復:g3 3976s → st3 1734s → pol50 969s(bf16 ~707-1118s)——受損模型打滿 max_tokens(失去停止行為),生成時間可作免費損傷粗探針(monitor-only)"
+ },
+ "branch_decision": "保留 30.3% < 80 → 走 short 分岔:e28_qat teacher(官方 strict 88.54,amend1 指定,t9 已除名)長打磨 200-400 步;另立 prereg 才開 GPU。若仍 short → 持續訓練戰役另立",
+ "runtime": {"gptq_s": 249, "train_s": 9150.6, "polish50_s": "~240", "export_3arms_s": "~600", "judge_3arms_s": 6678, "wall_total": "~22:14→03:14 CST"},
+ "notes": "90% try-line 未達(誠實入帳;prereg 動機欄已預告 CAT-Q 三元掉 8-11 點、大概率不可達)。pareto_line 對照模型未跑(secondary,另立 prereg)。val CE 全程 monitor-only。"
+}

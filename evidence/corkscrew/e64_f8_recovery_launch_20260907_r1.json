@@ -1,0 +1,62 @@
+{
+  "format": "e64_f8_recovery_launch_receipt_v1",
+  "tag": "e64_f8_recovery_20260907_r1",
+  "launch_utc": "2026-09-07 13:51:57 UTC",
+  "launch_taipei": "2026-09-07 21:51:57 +08:00",
+  "tracked_exec_session_id": 96987,
+  "controller_pid": 61098,
+  "controller_process_start": "3821455",
+  "evaluation_pid": 61157,
+  "vllm_api_pid": 61165,
+  "identity": "fbd84c19ab6c6122614bb954d7e941212e656e6d23956f9b137e59364d9ae5ae",
+  "source_commit_short": "70c293b",
+  "artifact_root": "$REPO",
+  "source_root": "$REPO/.worktrees/e64-free3-rotation",
+  "command": "PYTHONPATH=$REPO/.worktrees/e64-free3-rotation $REPO/.venv/bin/python -P -m p2_anchor.corkscrew.chain_e64_f8 --run --tag e64_f8_recovery_20260907_r1",
+  "live_ledger": "evidence/p1_grouping/corkscrew/chain_e64_f8_recovery_20260907_r1/ledger.json",
+  "frozen_preregistration": "evidence/p1_grouping/corkscrew/chain_e64_f8_recovery_20260907_r1/preregistration.json",
+  "benchmark_log": "evidence/p1_grouping/corkscrew/chain_e64_f8_recovery_20260907_r1/eval_bf16.1.log",
+  "observed_at_handoff": {
+    "observed_utc": "2026-09-07 13:54:47 UTC",
+    "status": "running",
+    "stage": "eval_bf16",
+    "subject": "ifeval",
+    "subject_prompts": 541,
+    "concurrent_requests": 128,
+    "health_http_status": 200,
+    "chat_completion_http_200_observed": true,
+    "new_completed_benchmark_scores": false,
+    "formal_recovery_training_started": false
+  },
+  "gates": {
+    "full_branch_review": "approved at fe85492; all deferred minors nonblocking",
+    "runtime_path_fix_review": "approved at 70c293b",
+    "owned_cpu_tests": "231 passed at fe85492; 26 focused passed after scoped PATH fix",
+    "actual_runtime_receipt": "evidence/p1_grouping/corkscrew/e64_f8_recovery_runtime_gates_20260907.json",
+    "full_real_chain_smoke_ledger": "evidence/p1_grouping/corkscrew/chain_e64_f8_chaincheck_20260907_smoke/ledger.json",
+    "full_real_chain_smoke_complete": true,
+    "individual_prompt_audit": "ANY-individual-user-prompt exclusion independently yields same5677rows/75955664inputs; zero heldout individual-prompt overlap"
+  },
+  "first_failed_attempt": {
+    "tag": "e64_f8_recovery_20260907",
+    "tracked_exec_session_id": 60690,
+    "stage": "BF16 vLLM initialization",
+    "cause": "PATH omitted existing inference-environment ninja helper",
+    "artifacts_preserved": true,
+    "answers_generated": false,
+    "recovery_training_tokens": 0,
+    "resolution": "allowlist inference bin after training bin; new identity/tag; no installation or training change"
+  },
+  "schedule": {
+    "window": "31 overlapping two-layer windows; 8 epochs per window",
+    "e2e_effective_loss_position_cap": 30000000,
+    "fixed_e2e_checkpoints": [10000000, 20000000, 30000000],
+    "evaluated_states": ["matched BF16", "initial F8", "post-window", "E2E10M", "E2E20M", "E2E30M"],
+    "subjects": ["ifeval", "humaneval", "gsm8k"],
+    "success": "each subject individually strictly exceeds90percent of matched BF16",
+    "automatic_larger_budget": false,
+    "estimated_hours_after_launch": [9, 13],
+    "estimate_is_provisional": true
+  },
+  "interpretation": "launch receipt, not completed recovery results; achieved first-budget curve will not prove a global maximum or universal quantization strategy"
+}

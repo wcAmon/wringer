@@ -1,0 +1,24 @@
+{
+ "experiment": "E48b 臂B:O1 固定稅 eval 側法證(零 GPU;prereg_e48b)",
+ "date": "2026-08-24",
+ "method": "全歷代 63 份 IFEval 卷宗(n=541)strict 失敗案分類:空回應(思考未閉合→parser 後答案通道全空,自動全違規)/截斷/殘樁;跨態差分",
+ "verdicts": {
+  "V1_instrument": "量尺無罪——bf16 與全部 QAT 態同 max_tokens 16384、同 qwen3 reasoning parser;bf16 空回應僅 7/541(1.3pp)=儀器本底;『eval 側工件 ≥3pp』假說否證",
+  "V2_empty_channel": "冠軍態 77/541(14.2pp)回應全空=自動零分;st47 家族(D/E/X/g16/e2e)恆定 77-83 案=態內固定,與鏈尾配方無關",
+  "V3_drain_tax_mechanism": "E39 遺留 −3.3pp 固定排水稅機制候選坐實:A 點(e42a 78.74)空 47 案 → 排水後 ~78 案(+31=+5.7pp 自動零分);以非空通過率 ~80% 修正,期望分損 ~−4.6pp ≈ E39 −3.33/E38 −3.14 帶——固定稅=排水誘發思考失律(endless thinking),非轉寫損耗",
+  "V4_damage_expression": "損傷大宗以空回應呈現:st47p 殺閘案 186 空(34.4pp)、t9 178、E40 RKL 崩塌 309(57.1pp);元數軸強相關(9元 1.5-3.9pp vs 3元 14pp+)",
+  "V5_headroom": "冠軍非空通過率 374/464=80.6%;若 77 空案以同率作答=+62 過 ≈ +11.5pp IF ≈ +0.041 甲——單一最大可攻擊損傷通道,大於排水軸全部剩餘稅"
+ },
+ "state_table_key_rows": {
+  "bf16_w128": [92.79, 7], "e28_qat_9e": [88.54, 14], "e42a_Apoint": [78.74, 47],
+  "st47d_tri": [71.35, 78], "st47d_e2e_w128": [69.87, 77], "st47e_tri": [69.13, 83],
+  "st47x_tri": [69.13, 77], "st47dg16_tri": [66.17, 81], "st47p_tri": [39.56, 186],
+  "format": "[IFEval strict, empty_count/541]"
+ },
+ "consequences": {
+  "instrument": "量尺不動(無罪);budget-forcing(強制閉合思考)屬量尺變體,僅在用戶要求第二量尺時考慮",
+  "new_axis": "『思考閉合軸』立案:模型側訓練干預(鏈尾或蓄水段思考紀律)攻 14.2pp 空回應通道;E49 候選臂(正當模型改進,非量尺)",
+  "caveat": "空回應=思考耗盡為間接推斷(responses.jsonl 無 reasoning_content/finish_reason;16384 上限+空 content 的最簡解釋);下次 runner 可加 finish_reason 落盤(量尺中立欄位)"
+ },
+ "prereg": "prereg_e48b.json arm_B;判準逐字:工件 <1pp → eval 側否證成立,殘差歸模型損傷(但通道結構已解剖)"
+}

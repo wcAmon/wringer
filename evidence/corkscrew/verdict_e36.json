@@ -1,0 +1,39 @@
+{
+ "experiment": "E36 7→3 全組合:合併即補償 + 移動老師自蒸餾鏈(prereg FROZEN @81fac4c)",
+ "chain": "st7m → sweep 31窗×60ep(97.9min)→ e2e 600步(83.3min)→ export verify → 官方雙裁判;08-12 21:05 – 08-13 01:0x 全鏈 ~4h",
+ "scores": {
+  "ifeval_strict_prompt": 0.22181146025878004,
+  "ifeval_strict_instruction": 0.3537170263788969,
+  "ifeval_loose_prompt": 0.2476894639556377,
+  "humaneval": 0.042683,
+  "generation_s_ifeval": 1429.3,
+  "generation_s_humaneval": 940.3
+ },
+ "criteria_verdicts": {
+  "N1_survival": "FAIL——22.18 < 37.5 存續線;且低於 E35 純走廊 28.65 達 −6.47pp、低於 E31 零訓練投影 28.65 同幅=全組合(補償+老師)相對純走廊為淨傷害",
+  "N1plus_champion": "FAIL(44.55 無懸念;3元 現任冠軍仍為 E32 e2e 44.55 → E37 P0 起點確定 = E32 態,冠軍態原則 E36 分支不觸發)",
+  "N2_record": "humaneval 4.27%(E35 10.98 → 0.39×;雙科同向惡化;生成 940s 無亂展開簽名)",
+  "N3_measurement_duty": "全收(見 n3_findings)",
+  "N4_stability": "PASS——gdisc1 median 0.1042 max 0.1561 ≤ 0.1724;nonfinite=0(log 與窗紀錄均無);holdout/train 末值比 median 1.039 max 1.119 無擴口"
+ },
+ "n3_findings": {
+  "comp_activity": "186 活事件(窗均 6.0 如設計)、總 flips 1,546,467;逐事件 flips 沿走廊遞增(ep8 中位數千 → ep32 max 60,139)= 總虧欠制 R 的預期形狀;absorb 逐模組 median 3.2% / p90 9.3% / max 71.3% = 薄靶低吸收 régime;cap 3% 遠未觸頂,增益門檻在限流",
+  "code_metrics": "t_flip_vs_init 0.3502(E35 0.3545,基本同值);null_flip_frac median 5.13%(E35 3.69%,小幅上移)= 補償只動 ~0.1% 碼、終碼仍以投影為主體,但這 0.1% + 老師改變的梯度場,合起來把官方分數壓低 6.47pp",
+  "teacher_drift": "median 0.0053 健康;>0.05 共 19 事件全集中深層窗 [26,32] 且沿事件遞增,max 0.344 = 自蒸餾鏈深層發散的預宣告 tripwire 形狀",
+  "logit_c_final": "median 0.729 range [0.120,0.994](E35 0.728)——合併阻力與 E35 持平,老師混合未改變 c 的生長慾望",
+  "e2e": "pre 3.087 → post 1.943(E35: 2.696→1.915);T 翻轉 0.0000(e2e 三證再確認,終碼即 sweep+comp 產物);post-e2e val CE 與 E35 幾乎同位(1.943 vs 1.915)而官方差 6.47pp = proxy 對本 régime 損傷不敏感(不構成反轉,方向同、幅度壓縮;val CE 從未入裁決鏈)"
+ },
+ "failure_attribution": {
+  "structure": "全組合設計,三嫌疑共存無法互相開脫;用戶預裁:N1 FAIL → 不加碼本路線消融,另尋路徑",
+  "suspects": [
+   "S1 老師混合梯度場:λ0.6 朝自蒸餾鏈訓練污染找碼方向(深層 drift 0.34 旁證);E37 已裁撤老師(D7)→ 不轉移",
+   "S2 非平穩靶:c 滑動+SGD 使虧欠 R 逐 epoch 移動,solver 追薄移動靶;E37 凍結水庫+γ 分格 = 格內固定厚靶 → 不轉移",
+   "S3 solver 本體(H 重建增益≠能力增益 / 落胞心破壞 s 退火幾何):E37 排水段同零件 → 唯一可轉移嫌疑,未被排除"
+  ],
+  "solver_prior_evidence": "冠軍碼(E31/E32 GPTQ init)即同族 H 重建目標靜態解出=『H 目標本質有毒』與既有證據矛盾;較可能罪名為『動態交錯使用時有毒』(薄靶+移動靶情境),E37 的靜態厚片恰為 solver 最有利庭審條件",
+  "e37_disposition": "E37 憑結構可單獨審判 S3:裁判點 A 升格硬 go/no-go 閘(solver 上場前先驗蓄水);預宣告『A 高而 B 低(ρ≤0)= S3 單獨定罪 + 第九筆 proxy 反轉(H 重建目標對能力失效)入檔,排水路線關閉』;τ/W_max 校準方向=少事件、穩定靶(見 prereg_e37 calibration)"
+ },
+ "route_disposition": "形變+老師+補償(動態交錯)路線關閉;E37 水庫烘焙(冠軍態+靜態厚片排放)依用戶 08-12 終裁自主接續",
+ "anchors_restated": {"bf16": 0.90943, "e31_zt": 0.28651, "e31_e2e": 0.3549, "e32_e2e_3gon_best": 0.4455, "e35_corridor_e2e": 0.28651, "e35c_noe2e": 0.17375},
+ "timestamp": "2026-08-13T01:1x+08:00"
+}

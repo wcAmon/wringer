@@ -1,0 +1,100 @@
+{
+ "experiment": "E38 雙軸水庫二輪:容量(rank)×語料域 三臂 A 點篩選 → 贏家排水 → B 點三科",
+ "status": "ADJUDICATED @verdict_e38.json:R1 FAIL(B 47.50<50.28,E37 衛冕)、ρ₂ 0.485 崩塌=排水吞吐新綁定約束、gsm8k 域餵料 +7.7pp 成立、raw code 反傷",
+ "date_frozen": "2026-08-13",
+ "motivation": {
+  "from_e37": "儲存軸可修已證(+5.91pp)但 A=50.46 僅覆蓋 bf16 缺口 ~13%;humaneval 卡 29.88;fill 在 @600 後僅餘 0.36% 改善=cal2×r128 已近榨乾",
+  "regime_thesis": "7元=微擾區(修復跨域泛化,agentic cal 使 humaneval 保留 87.3%);3元=重建區(修復域特異,agentic cal 下 humaneval 僅 ~31% of bf16)。旁證:混元 he 26.8 ≈ 3元 29.88 同型剖面",
+  "hypotheses": {
+   "H_capacity": "agentic 跨域轉移未飽和,rank↑ 續供水(證據:E35→E37 he +18.9pp 純 agentic 水)",
+   "H_coverage": "agentic 語料在重建區有 code/math 天花板,需換域餵料",
+   "H_interaction": "容量×新域相乘,單開不夠"
+  }
+ },
+ "base": {
+  "state": "data/qs_st37r_e2e(E37 冠軍態,碼全程凍結)",
+  "ref_export": "exports/e37_3g(P0 gate 位元一致基準)",
+  "teacher": "bf16 錨 revision 945c40a4",
+  "reservoir_reuse": "res_res37 不復用(其水已轉寫);每臂新建"
+ },
+ "corpus_cal3": {
+  "file": "evidence/p1_grouping/calib_train_512_v3.pt",
+  "manifest": "evidence/p1_grouping/CALIB512V3_MANIFEST.json",
+  "spec": "512×2048 token 級三域均分:agentic 171(五源全新切片,與 cal1/cal2 檔案級零重疊,深度中層)+ code 171(code_starcoder)+ math 170(math_nemotron);列級 shuffle 混域",
+  "decontam": "全列 word 8-gram 掃 gsm8k-test(question+answer)+ humaneval(prompt+solution+test);列級切除:每域多建 30 列 margin,命中列剔除取前 n_seqs 乾淨列,不足即 FAIL 停鏈。實測 math_nemotron ~2% 列含 gsm8k 測題文本(首建 3/200 命中),切除留痕 manifest"
+ },
+ "arms": {
+  "A1": {
+   "r_res": 256,
+   "data": "cal2",
+   "tests": "H_capacity"
+  },
+  "A2": {
+   "r_res": 128,
+   "data": "cal3",
+   "tests": "H_coverage"
+  },
+  "A3": {
+   "r_res": 256,
+   "data": "cal3",
+   "tests": "H_interaction"
+  },
+  "fill_params": "steps 1200 / batch 8 / lr 2e-4 / 固定步數(plateau 判停停用,見 amendment_1)",
+  "amendment_1": {
+   "date": "2026-08-13(A1 fill 完成後、任何 A 點官方讀數產出前;無結果偏倚)",
+   "what": "plateau 判停(val CE 改善<0.5% 即停)停用,三臂一律固定 1200 步(--plateau-every 1e9)",
+   "why": "儀器故障:E38 基座=E37 冠軍態已經蓄排過一輪,fill 的 KD 方向與 cal1-val CE 不再同向(A1 實測 val CE 1.7157→1.7516 反升),判停在首檢查點 300 即誤觸發=水庫欠填 4×;放行會讓三臂全欠填、飽和分岔假觸發。E37 當時 val CE 同向下降純屬 régime 巧合——此為 val CE 代理失效的第十筆型態(用在控制迴路而非裁決,故不計入反轉帳)",
+   "action": "A1 欠填產物(300 步 fill、export、水庫)全刪重跑;A 點無任何官方分數先於本修正"
+  },
+  "order": "A1→A2→A3 序跑,每臂收完釋 GPU"
+ },
+ "judge_A": {
+  "subjects_per_arm": [
+   "ifeval",
+   "humaneval",
+   "gsm8k"
+  ],
+  "winner_rule": "主判 IFEval-A(strict prompt)最高;前提 humaneval-A ≥ 0.28(=E37 B 點 29.88 減 2pp 噪聲帶)。若無臂過 he 地板但有臂 IFEval-A > 0.5046:仍取 IFEval 最高者排水,verdict 記 humaneval_floor_fail",
+  "saturation_branch": "全臂 IFEval-A ≤ 0.5046(E37 A)→ 不排水,收卷歸因『儲存軸二輪飽和:rank 與語料皆非綁定約束,缺口回到碼容量本身(E35 結論)』",
+  "hypothesis_reading": {
+   "H_capacity_scores": "A1 humaneval-A > 0.35",
+   "H_coverage_scores": "A1 humaneval-A 停在 ~0.30(≤0.32)且 A2 humaneval-A ≥ A1+3pp",
+   "H_interaction_scores": "A3 IFEval-A > max(A1,A2)+1pp 或 A3 humaneval-A > max(A1,A2)+3pp"
+  }
+ },
+ "drain": {
+  "trainer": "train_res --tag st38r --state-tag st37r_e2e --res-tag res38<贏家> --gsteps 5 --tau 0.5 --w-max 4 --tail-soft 10 --tail-ste 4 --learn-theta --holdout-frac 0.05 --resume",
+  "tau_note": "τ=0.5 保留原值:E37 實測零觸發=行為上即 W_max=4 固定節奏;不改碼以最小化 delta",
+  "calib": "贏家 fill 語料前 128 列(另存 calib_drain_e38.pt,sha256 入 manifest)——域一致轉寫(E33b 教訓:鏈尾域切換可反轉排序)且計算量對齊 E37(128×2048)",
+  "val": "calib_val.pt 不變(monitor-only)"
+ },
+ "e2e_tail": "e2e_soft --tag st38r_e2e --state-tag st38r --steps 600 --batch 8 --data <贏家 fill 語料>(拋光與蓄水同域)",
+ "export": "export --state-tag st38r_e2e --out exports/e38_3g --verify",
+ "judge_B": {
+  "subjects": [
+   "ifeval",
+   "humaneval",
+   "gsm8k"
+  ],
+  "R1_new_champion": "B-IFEval(strict prompt)> 0.5028(E37 B)→ 新冠軍",
+  "R2_rho2": "ρ₂ = (B_if − 0.4455)/(A_if − 0.4455);對照 E37 ρ=0.969(第二筆 ρ,裁跨輪穩定性)",
+  "R3_measurements": "humaneval-B vs 0.29878、gsm8k-B vs 0.46323(E32 e2e;E37 未測 gsm8k,此為 3元 系最近基線)、gsm8k bf16 錨 0.952995 —— 列量測非判準",
+  "R4_stability": "gdisc1 exit ≤ 0.1724、nonfinite=0、holdout exit 比無擴口(同 E37 N4)"
+ },
+ "discipline": {
+  "official_only": "判準只認官方三科;val CE / KD / 水位 / loss 一律 monitor-only(九筆 proxy 反轉在案)",
+  "no_cross_arm_loss": "cal2 與 cal3 的 loss/CE 尺度不可比,嚴禁跨臂比 loss 裁任何事",
+  "fail_honest": "任何 FAIL 照實入 verdict;鏈斷點 E38_FAIL:<段> 記錄"
+ },
+ "budget_estimate": "cal3 建置(CPU)~1h;三臂 fill+A 三科 ≈ 3×(55m+60m)≈ 6h(gsm8k 3元 生成偏慢 ~40m/臂);贏家 drain ~1.5h + e2e ~1.8h + B 三科 ~1.2h ≈ 4.5h;合計 ~11h",
+ "artifacts_plan": {
+  "evidence": [
+   "fill_res38a{1,2,3}.json",
+   "a1eval/{ifeval,humaneval,gsm8k}_e38_a{1,2,3}A/",
+   "train_st38r.json",
+   "train_st38r_e2e.json",
+   "a1eval/{ifeval,humaneval,gsm8k}_e38_3g/"
+  ],
+  "states": "data/qs_st38r_e2e、exports/e38_3g、data/res_res38a{1,2,3}(.pt 不進 git)"
+ }
+}

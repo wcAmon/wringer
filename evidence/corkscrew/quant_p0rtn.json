@@ -1,0 +1,30 @@
+{
+ "tag": "p0rtn",
+ "grid": 8,
+ "grid_map": null,
+ "c": 0.6,
+ "solver": "rtn",
+ "alpha_init": "auto",
+ "prior_lam": 0.0,
+ "module_map": "",
+ "ledger": {
+  "code_fixed": 3.0,
+  "code_entropy": 2.7533,
+  "code_entropy_joint": 2.7533,
+  "alpha": 0.125,
+  "beta": 0.0,
+  "r": 0.0,
+  "weights": 3565158400,
+  "total_fixed": 3.125,
+  "total_entropy": 2.8783,
+  "total_entropy_joint": 2.8783
+ },
+ "block": 128,
+ "n_calib": 128,
+ "seed": 20260806,
+ "zerotrain_val_ce": 1.6151795983314514,
+ "t1_nonzero": 0.7648,
+ "t2_nonzero": 0.0,
+ "runtime_s": 1652.4,
+ "timestamp": "2026-09-09T18:30:19.792072"
+}

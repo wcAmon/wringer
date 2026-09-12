@@ -1,0 +1,79 @@
+{
+ "experiment": "E60-L 凍碼學旋轉期望值探針(rot_learn v2:GPTQ 碼凍結、旋轉施於激活側、Q=Q0·Cayley(A) 只學 A;兩輪 learn→fold→重解 GPTQ)",
+ "verdict": "MID(重解 r_learned 0.468 ∈[0.45,0.60);官方門檻 r≥0.50 未達→官方三科跳過)",
+ "headline": "旋轉分岔:當『與固定碼共適應的連續載體』r_frozen 0.82→0.88(HIGH 帶上方,proxy);當『前處理再重解』r_learned 0.468(MID 下緣,+0.08 vs 隨機 0.388)。走廊裡要的是前者(用戶「一樓轉向接二樓」),但前者只有 val CE 證據,官方未裁。",
+ "gap_decomposition": {
+  "ce_bf16": 2.0032,
+  "ce_3g_direct_ctl": 2.8080677837133408,
+  "definition": "r=(CE_ctl−CE)/(CE_ctl−CE_bf16)=基底失準份額;餘=容量份額",
+  "random_rotation": {
+   "ce": 2.495705157518387,
+   "r": 0.3881
+  },
+  "L1": {
+   "frozen_q0": 2.493971675634384,
+   "frozen_best": 2.1457230001688004,
+   "best_step": 125,
+   "r_frozen": 0.8229,
+   "rms_principal_angle_rad": 0.10209449824963074,
+   "resolve_gptq_ce": 2.4311694353818893,
+   "r_learned": 0.4683
+  },
+  "L2": {
+   "frozen_q0": 2.429912820458412,
+   "frozen_best": 2.102832615375519,
+   "best_step": 150,
+   "r_frozen": 0.8762,
+   "rms_principal_angle_rad": 0.09557689605387577,
+   "resolve_gptq_ce": 2.459485247731209,
+   "r_learned": 0.4331
+  },
+  "bands": {
+   "HIGH": ">=0.60",
+   "MID": ">=0.45",
+   "LOW": "<=0.44(≈隨機)",
+   "official_gate": "r_learned>=0.50"
+  }
+ },
+ "readings": [
+  "R1 共適應主宰:同一 Q_L 折進權重後重解,CE 從 2.146 回彈到 2.431(L1)、2.103→2.459(L2)。學到的旋轉七成以上的增益是『對這一組碼』的共適應,不是基底本身的通用改善。",
+  "R2 基底通用增益小而正:r_learned 0.468 vs 隨機 0.388(Δr +0.08);SpinQuant『學>隨機』在三元 g32 成立但幅度被 g32 聯合 α 壓縮(與 E60-probe 預判一致)。",
+  "R3 迭代不累積:L2 從 L1 基底再學,凍碼 best 2.103 略優 L1 2.146,但重解 2.459 反劣於 L1 2.431;旋角 RMS 0.102→0.096 rad 未放大。前處理路線在一輪就飽和。",
+  "R4 載體容量極小卻吃掉八成缺口:Q=3.3M 參數(vs 三元 7.8B×1.58b),凍碼下 r_frozen 0.88=三元直投缺口的 88% 在 val CE 上可由 2560×2560 一個全局旋轉配固定碼補回。這與 E37/E39『儲存軸可修』同型(連續載體),但載體從 r128 旁路換成一個正交矩陣。",
+  "R5 未證:val CE 是第 5-12 型反轉多發 proxy;r_frozen 無官方讀數(凍碼+激活側旋轉不是三元可 export 態,vLLM 路徑不通)。官方裁判需 HF 慢路或把旋轉移進推論核。"
+ ],
+ "literature_check": {
+  "SpinQuant_learned_gt_random": "成立(+0.08 r,val CE −0.065)但小",
+  "QuIP_incoherence": "增益幾何型:誤差量級不降(E60-probe 中位比 1.052)而 CE 降=與 QuIP 不相干性論證一致",
+  "gain_is_rotation_plus_adaptation": "本探針坐實:旋轉單獨(重解)MID、旋轉+碼共適應 HIGH"
+ },
+ "confounds": [
+  "150 步/4.8M token 小劑量,凍碼曲線 step 150 仍未平台(L2 best=最後步)→ r_frozen 為下界",
+  "val CE 32×2048 單分割,與 calib 同源 on-manifold;泛化到官方未測",
+  "GPTQ 重解 seed 固定 20260806、n_calib 128 同探針"
+ ],
+ "route_reading": {
+  "MID_per_prereg": "旋轉作前處理(固定或一輪學習)只配前處理+可消融配件,不配走廊預算",
+  "carrier_reading_for_user": "r_frozen 0.88 支持用戶『二樓壓縮同時一樓轉向』:旋轉當 T2 退火期間的可學習連續自由度(配碼共適應)而非前處理。此讀數為 proxy,升走廊核心前需一筆官方讀數。",
+  "cheapest_official_test": "HF 慢路:對 exports 之外的 frozen-code+RotQ(L2, Q_L2)模型跑官方三科(vLLM 不可用,HF generate 估 6-10h)或只跑 gsm8k/IFEval 子集。未預註冊,待用戶裁。",
+  "no_autonomous_ignition": true
+ },
+ "assets": {
+  "rot_learn": "p2_anchor/corkscrew/rot_learn.py(v2)",
+  "rot_fold": "p2_anchor/corkscrew/rot_fold.py(--Q/--rec)",
+  "Q": [
+   "rot_Q.pt(隨機)",
+   "rot_Q_L1.pt",
+   "rot_Q_L2.pt"
+  ],
+  "exports": [
+   "exports/a1_rotL1_bf16",
+   "exports/a1_rotL2_bf16"
+  ],
+  "states": [
+   "qs_g3rotL1",
+   "qs_g3rotL2"
+  ]
+ },
+ "timestamp": "2026-09-03T00:52:24.233445"
+}

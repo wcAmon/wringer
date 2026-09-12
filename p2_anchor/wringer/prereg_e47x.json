@@ -1,0 +1,19 @@
+{
+ "experiment": "E47-X D×E 組合臂:排水軸封盤戰(W_max 12 × comp_cap 0.06 疊加)",
+ "status": "FROZEN(2026-08-23 用戶令『等DxE以及必要排水槓桿結束』=排水軸封盤授權;發射掛 E47-P 收官事件,GPU 空檔即發)",
+ "design": {
+  "arm": "st47x = st47d 逐字 + comp_cap 0.03→0.06(即 D 與 E 的聯集;兩變因各自單獨已裁 +6.29/+4.07,本臂裁交互項)",
+  "single_variable_note": "相對 st47d 的單變因=cap;相對 st47e 的單變因=W_max;雙向可歸因",
+  "command": "train_res --tag st47x --state-tag st41g_e2e --res-tag res42 --calib calib_drain_e42b.pt --group-override 24-31:16 --gsteps 8 --tau 0.5 --tail-soft 10 --tail-ste 4 --learn-theta --holdout-frac 0.05 --gamma-field --beta-denoise 1.0 --w-max 12 --comp-cap 0.06"
+ },
+ "judges": {
+  "primary": "triage IFEval w128 vs 冠軍 71.35;>72.35(+1)=組合有效,排水冠軍易主;71.35±1=飽和(口徑已頂,E49 風險讀法收緊);<70.35=負交互(E36 總虧欠陰影),照實記",
+  "kill": "55;殺閘或 FAIL 回用戶",
+  "rho": "ρ_drain=/78.74 併報",
+  "context": "名目可加 +10.36 > 剩餘稅 7.39=必次可加;本臂實測交互項本身即 E49 口徑餘裕的校準讀數"
+ },
+ "conditional": "若 E47-P triage >71.35(A′ 勝):A′ 與組合的整合方式(pin×combo 或分立)回用戶裁,本臂照發不變(組合交互項獨立於 A′ 裁決)",
+ "post": "本臂收卷=排水軸封盤:窗態冠軍定格,鏈尾雙臂(he 混料 e2e+O1 稽核)接跑,E49 排水驗證段配方槽填入最終冠軍",
+ "budget": "~7.5h 排水 + 40m triage",
+ "date": "2026-08-23"
+}

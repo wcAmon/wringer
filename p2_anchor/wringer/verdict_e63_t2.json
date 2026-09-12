@@ -1,0 +1,117 @@
+{
+ "experiment": "E63 步驟③ — down_proj 第二三元平面(T2)零訓練探針;prereg_e63_t2.json FROZEN @46458e7 + amendment_1(t2beta 殘差平面)@f7113cc",
+ "date": "2026-09-07 07:4x",
+ "platform": "A4(st54r 碼 + res58r1 水;各臂零訓練閉式;ρ = comp/0.7038;帶 ±0.011 comp)",
+ "arms_official": {
+  "pa63_ctrl": {
+   "ifeval": 66.36,
+   "humaneval": 26.83,
+   "gsm8k": 54.59,
+   "comp": 0.5235,
+   "rho": 0.744,
+   "empties": {
+    "ifeval": 53,
+    "humaneval": 43,
+    "gsm8k": 85
+   }
+  },
+  "pa63_asymblkq2": {
+   "ifeval": 69.69,
+   "humaneval": 34.15,
+   "gsm8k": 59.14,
+   "comp": 0.5772,
+   "rho": 0.82,
+   "empties": {
+    "ifeval": 44,
+    "humaneval": 34,
+    "gsm8k": 93
+   }
+  },
+  "pt63_t2beta_dp": {
+   "ifeval": 72.83,
+   "humaneval": 32.32,
+   "gsm8k": 59.97,
+   "comp": 0.5849,
+   "rho": 0.831,
+   "empties": {
+    "ifeval": 38,
+    "humaneval": 35,
+    "gsm8k": 77
+   }
+  },
+  "pt63_t2gptq_dp": {
+   "ifeval": 65.99,
+   "humaneval": 28.05,
+   "gsm8k": 58.0,
+   "comp": 0.5384,
+   "rho": 0.765,
+   "empties": {
+    "ifeval": 48,
+    "humaneval": 40,
+    "gsm8k": 75
+   }
+  },
+  "pt63_t2beta_dp_asym": {
+   "ifeval": 73.75,
+   "humaneval": 37.2,
+   "gsm8k": 61.64,
+   "comp": 0.6112,
+   "rho": 0.868,
+   "empties": {
+    "ifeval": 51,
+    "humaneval": 41,
+    "gsm8k": 76
+   }
+  }
+ },
+ "deltas_comp": {
+  "a_t2beta_dp_minus_ctrl": 0.0614,
+  "b_t2beta_dp_asym_minus_asymblkq2": 0.034,
+  "c_t2gptq_dp_minus_t2beta_dp": -0.0465,
+  "r_only_minus_ctrl": 0.0537,
+  "r_plus_T2_minus_ctrl": 0.0877,
+  "additivity": "r+T2 實得 +0.0877 vs 相加 +0.1151 ⇒ 重疊 0.0274(2.5× 帶)= 76% 可加"
+ },
+ "verdict": "POS(主判 a +0.061 > +0.011;b +0.034 POS;c −0.047 NEG)",
+ "local_probe_full": {
+  "t2beta_down_proj_ratio_median": 0.123,
+  "t2beta_all_median": 0.145,
+  "t2_nz_down_proj": 0.523,
+  "beta_over_alpha_down_proj": "0.035–0.05(L0 0.051/L15 0.038/L31 0.036)",
+  "t2fix_down_proj": 0.993,
+  "t2gptq_down_proj": 0.808,
+  "t2gptq_flips_t1": 0.0099,
+  "ctrl_absorb": 0.676,
+  "t2beta_absorb_down_proj": 0.93,
+  "file": "evidence/p1_grouping/corkscrew/probe_t2.json"
+ },
+ "predictions": {
+  "P1 (t2fix ratio≤0.40 / t2gptq≤0.30)": "FAIL(t2fix 0.993 設計失效;t2gptq 0.808)——amendment_1 已改 t2beta",
+  "P1' (t2beta ratio≤0.45 / nz≥0.3 / β/α∈[0.05,0.3])": "ratio 0.123 PASS;nz 0.52 PASS;β/α 0.035–0.05 邊界(貼/略低下緣)= 殘差量級直接量測",
+  "P2 (t2gptq flips_t1≥0.10 出盆地)": "FAIL(0.0099:GPTQ 9 值直解其實留在盆地附近,仍官方差 ⇒ c 的 NEG 不是出盆地效應而是解法器局部誤差第 11 型)",
+  "P3' (a≥+0.03)": "PASS(+0.061,2×門檻)",
+  "P4' (b≥+0.02;t2beta_dp_asym ρ≥0.86)": "PASS(+0.034;ρ 0.868)",
+  "P5' (c 不 POS)": "PASS(−0.047 NEG:殘差平面 ≫ 直解)",
+  "falsifier a≤+0.011": "未觸發"
+ },
+ "bit_efficiency": {
+  "r_all_modules": "+0.054 comp / 0.0625 b/w = 0.86 comp per b/w",
+  "T2_down_proj": "+0.061 comp / 0.435 b/w = 0.14 comp per b/w",
+  "reading": "r 位元效率 6× T2;T2 是逐元素槓桿,增益絕對量與 r 同級但貴 7 倍位元;兩者 76% 可加"
+ },
+ "subject_pattern": {
+  "he": "ctrl 26.83 → T2 32.32(+5.5)/ r 34.15(+7.3)/ 兩者 37.2(+10.4,A4 零訓練最高)",
+  "ifeval": "66.36 → 72.83 / 69.69 / 73.75",
+  "gsm8k": "54.59 → 59.97 / 59.14 / 61.64",
+  "empties_note": "t2beta_dp_asym IFEval 空 51 高於 asym 44、T2 38——形態票未惡化到 A4 帶外但需留意"
+ },
+ "cross_reference_S1": "零訓練 r+T2 ρ 0.868 ≈ 訓練式 r-only st63a 0.878(無效差 0.010);若 b 的 +0.034 comp(ρ +0.048)能疊在 st63a 上,投影 ρ ≈ 0.91–0.93(跨 PASS 0.90 與封冠線 0.909)——投影非結果",
+ "next_step_options_for_user": {
+  "A_step4_as_planned": "st63a 引擎排 res62s2(冠軍台 A 0.8216):預期 B ≈ 0.878×0.8216 ≈ 0.72 < 冠軍 0.7469(差 0.026,2.4× 帶)⇒ 幾乎確定不封冠;價值=r 引擎跨台可遷移性;成本 ~9h 訓練 + 1.5h 官方",
+  "B_st63b_on_A4": "st63a 引擎 + down_proj T2β 殘差平面進 comp 事件((α,r,β,T2) 閉式,STE 前向 w=α·T1(r)+β·T2),A4 上裁 ρ ≥ 0.909 才上冠軍台;位元 +0.435 b/w(用戶先前裁 T2 僅作對照,需重裁位元帳);工程 ~半天 + 9h + 1.5h",
+  "C_zero_train_on_champion": "冠軍 st51c_e2e + res62s2 水 零訓練 r+T2β 閉式(無訓練):預期 0.868×0.8216 ≈ 0.713,不封冠;3h 得冠軍台零訓練校準讀數",
+  "recommendation": "若位元帳允許 down_proj +0.435 b/w ⇒ B(唯一投影過封冠線的路);否則 A 作遷移性試驗。不自主點火。"
+ },
+ "cleanup_candidates_not_deleted": "data/qs_pa63_asym、qs_pa63_asymrefit(各 7.1G,S0 未上官方臂);exports/e63_pt63_*(3 臂 ~10G each)、e63_pa63_*、e63_st61b_stripm、e61_st61b、e62_st62b*",
+ "assets": "data/qs_pt63_{t2beta,t2gptq}_dp{,_asym};exports/e63_pt63_*;a1eval/*_e63_pt63_*;probe_t2.json"
+}

@@ -1,0 +1,37 @@
+{
+ "experiment": "E44 培養式去噪排水終裁(prereg FROZEN @7f3a374;鏈=加速定序 臂B先行→分支②→臂A 歸因)",
+ "date": "2026-08-21",
+ "coordinate": "w128(判準:baseline e42b_r1 67.47、champion e41_g16 71.16、殺閘 <55)",
+ "scores": {
+  "armB_st44f(β1+γ-field)": {"triage_post_drain": 65.06, "ifeval": 62.48, "humaneval": 48.78, "gsm8k": 72.56},
+  "armA_st44d(β1 階梯)": {"triage_post_drain": 53.97, "status": "KILLED(<55 殺閘,prereg 化止損;無鏈尾/終分)"},
+  "armBp": "未跑(分支② 條件未達)"
+ },
+ "judges_verbatim": {
+  "G1_champion": "FAIL——max(臂)=62.48 < 71.16,e41_g16 衛冕",
+  "H_denoise": "N/A-KILLED——臂A 觸殺閘無官方終分(triage 分不入終裁);post-drain 座標 53.97=崩塌帶,β=1 去噬目標於階梯模式受損傷嫌疑最重,但逐字判準無法給值",
+  "H_field": "N/A(需 S_A)——monitor 註記:post-drain 座標 B 65.06 vs A 53.97=場桿在排水段逆轉去噪毒性 +11.09pp(triage 座標,不入判);場單獨臂未測,場=解毒還是稀釋不可分",
+  "H_teff": "N/A(B' 未跑)",
+  "R_he_tax": "he 48.78 > 46.95 高標=全系新高;>34.98 地板;無冠軍錨定承接問題(G1 已 FAIL)",
+  "R6_stability": "臂B FAIL 照實——gdisc1 max 0.2019 > 0.1724(早中窗超標,晚窗 0.03-0.08 剖面倒轉);31/31 定案 PASS;e2e 碼凍結 6e-06 PASS;holdout 比值 max 1.854 記錄在案"
+ },
+ "case_verdict": "E44 FAIL——雙桿皆未超越 baseline;E45 base_state 依 prereg 回退 st42r(勝者未超 baseline 條款)",
+ "attribution": {
+  "denoise_target_toxic": "臂A(β=1 單桿、階梯)post-drain 53.97 崩塌帶=『排水目標改乾淨老師流』在階梯模式下重傷;E43 512 劑量崩塌帶同域(52-54)",
+  "field_rescue_at_drain": "臂B post-drain 65.06=免 e2e 態全系新高(舊高 63.22)——場路徑在排水段有真實正值;但與標準 e2e 不相容",
+  "e2e_incompatibility": "史上首次 e2e 淨負:65.06→62.48(−2.58pp,IFEval 同座標鏈內歸因);同配方 e2e 給 baseline +4.80。場態掉出標準鏈尾服務範圍;臂A 之 e2e 對照因殺閘未取得(n=1)",
+  "he_axis_signal": "he 48.78 全系新高(+1.83 vs 基線)=場訓練分科方向偏 code;IFEval 賠 4.99=方向錯科非無作用"
+ },
+ "instrument_scoring": {
+  "armB_scored": "五指標三中一亡一邊界(absorb_close_max 跨 régime 陣亡=第13筆型態)",
+  "armA_scored": "本 régime 全數命中——tflip 2.01e8>1e8 報崩(實 53.97 崩塌帶)、solverflips_band 1.93e6 報崩、absorb_close/gdisc/holdout 報退化;churn 崩塌級粗篩本 régime 二次確認(n=3 命中,0 假警報)",
+  "status": "全部仍 monitor-only;churn 粗篩升格候選=下一同 régime run 預註冊閾值 tflip>1e8/solverflips_band>1e6 再中一次"
+ },
+ "chain_notes": "尾標 E44_ALL_KILLED 為分支②路徑之腳本標籤瑕疵(臂B 完整收卷未被殺);specaccept 首基線 accept_mean 0.841/E[L4] 2.72(st44f_e2e,monitor-only)",
+ "next_candidates_for_user": {
+  "a_e45_on_st42r": "照 prereg 回退臂:E45 三桿(快取/MTP/span)於 st42r 窗態,對照=68.02 同態標準 e2e(現成)",
+  "b_e45_on_st44f": "改案臂:E45 重設計 e2e 直接接場態 st44f(post-drain 65.06+he 新高;若 span/MTP 鏈尾能吃下場態,62.48→? 一併裁 e2e 不相容性),需 prereg 修訂",
+  "c_field_alone_arm": "歸因臂:γ-field 單桿(β=0)拆『場=解毒 or 獨立正值』,~7h drain+鏈尾",
+  "d_absorption_levers": "吸收桿(comp_rounds/cap/cadence)——暫緩:欠額已證非分數之因"
+ }
+}

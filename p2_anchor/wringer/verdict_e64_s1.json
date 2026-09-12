@@ -1,0 +1,67 @@
+{
+ "experiment": "E64-PL S1 r 上冠軍台(零訓練)",
+ "arms": {
+  "ctrl": {
+   "scores": {
+    "ifeval": 82.07,
+    "humaneval": 60.37,
+    "gsm8k": 83.47
+   },
+   "comp_old": 0.7989985428642572,
+   "comp_new": 0.8055497565484613,
+   "empties": {
+    "ifeval": 25,
+    "humaneval": 22,
+    "gsm8k": 39
+   }
+  },
+  "asymblkq2": {
+   "scores": {
+    "ifeval": 84.84,
+    "humaneval": 58.54,
+    "gsm8k": 84.61
+   },
+   "comp_old": 0.8064727923534983,
+   "comp_new": 0.8131978701681457,
+   "empties": {
+    "ifeval": 25,
+    "humaneval": 22,
+    "gsm8k": 34
+   }
+  },
+  "asymrefitq2": {
+   "scores": {
+    "ifeval": 83.55,
+    "humaneval": 64.02,
+    "gsm8k": 85.29
+   },
+   "comp_old": 0.8235391606181816,
+   "comp_new": 0.8302594378017562,
+   "empties": {
+    "ifeval": 25,
+    "humaneval": 22,
+    "gsm8k": 40
+   }
+  }
+ },
+ "anchors": {
+  "old": {
+   "ifeval": 92.79,
+   "humaneval": 94.51,
+   "gsm8k": 95.53
+  },
+  "new": {
+   "ifeval": 90.57,
+   "humaneval": 93.9,
+   "gsm8k": 96.21
+  }
+ },
+ "judges": {
+  "J1": "NULL",
+  "J2": "NEW_DELIVERABLE_CHAMPION",
+  "J3": "CTRL_OK",
+  "refit": "REFIT_POS",
+  "delta_asym_ctrl": 0.0075,
+  "delta_refit_asym": 0.0171
+ }
+}

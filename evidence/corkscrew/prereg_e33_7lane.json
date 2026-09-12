@@ -1,0 +1,40 @@
+{
+ "experiment": "E33 純 7元 90% 路徑(含 E33-pre 9元雙迴雙語料前測;Corkscrew,g32 基座)",
+ "preregistered": "2026-08-11",
+ "frozen_before_gpu": true,
+ "user_directive": "用戶 08-10/11:E32 混元 49% 證線性律(混元點低於 3-9 連線,配置溢價否證)→ 改道先找純 7元 90%;逐窗×2 → e2e → eval 單裁判(e2e 屬飄移域不插中間);窗內退火加柔;備兩份退火語料;E33 含 pre 現在凍結,四科鏈收卷自動接上",
+ "hypothesis": "線性律預測 7元(2.807 b/w)~84% 保留;90% 門檻=「sweep2 重退火+新語料+加柔退火」能否打敗線性。E33-pre 先在 9元(最易階)驗 sweep2+新語料機制:第一迴凍結的窗吃的是過期下游上下文,第二迴每窗看到最終量化網路的真實誤差場(UPQ 補償型更新);T 搜索住逐窗段(E32 flip 15.77% vs e2e 0.0000)",
+ "corpora": {
+  "cal1": "calib_train_512.pt(CALIB512_MANIFEST,五源 agentic,seed 20260809)——sweep1",
+  "cal2": "calib_train_512_v2.pt(CALIB512V2_MANIFEST,sha 09e3e9cc…,五源檔案級不相交、同域對位、深度偏深,seed 20260811)——sweep2 與 e2e"
+ },
+ "recipe_pre": {
+  "stage": "E33-pre(9元):quantize --grid 9 --block 32 --tag g9 → train_st --grid 9 --tag st9 --state-tag g9 --learn-theta --resume --n-calib 512 --calib cal1 --win 2 --stride 1 --gamma 0.9 → train_st --tag st9s2 --state-tag st9 --calib cal2(同參;sweep2=從已訓 state 重開窗,每窗天然重跑軟→硬循環)→ e2e_soft --tag st9s2_e2e --state-tag st9s2 --steps 600 --batch 8 --data cal2 → export e33pre_9e --verify → 官方 IFEval",
+  "purpose": "天花板測試:9元 Corkscrew 雙迴雙語料 vs e28_qat 88.54(異管線,揭露);同時產出降元階梯 9元 rung 與臂 B 投影母體"
+ },
+ "recipe_main": {
+  "stage": "E33(7元):quantize --grid 7 --block 32 --tag g7 → GPU 冒煙(獨立 tag 即刪,7元首上 GPU)→ train_st --grid 7 --tag st7 --state-tag g7 …--calib cal1 --gamma 0.9 → train_st --tag st7s2 --state-tag st7 --calib cal2 → e2e_soft --tag st7s2_e2e --steps 600 --batch 8 --data cal2 → export e33_7e --verify → 官方 IFEval",
+  "softness_disclosure": "γ 0.8→0.9(軟段 90% epoch、STE 尾縮至 10%;E31 剔除此旋鈕的零翻轉證據只覆蓋 e2e 段,E32 窗段 flip 15.77% 使其復活);AOQ 探索平台與 QDrop 需改碼,延後 E34;sweep2-從已訓-state 為新用法,鏈內冒煙先行"
+ },
+ "bit_budget": {"e33_7e": "T log2(7)=2.807 + α g32 0.5 = 3.31 b/w", "e33pre_9e": "3.17+0.5=3.67 b/w"},
+ "baselines": {
+  "bf16_ifeval": 90.94, "e28_qat_9元": 88.54, "e32_e2e_mix": 44.55,
+  "e31_e2e_3元": 35.49, "linear_law": "保留≈36.8 點/b·w(3元 1.585/39%、混 2.06/49%、9元 3.17/97.4%);7元 線性預測 ~84%"
+ },
+ "criteria": {
+  "Z1_pre_ceiling": "e33pre_9e strict > 88.54(e28_qat)——sweep2+新語料抬升 9元 天花板(異管線對照,照實揭露)",
+  "Z2_main": "e33_7e strict ≥ 81.85(90% × 90.94)——7元 90% 路徑成立,且高於線性預測 ~84% 的觀察對照亦入帳",
+  "Z3_sweep2_value": "sweep2 各窗末 loss < sweep1 同窗末 loss(中位數比較)——重退火淨值的機制證據;兩迴曲線並排入帳",
+  "Z4_stability": "兩迴窗 loss 全程有限、無帶化連發;e2e STE 段 kd < soft 末段 ×2",
+  "Z5_honest_band": "e33_7e 保留 ∈ [55%, 95%]"
+ },
+ "branches": {
+  "Z2_pass": "7元 rung 定樁 → 下一階 7→5(降元階梯續行,E33-pre 的 st9s2 為臂 B 投影母體備用)",
+  "Z2_fail_Z1_pass": "機制有效但 7元 容量不足 → 臂 B(st9s2 投影 7元 巢狀子格+窗訓)檢驗指派繼承;9元 層反號檔 ~27%(gdisc3)=投影重指派熱點",
+  "Z2_fail_Z1_fail": "sweep2+新語料機制無效 → E34 改碼路線(AOQ 探索平台/QDrop),暫停降元",
+  "Z3_fail_only": "sweep2 無淨值 → E33 後續砍 sweep2 省半程,轉語料軸"
+ },
+ "queue": "四科錨定(bf16/e28_qat/e32_e2e 三臂;lp300 臂裁撤)e32_e2e mmlu 收卷 → 自動接 E33-pre(~8h)→ E33 main(~8h);單裁判紀律:每段僅末端 IFEval 一次",
+ "disclosure": "lp300 四科臂裁撤=省 1.5-2h 提前接鏈(用戶 08-11 同意精簡);sweep2 資訊由兩迴 loss 曲線承載,不設中間裁判;E33-pre 與 main 無 gate 關係(pre 敗 main 照跑,分岔於收卷後執行);smoke 不裁決",
+ "seed": 20260811
+}

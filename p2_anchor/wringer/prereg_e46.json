@@ -1,0 +1,55 @@
+{
+ "experiment": "E46 蓄排一體化(v4 全案改向):排水中段水庫重蓄——把補償的拍攝時刻對準使用時刻,直攻時間差稅",
+ "status": "FROZEN(2026-08-22 用戶裁『均推薦』):①判準形制=甲 等權三科回復率(E45 裁項①⑤併同定案:he 線 46.95 不得倒退/48.78 stretch)②cadence=4層×500步×7 ③臂B=條件發射(臂A triage >63.96+1 才發);臂A 即刻發射",
+ "redirect_note": "v1-v3(鏈尾軸:阻尼 e2e/γ-remelt/熔化幾何/r128/ADMM)被用戶 2026-08-22 裁決取代:『直攻蓄排一體,先把蓄排段做好,鏈尾會有更高的天花板』;鏈尾軸降為 E46 收卷後的收割段/E47 候選,選項紀錄見 git 史 @7f9b962",
+ "user_rulings": {
+  "goal": "均衡執行者(IFEval 單科制廢止);判準形制推薦甲=等權三科回復率,隨本 FROZEN 一併裁定",
+  "direction_2026-08-22": "『既然分析到這邊應該直攻蓄排一體,因為時間差的結論很寶貴…先把蓄排段做好,鏈尾會有更高的天花板』",
+  "e45_inputs": "場×β=引擎+煞車(單獨皆毒);時間差稅=ρ 來源(0.485~0.969 在案);快取 he 定罪(本案不用快取,老師常駐);排水劑量 256 為準(512 已判毒,E43)"
+ },
+ "mechanism": {
+  "claim": "水庫在 t=0 全連續幾何上一次性學成;排水逐層凍結後,晚段使用的補償對著早已不存在的網路=時間差稅。逐段重蓄=讓補償永遠對準當前幾何,同時是『持續對準當前應力的動態補償器』(場×β 原理在蓄水軸的投影)",
+  "user_formalization_2026-08-22": "輸入漂移→水質變髒(用戶版,更具體):早窗排水改晚窗輸入;晚窗訓練用新輸入,但水庫補償目標(γ=1 落點)是 t=0 原輸入分布擬合的→目標本身錯位。收編 E43:512 calib→解算激進→翻轉爆量(1.63 億 vs st42r 4,300 萬)→早窗漂移更大→髒水級聯放大=劑量透過漂移間接施毒。收編 st44f 鏈尾:晚窗已固定為髒水塑形,e2e 無法翻碼(6e-06)只能在失效基座打磨;科目分岔照實(he +3.66 殘餘可收、IF −2.58 已榨乾)",
+  "falsifiable": "若時間差稅為主因,重蓄排水態應顯著優於同配方標準排水(63.96);若增益來自單純多蓄(劑量),臂B 等預算對照會複現增益",
+  "corollary_dose_detox(E46 後條件臂,不在本案)": "髒水說預言重蓄可解 512 劑量毒(級聯被逐段截斷)——臂A 勝出後『512 calib+重蓄』復判臂=E43 翻案測試,另行 prereg"
+ },
+ "arms": {
+  "A_integrated(主臂)": {
+   "base": "st41g_e2e + res42(現成 t=0 水庫,r512/7500 步,語料 calib_e42_train sha 8cb8dfbf…)",
+   "drain": "st42r 配方逐字(calib_drain_e42b 256 條、W_max 8、τ0.5、gsteps 8、comp 3/0.03、tail 10/4、group-override 24-31:16、learn-theta、holdout 0.05、標準目標無 β 無場)",
+   "interleave": "每定案 4 層中停(--stop-after-layer 3,7,11,15,19,23,27)→ res_refill 500 步(calib_e42_train、lr 2e-4、bf16 老師常駐、只訓未凍後綴旁路、B/A 熱初始化)→ --resume 續排;共 7 次重蓄=3500 步增量",
+   "tail": "標準 e2e 逐字(st44f_e2e 同款:1200 步 batch 8 FKL 老師常駐,無快取)→ export --verify → 三科 w128",
+   "single_variable": "vs st42r→e2e 鏈(67.47/46.95/74.45)唯一新增=7 次中段重蓄;排水/鏈尾配方逐字相同"
+  },
+  "B_dose_control(條件臂,臂A 讀出後按需發射)": {
+   "design": "res42 上 t=0 追加 3500 步蓄水(等增量預算)→ 標準排水(無重蓄)→ 同鏈尾;分離『時機』vs『劑量』",
+   "trigger": "臂A 排水段 >63.96+1 時發射(歸因需要);臂A 平/負則臂B 免發,直接歸因=重蓄無效或反噬"
+  }
+ },
+ "judges": {
+  "H_fresh(主判,排水段)": "臂A triage IFEval vs 63.96(同座標標準排水錨):>+1=時間差稅可退實錘;>65.06=超過場+β 路線=新排水態最佳;≈0=時間差稅非主因照實;<55 殺閘→跳鏈尾",
+  "G1_balanced(終判)": "e2e 後三科甲 composite vs 0.6677(e42b_r1 現任);>0.6677=新均衡冠軍",
+  "R_he(共同主判)": "he ≥ 46.95 不得倒退;48.78 為 stretch 線;>34.98 地板",
+  "H_dose(條件判)": "臂A 增益 vs 臂B 增益:A>B=時機主因(蓄排一體化證成);A≈B=劑量主因(E43 劑量敘事翻案,重蓄降格)",
+  "H_tailroom(次判,零成本)": "同款標準 e2e 鏈尾增量三碼對照:st42r +3.51(IF)/st44f −2.58/st46r 待測——髒水說預言碼更乾淨→鏈尾可收割餘量更大;逐科並記(he 軸殘餘不均在案)",
+  "R6": "export verify、refill_<tag>.json 逐段入卷、partial rec 逐段入卷——逐字"
+ },
+ "monitors_not_judges": "逐段 pre/post-refill val CE、逐窗 churn(儀器存活方向已作廢 @4f0669a)、逐段 kd 曲線;16 起 proxy 型態在案,一律不裁決",
+ "engineering": {
+  "train_res": "--stop-after-layer(partial rec train_<tag>.partial_LXX.json+哨兵 STOP_AFTER_LAYER 退出;--resume 續排原生支援)",
+  "res_refill": "新模組 p2_anchor/corkscrew/res_refill.py:凍結前綴=qs 硬碼覆寫、未凍後綴=冠軍碼+ResBypass 熱初始化、KD 只訓旁路、寫回 res 目錄(凍結層條目原樣搬運,僅齊全斷言用)",
+  "smoke": "三段煙測(L0 中停→refill→resume)e46_smoke.sh;PASS 後才呈 FROZEN"
+ },
+ "budget": "臂A:排水 ~4.5h + 7×500 步重蓄 ~4.5h + e2e ~5h + export/三科 ~1.5h ≈ 15.5h;臂B(條件)≈15h",
+ "risks": {
+  "refill_disturb": "重蓄改變下一窗的補償初始值=窗訓練起點移動——此為受測效應本身,非 bug;逐段 partial rec 可歸因",
+  "dose_brittleness": "E43 劑量脆性在案:重蓄增量 3500 步若反噬,臂B 對照分離毒性歸屬",
+  "throughput_wall": "E38 ρ₂ 0.485 的牆若非時間差而是結構性,臂A 平錨照實=開礦軸維持封閉,回鏈尾收割路線"
+ },
+ "frozen_adjudication_items": {
+  "①判準形制": "甲 等權回復率(推薦)/乙 IF+he地板/丙 加權——隨本 FROZEN 定案(E45 裁項①⑤併入)",
+  "②cadence": "4層×500步(預設推薦)/2層×250步(更密同預算)",
+  "③臂B時機": "條件發射(推薦,省 ~15h)/與臂A 串行必發"
+ },
+ "date_draft": "2026-08-22 v4:用戶裁『直攻蓄排一體』後全案改向;工程(stop-after-layer+res_refill)已實作,煙測進行中"
+}

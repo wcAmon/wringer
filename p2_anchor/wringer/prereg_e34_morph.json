@@ -1,0 +1,38 @@
+{
+  "experiment": "E34 morph descent(訓練驅趕降元 9→7,c 滑移走廊)",
+  "status": "FROZEN(起點對決已收卷;GPU 發射前凍結)",
+  "design_doc": "evidence/p1_grouping/corkscrew/E34_DESCENT_MORPH.md",
+  "mechanism": {
+    "primary": "c 滑移即降元:corridor(c_free=0.6, c_tgt=0.5, logit_c, m);m=1 時 ±(1−c) 撞 ±c 收斂為均勻 7元(morph_check V1-V4 已驗)",
+    "carrier": "morph.py grid_from_c/soft_staircase_c/corridor(C1-C4 自檢);stq.py STQParam.enable_morph/set_m/_collapse;dθ 收斂走索引遮罩 [0,1,3,4,6,7]",
+    "state_semantics": "落盤逐模組 c=0.5 grid=7;下游 load_state/export/e2e 全從 state 讀 c,無 C_K2 默認洩漏"
+  },
+  "start_state": {
+    "rule": "用戶規則 08-11:st9 vs st9s2 硬導出同台 IFEval 勝者(不經 e2e,隔離 sweep2 單一變因;兼 Z3 無混淆加測)",
+    "winner": "st9",
+    "ifeval_st9": 0.8576709796672828,
+    "ifeval_st9s2": 0.8170055452865065,
+    "z3_alt_finding": "官方座標下 sweep2 為負貢獻(−4.07pp),與 prereg Z3 的窗末 loss PASS 相反——第七筆 proxy 反轉;e2e 把 st9s2 拉回 88.91 屬遮罩效應"
+  },
+  "curriculum": {
+    "epochs": 30, "win": 2, "stride": 1,
+    "plateau_frac": 0.3, "s_plateau": 2.0, "gamma": 0.9, "s0": 30.0,
+    "morph_lo": 2.0, "morph_hi": 8.0,
+    "rationale": "E33 軌跡:歸一化 loss 最低點在 ep 7-8(適應完成於平台附近);走廊 [2,8] 全程落在 s=2 平台內(平台由 0.2 延至 0.3),盆地收縮發生於梯度最大流動區,符合『m 變動須在 s 低區』原則;硬化段(gamma 後 STE)只承諾已定形 7元 網格",
+    "lora_r": 64, "lora_lr": 0.0006, "factor_lr": 0.003,
+    "learn_theta": true, "calib": "cal1(calib_train.pt;st9 同分佈)",
+    "calib_rationale": "起點對決顯示『換 cal2 的第二遍逐窗』本身是損傷條件(−4.07pp),E34 沿用 st9 的 cal1 讓形變機制成為唯一操縱變因",
+    "note_flip": "flip 統計對象為 9元 起點碼(表示變更後 flip=驅趕量,非噪聲)"
+  },
+  "pipeline": "morph sweep(31 窗,~4h)→ e2e(cal2 600 步,自生語料經 Z6 FAIL 不用)→ export(7元 c=0.5)→ IFEval → 過 M1 才補 humaneval",
+  "run_cmd": "train_st --grid 9 --tag st7m --state-tag st9 --epochs 30 --win 2 --stride 1 --gamma 0.9 --plateau-frac 0.3 --s-plateau 2.0 --morph-to 7 --morph-lo 2 --morph-hi 8 --learn-theta --resume",
+  "criteria": {
+    "M1_main": "IFEval strict ≥ 0.90×bf16 = 0.8184842883548983;參考座標(非判準):線性律 from-scratch 預測 ~84%、E33 9元 起點 88.91、E33 MAIN 對照臂已隨 D3 裁撤故無同代從頭 7元 對照",
+    "M2_cliff": "humaneval 保留 ≥ 85%(四科錨定 @ab0adc5 讀出協定;M1 過才跑)",
+    "M3_mechanism": "全窗聚合 morph_flow:|to_half − 0.818| ≥ 0.03 或 to_other ≥ 0.01 判『驅趕發生』;否則 FAIL(= 慢動作投影,零訓練 null V4:81.8%→±0.5、18.2%→0)",
+    "M4_stability": "非有限 loss 窗數 = 0;gdisc1 中位數 ≤ 2× E33 9元 中位數(0.0769×2=0.1538);帶化(窗末>首×1.5)照 E33 已知課程性上升,監測揭露不裁決",
+    "budget_statement": "morph 臂總算力 = 9元 訓練(沉沒復用)+ morph sweep ~4h + e2e ~3.4h + 導出裁判 ~0.8h;無同預算對照臂,判讀連同此聲明"
+  },
+  "frozen_at": "2026-08-12T04:45+08:00",
+  "frozen_commit": "本檔進版控之 commit(GPU 發射前;冒煙不動配方)"
+}

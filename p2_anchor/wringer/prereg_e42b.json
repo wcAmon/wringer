@@ -1,0 +1,42 @@
+{
+ "experiment": "E42b 拆軸:排水未完主修——b 拆帳 → 重排水 1+2 主臂 + 容量 3 歸因臂",
+ "status": "FROZEN",
+ "design_provenance": "用戶裁 2026-08-17:『我認為排水未完是重點這部分要重視,b -> 1+2, 但也納入3做歸因』;證據基礎=E42 裁決 @c6093d5(31/31 窗 drain_epochs 打滿 25、末事件殘留 absorb 中位 0.035/最大 0.067=被趕走非收斂;drain calib 128 列 ifshape 僅 ~20 列=儀器近視;gdisc 0.0861 on-calib 乾淨 vs 官方 −8.68pp=E38 簽名)",
+ "shared_base": {
+  "reservoir": "res42 不重蓄(A 天花板 78.74/59.15/83.70 在案資產)",
+  "state": "data/qs_st41g_e2e(起點同 E42,g16 帶不動=位元預算/export 格式凍結,冠軍可比性保全)",
+  "baseline": "冠軍 e41_g16 IFEval 72.27/he 35.98/gs 78.17;E42 對照 B 63.59/43.29/77.10、A−B 缺口 15.15pp"
+ },
+ "stage_b_split": {
+  "what": "export st42(免 e2e 態)--verify → 三科(a1eval/*_e42b_ne)",
+  "yield": "D_split:drain 段損失 = A − st42_ne;e2e 段損失 = st42_ne − 63.59;純診斷不裁勝負,約束兩臂歸因讀法",
+  "cost": "~2h"
+ },
+ "arm1_redrain": {
+  "levers": "1+2 對症雙漏點:calib_drain_e42b.pt(256 列分層,if 96/code 80/math 48/agentic 32=37.5% ifshape,sha 696f6bd4…)+ W_max 4→8 + gsteps 5→8",
+  "cmd": "train_res --tag st42r --state-tag st41g_e2e --res-tag res42 --calib calib_drain_e42b.pt --group-override 24-31:16 --gsteps 8 --tau 0.5 --w-max 8 --tail-soft 10 --tail-ste 4 --learn-theta --holdout-frac 0.05 --resume",
+  "then": "e2e FKL 1200(data calib_e42_train)→ export e42b_r1 --verify → B 三科(*_e42b_r1)"
+ },
+ "arm2_capacity": {
+  "levers": "臂1 全配置 + lora_r 64→128(載體容量單變因;不動 g16 帶=export 位元不變)",
+  "cmd": "同臂1 唯 --tag st42c --lora-r 128",
+  "then": "e2e 1200 → export e42b_r2 --verify → B 三科(*_e42b_r2)"
+ },
+ "judges": {
+  "G1_champion": "max(臂1,臂2) B-IFEval > 0.7227 → 新冠軍(A1 協定)",
+  "H_drain(主判)": "臂1 ρ_if = B_if/0.7874 > 0.808 → 排水加力有效;>0.9 → 吞吐約束可修宣告;≤0.808 → 排水口徑非瓶頸,歸因轉 s2/s3",
+  "H_cap(歸因)": "臂2 − 臂1 IFEval:>+1pp 容量綁定(H_richcap 在滿水庫上翻案);−1~+1 容量非瓶頸(H_richcap 續成立);<−1 容量反噬記錄",
+  "D_split": "stage b 產出;若 e2e 段損失 > drain 段損失,兩臂結果讀法降級為部分歸因(e2e 軸另立實驗)",
+  "R_he_floor": "冠軍錨定地板不變:B-he ≥ 0.3498;he vs 43.29 參考高標照記",
+  "R6_stability": "gdisc ≤ 0.1724、31/31 finalize、nonfinite 0、holdout 無擴口——逐字"
+ },
+ "discipline": {
+  "official_only": "官方三科唯一判準;CE/KD/gdisc monitor-only(E42 再證 gdisc on-calib 與官方脫鉤)",
+  "no_pt_in_git": ".pt 不進 git;calib manifest sha 留痕",
+  "fail_honest": "FAIL 照實;兩臂與 b 全記錄",
+  "frozen_gate": "本檔=用戶裁定逐字凍結;凍結後只許 amendment 附記"
+ },
+ "budget_estimate": "b ~2h + 臂1(drain ~4h+e2e 3.6h+export/eval ~2h ≈ 9-10h)+ 臂2 同 ≈ 21-22h 總",
+ "next_ladder": "臂通過 G1 → 觸發 guard 層(IFBench #28/LCB-V6 #49 vendor);H_drain 有效但未封冠 → 排水加力續階(W_max 16/calib 512)或蓄排一體化;全 FAIL → s2 tilt 回撥重蓄",
+ "date_frozen": "2026-08-17(用戶裁:排水未完是重點;b→1+2,納入3做歸因)"
+}

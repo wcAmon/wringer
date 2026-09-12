@@ -1,0 +1,14 @@
+{
+ "tag": "g3rotL1",
+ "grid": 3,
+ "grid_map": null,
+ "c": 0.6,
+ "block": 32,
+ "n_calib": 128,
+ "seed": 20260806,
+ "zerotrain_val_ce": 2.4311694353818893,
+ "t1_nonzero": 0.5789,
+ "t2_nonzero": 0.0,
+ "runtime_s": 250.4,
+ "timestamp": "2026-09-03T00:42:45.512223"
+}

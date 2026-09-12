@@ -1,0 +1,107 @@
+{
+ "experiment": "E60 S0 旋轉載體態官方三科(codes g3rotL1 + Q_L2,凍碼 val CE 2.1028,r_frozen 0.876)",
+ "verdict": "FAIL(comp 0.0832 <0.15;=隨機旋轉 0.0896 的 0.93×、直投地板 0.0683 的 1.22×)→ prereg 殺閘:S2/S3 不點火,旋轉走廊封盤",
+ "official": {
+  "ifeval": 16.45,
+  "humaneval": 4.88,
+  "gsm8k": 1.97,
+  "comp": 0.0832,
+  "empties": {
+   "ifeval": "233/541",
+   "humaneval": "96/164",
+   "gsm8k": "500/1319"
+  },
+  "vs": {
+   "g3ctl_direct_floor": {
+    "comp": 0.0683
+   },
+   "g3rot_random": {
+    "comp": 0.0896,
+    "if": 18.3,
+    "he": 5.49,
+    "gs": 1.29,
+    "empties": {
+     "ifeval": 35,
+     "humaneval": 48,
+     "gsm8k": 269
+    }
+   },
+   "E31_direct_arm_if": 35.49,
+   "champion_st51c_e2e": 0.7469
+  },
+  "shape": "雙峰:答得出的題短而正常(非空長度中位 408 字元 vs 隨機旋轉 44,176),但 43%/59%/38% 思考永不閉合=P1 驗屍型失律,非能力平均下降"
+ },
+ "proxy_reversal_13": {
+  "claim": "val CE 缺口份額 r_frozen 0.88 → 官方 0.93× 隨機旋轉:第 13 型 proxy 失效=『連續載體以 CE 為目標時,val CE 增益混入分佈擬合與稀有 token 犧牲』",
+  "smoking_gun_L9": "9元 凍碼 + 學旋轉:val CE 2.0299 → 1.6900(Δ-0.3399),**低於 bf16 2.0032 達 0.31 nats**。量化模型不可能靠基底修復超越原模型,唯一解釋=3.3M 參數的 Q 在對校準語料族微調;calib_val 與校準同族故 r 讀成『修復』",
+  "cross_distribution": {
+   "bf16": {
+    "val": 2.0032,
+    "train512_tail": 1.9647,
+    "e42_tail": 0.6205,
+    "traj_head2k": 0.654
+   },
+   "g3ctl_direct": {
+    "val": 2.8081,
+    "train512_tail": 2.6478,
+    "e42_tail": 2.106,
+    "traj_head2k": 2.6029
+   },
+   "g3rot_random": {
+    "val": 2.4957,
+    "train512_tail": 2.2614,
+    "e42_tail": 1.6573,
+    "traj_head2k": 2.0099
+   },
+   "carrier_g3rotL1_QL2": {
+    "val": 2.1027,
+    "train512_tail": 1.9715,
+    "e42_tail": 1.2062,
+    "traj_head2k": 0.9756
+   }
+  },
+  "cross_reading": "載體在四個同族分佈全面優於隨機旋轉(train512_tail 1.971≈bf16 1.965),所以不是狹義過擬合某一集,而是『全族 teacher-forced CE 好、生成失律』——CE 與官方分數在此 régime 脫鉤",
+  "closure_instrument": {
+   "bf16": {
+    "logp_close_mean": -0.1326,
+    "logp_close_med": -0.0003,
+    "pre64_mass": 8e-05
+   },
+   "g3ctl_direct": {
+    "logp_close_mean": -0.2165,
+    "logp_close_med": -0.0284,
+    "pre64_mass": 0.03389
+   },
+   "g3rot_random": {
+    "logp_close_mean": -0.0386,
+    "logp_close_med": -0.0063,
+    "pre64_mass": 0.06561
+   },
+   "carrier_g3rotL1_QL2": {
+    "logp_close_mean": -0.2871,
+    "logp_close_med": -0.0732,
+    "pre64_mass": 0.00299
+   }
+  },
+  "closure_reading": "</think> 真閉合位 logP:載體 −0.287(中位 −0.073)為四態最差(bf16 −0.133/−0.0003、隨機旋轉 −0.039/−0.006)。CE 目標下 1/5428 的閉合 token 被犧牲換整體 CE=E51『閉合軸稀有度』機制重演;空回應近半即此。pre64 質量 0.003 低=無過早閉合,病灶單向為『不閉合』"
+ },
+ "mechanism_summary": "旋轉當共適應載體的『期望值』被錯誤儀器高估:(1) 目標=校準 CE 允許超越老師(L9 <bf16);(2) 量測=同族 val CE;(3) 稀有閉合 token 無加權。三者皆為 E37/E51 已有的教訓(KD 對 bf16 老師、閉合加權 λ_close 256)在探針裡被省略。旋轉自由度本身未被本筆否證,被否證的是『CE 探針對載體的估值』",
+ "S1_tooling": {
+  "status": "就緒且驗證:折 γ 底模 a1_fold_bf16(等價閘 PASS)、g9f CE 2.0299≡g9 2.0304、e2e 載體接線 pre CE 2.102833≡載體(|Δ|=0)、export_rot 兩次等價閘 1e-4/8e-4、rot_learn --per-layer(lr 未校發散,無讀數)",
+  "t2drain_grid5": "煙測進行中/見 chain log"
+ },
+ "next_candidates": {
+  "S0_prime(amendment)": "重做載體探針但用正確儀器:rot_learn-KD(凍碼、Q 以 KD 對 bf16 老師 + 閉合加權 λ_close 256 學,~10-15 min)+ r 改量 held-out KL-to-bf16 + 閉合 logP 儀器;通過(KL r ≥0.5 且閉合 logP 不劣於隨機旋轉)才重跑官方 3h 重裁 S0。S2 α 臂本就用 KD 目標,S0′ 過閘即可回到已凍結的 S2→S3 鏈",
+  "fixed_hadamard_only": "依原殺閘字面:旋轉封為前處理配件(固定 Hadamard 位元帳),走廊不配預算",
+  "note": "殺閘已觸發,S0′ 屬 prereg 修正案,不自主點火"
+ },
+ "assets": {
+  "carrier_export": "exports/g3rotL1_QL2_carrier",
+  "postmortem": "evidence/p1_grouping/corkscrew/postmortem_e60_s0.json",
+  "evals": "a1eval/{ifeval,humaneval,gsm8k}_g3rotL1_QL2_carrier",
+  "L9": "rot_learn_L9.json/rot_Q_L9.pt",
+  "fold_I": "exports/a1_fold_bf16 + rot_fold_I.json",
+  "g9f": "quant_g9f.json"
+ },
+ "timestamp": "2026-09-03T02:21:30.697223"
+}

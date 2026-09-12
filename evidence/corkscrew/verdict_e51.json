@@ -1,0 +1,51 @@
+{
+  "experiment": "E51 閉合軸總攻:</think> 加權 KD(λ_close=256, λ_post=16×8)",
+  "prereg": "prereg_e51.json(FROZEN @8a9c84f)",
+  "date": "2026-08-25",
+  "arm": {
+    "tag": "st51c_e2e",
+    "coords": "冠軍 e2e 座標逐項不動(st47d + calib_e42_train_hec65.pt + steps1200/batch8/γ0.8/s0=30/r64/1e-4/3e-4/clip1.0/fwd/seed20260806)",
+    "only_change": "--close-weight 256 --close-post-weight 16 --close-post-k 8",
+    "export": "exports/st51c_e2e_x(verify PASS)"
+  },
+  "scores_official": {
+    "ifeval": 75.97, "humaneval": 54.88, "gsm8k": 80.36,
+    "champion_prev": {"ifeval": 73.01, "humaneval": 48.17, "gsm8k": 78.32, "comp": 0.7055},
+    "delta_pp": {"ifeval": 2.96, "humaneval": 6.71, "gsm8k": 2.04},
+    "comp": 0.7469
+  },
+  "verdicts": {
+    "primary": "PASS — 甲 0.7469 > 0.7055(+0.0414)→ 冠軍換防 st51c_e2e",
+    "milestone_080": "未達 — 0.7469 < 0.80(金礦算術上界 0.828,本臂收復 34% 額度)",
+    "mechanism_gate": "PASS — 空回應 181→117(if 78→35 / he 46→35 / gs 57→47),三科全降、無單科 +5",
+    "fingerprint_gate": "字面 PASS、假說預測 REFUTED(見 fingerprint 節)",
+    "kill_gate": "未觸發 — 三科全升"
+  },
+  "fingerprint_v2": {
+    "instrument": "e51_fingerprint.py v2 probe_curve:8 條驗屍未閉合思考流(loop4+ramble4)teacher-forcing 全流逐位置 P(</think>),報峰值;v1(任意截斷點單點)雙方全零=尖峰訊號踩空,已作廢並以 v2 重測 before 錨",
+    "median_peak": {"teacher_bf16": 0.00193, "before_st47d_hec_e2e": 0.00307, "after_st51c_e2e": 0.01013},
+    "gate_literal": "after 0.01013 > before 0.00307(3.3×)→ 字面 PASS",
+    "hypothesis_refuted": "H_rl_delta 指紋預測『冠軍曲線系統性低於教師』不成立:治療前冠軍峰值中位已是教師 1.6×。病灶非『同前綴下閉合機率被壓低』,而是『生成軌跡漂入閉合永不觸發的區域』(教師在這些病理軌跡上峰值同樣低,中位 1.9e-3);治療機制=全域閉合傾向抬升 3.3×,把漂移軌跡機械轉為閉合",
+    "overshoot_note": "治療後閉合傾向達教師 5.3×=閉合過量;官方分數三科仍全升,故不判傷,但列為 churn 的候選成因"
+  },
+  "empties_structure": {
+    "recovered": {"ifeval": 62, "humaneval": 21, "gsm8k": 42, "total": 125},
+    "new": {"ifeval": 19, "humaneval": 10, "gsm8k": 32, "total": 61},
+    "residual": {"ifeval": 16, "humaneval": 25, "gsm8k": 15, "total": 56},
+    "autopsy_class_residual": "loop 19 中 14 仍空、ramble 27 中 19 仍空、closed_on_retry 18 中 5 仍空=驗屍深層硬核 46 題僅收復 13;收復主力為隨機邊緣段(與 P1『同 seed 重擲 65% 閉合』一致)",
+    "churn_caveat": "收復 125 同時新發 61(gs 32 最多)——淨 −64 之下有雙向流動;成分含推理端非決定性(vLLM continuous batching)與可能的早收副作用,無同態 empties 基線不能分解,照實入卷不歸因"
+  },
+  "training": {
+    "log": "kd 0.10–0.20 全程穩定,無尖刺;尾段 [ste] 10.7s/step;record train_st51c_e2e.json",
+    "loss_mass": "閉合位置 λ256 佔 loss 質量 ~4.7%(256/5428),歸一 Σw·KL/Σw"
+  },
+  "interpretation": {
+    "h_rl_delta_status": "干預端支持(加權重教終止行為→空回應 −35%、三科全升)、指紋端否證(壓低敘事不成立)→ 修正版:量化損傷表現為『軌跡層面的終止失律』而非『逐點閉合機率壓低』;閉合加權有效但機制是傾向性全域抬升,非精準修復",
+    "goldmine_remaining": "殘餘 117 題中驗屍硬核 33(loop 14+ramble 19)+ 新發/隨機 churn 段;閉合軸單獨繼續加碼預期報酬遞減(硬核=logit 陷阱,presence_penalty 1.5 不可破)",
+    "proxy_ledger": "無新增反轉;官方唯一裁判紀律維持"
+  },
+  "routing": {
+    "per_prereg": "方向正確、幅度不足 → P2(閉合率選料 fill)資格啟動;P3(三方混)後備",
+    "champion_new": "st51c_e2e 甲 0.7469,export exports/st51c_e2e_x"
+  }
+}

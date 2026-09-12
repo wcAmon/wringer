@@ -1,0 +1,59 @@
+{
+ "experiment": "E44 培養式去噪排水:乾淨軌跡目標(臂A)+ γ-場培養(臂B)——DiffusionBlocks 雙桿翻譯",
+ "status": "FROZEN(2026-08-20 12:3x:重錨四錨收卷+smoke 三項全過,依用戶授權『填好判決基準就發射』發射;判準=w128 新座標)",
+ "decision_tree": {
+  "前置": "重錨四錨收卷 → judges 填 w128 實測數字 → smoke 三項過閘 → 發射",
+  "鏈序": "臂B st44f(256 底座+β=1+γ-field 72ep)drain → 殺閘 triage IFEval(材化,<55 判死)→ e2e 1200 → export e44_f → 三科 w128 + specaccept",
+  "分支①_B成功": "S_B ≥ baseline+1pp → 培養軸成立;S_B > 冠軍線 → G1 新冠軍;自動追加臂B'(48ep)裁 token efficiency;臂A 拆帳=選配,回報用戶裁",
+  "分支②_B無效或反噬": "S_B ∈ ±1pp 或 <−1pp → 自動跑臂A(β=1 單桿)歸因:S_A≥base+1pp=去噪好場壞(H_field=S_B−S_A 反噬入檔);S_A∈±1=兩桿皆無效;S_A<−1=去噪本身反噬",
+  "分支③_殺閘死": "臂B triage <55 → 記臂B FAIL(post-drain 座標)→ 自動跑臂A(歸因必需);臂A 也觸殺閘 → 全案 FAIL 收卷,回蓄水軸候選",
+  "授權範圍": "發射+按樹自主推進+B' 追加皆授權內;唯分支① 的臂A 拆帳需用戶另裁"
+ },
+ "draft_ruling": "用戶裁 2026-08-20:①『參數分布應藉由培養完成,而不是把路徑設計好』②diffusion 促進 token efficiency in recovery + 排水向 teacher 對齊 ③維持 E43→E44 順序 ④E44/E45 既有 diffusion 理論架構上加培養桿,非重來;本檔 FROZEN 前不開 GPU",
+ "design_provenance": {
+  "paper": "arXiv 2506.14202 DiffusionBlocks:每區塊在『隨機採樣的噪聲位準』上學共享乾淨軌跡的一步(score field),路徑由場湧現、非人為排程;區塊獨立訓練追平端到端",
+  "lesion_a": "窗目標 Y=T_w(X_drift) 自條件——教複製變換不教修上游誤差(E42b 歸因:漏損全在排水段;gdisc1 逐窗 0.10→0.17 漂移累積)",
+  "lesion_b": "γ 階梯=我們設計的單一排水路徑:窗只在被排程的 γ 位準上訓練,學的是『這條路徑的逐點應對』;E43 劑量翻倍讓同一設計路徑崩塌=路徑本身脆弱的旁證",
+  "translation_a": "臂A(β-denoise,已實作 @fe66a23):目標改乾淨流 T_w(XT)=teacher 側理想軌跡——排水向 teacher 對齊,每窗兼修上游三元誤差",
+  "translation_b": "臂B(γ-field,本輪新實作):棄階梯,ftgt 部署基態 γ=0,訓練逐批隨機 γ~U(0,1)——窗學『任意水位→理想輸出』的整個去噪場;水由 comp solver 以 cap 階梯自主分期吸收;排水軌跡=湧現(培養),非設計;token efficiency=同一 calib 列在多噪聲位準重複取信號,單位 token 學習信號密度更高"
+ },
+ "implementation": {
+  "flag_a": "--beta-denoise 1.0(train_res @fe66a23;drift_rel 逐窗入檔)",
+  "flag_b": "--gamma-field --field-epochs 0(自動=gsteps×(w_max+1)=72,對齊階梯典型預算=預算平價,單變因保住);comp 事件節奏=每 F_EP/gsteps 個 epoch 一次+收官一次;holdout/comp 一律在 γ=0 部署形態量測",
+  "new_instrument_revisit": "comp 事件後部署碼 int8 快照 → ev_flips(全量事件翻碼,修正舊 event-flips 只計 solver 內部翻碼的語義缺口)+ revisit(翻回窗起點碼的數量)——直接裁『多權重各翻一次 vs 少數權重往返震盪』;用戶已裁:外部震盪敘事不能整包進口,本儀器用我們自己的引擎數據裁;monitor-only",
+  "instrument_specaccept": "diag_specaccept 每 export 跑(off-trace 路徑質量;monitor-only)"
+ },
+ "base_recipe": "E42b 臂1 配方(E43 終裁填定 @68b9dce):256 列 calib_drain_e42b.pt(sha 696f6bd4…)、r64、W_max 8、gsteps 8、comp_rounds 3、st41g_e2e 起點、res42、g16 帶、learn-theta、holdout 0.05;512 劑量判毒不得使用",
+ "arms": {
+  "baseline": "qs_st42r_e2e(舊座標 68.02/44.51/77.48;w128 重錨分收卷後以新座標為準,免重跑)",
+  "armA_st44d": "底座 + --beta-denoise 1.0(單變因 vs baseline:排水目標)",
+  "armB_st44f": "臂A + --gamma-field(單變因 vs 臂A:排水路徑設計→湧現;F_EP=72 預算平價)",
+  "armBp_conditional": "臂B' --field-epochs 48(⅔ 預算):加速定序下條件=臂B ≥ baseline+1pp(培養軸先成立才測 token efficiency;原 H_field≥0 條件在臂A 未跑時不可判)"
+ },
+ "judges": {
+  "G1_champion": "max(臂) B-IFEval > 71.16(冠軍 e41_g16 w128 實測)→ 新冠軍(A1 協定,新座標)",
+  "H_denoise(主判一)": "臂A − 67.47(baseline e42b_r1 w128 實測):>+1pp 去噪軸成立;−1~+1 無效;<−1 反噬照實",
+  "H_field(主判二)": "臂B − 臂A:>+1pp 培養軸成立;−1~+1 無效;<−1 反噬照實(加速定序下臂A 未跑時,分支①判 B−baseline=67.47)",
+  "H_teff(條件判)": "臂B' − 臂B ≥ −1pp 且 B' 分數 ≥ 67.47 → token efficiency 成立(⅓ 預算免費)",
+  "R_he_tax": "he vs 46.95 高標(e42b_r1 w128;冠軍 he 39.02 w128 不動);he < 34.98 地板不承接冠軍錨定(冠軍 he 座標零漂移,地板承接)",
+  "R6_stability": "gdisc ≤ 0.1724、31/31 窗定案、holdout 無擴口、e2e 碼凍結——逐字"
+ },
+ "prereg_expectations": {
+  "window_loss_shift": "臂A/B 窗 loss 比現行大一個量級以上(目標不再套套邏輯)——設計後果非病徵,嚴禁據此中止",
+  "field_loss_shape": "臂B 逐批 loss 方差大(γ 隨機)——epoch 均值才可讀;comp absorb 應呈 cap 頂滿的分期吸收(每事件 ~cap 0.03)",
+  "revisit_bands": "臂A/B revisit/ev_flips 對照 E43 崩塌剖面(窗 16-27 高原):若臂B revisit 率顯著低於階梯模式=場訓練抑制往返;若同高但官方分升=翻碼混亂指控在本引擎不成立(用戶懷疑得證)",
+  "failure_signature": "臂B 若 comp 吸收不完(收官 level 高原)+官方分崩 → 歸因=cap 階梯吸收速度不足,候選解=comp_rounds/cap 上調或 cadence 加密"
+ },
+ "sequencing_accelerated": "合體先行、拆帳條件化(2026-08-20 加速案,FROZEN 時一併裁):先跑臂B(β=1+γ-field 合體=培養假說最完整形式)→ ①B ≥ baseline+1pp:培養軸成立,臂A 拆帳降為選配(用戶裁要不要花 11h 分帳兩桿貢獻);②B 落在 ±1pp 或反噬:跑臂A 歸因(哪支桿壞的);成功路徑 ~11h(原雙臂 22h),失敗路徑不變",
+ "kill_gate_triage": "排水後 triage 殺閘(prereg 化,官方指標非 proxy):drain 完材化 → 只跑 IFEval 541 題(w128 ~8min)→ strict prompt < 55(崩塌帶,E42b 免 e2e 態 63.22 為健康參考、E43 崩塌帶 <54)→ 判死跳過 e2e+全量 eval,省 ~4.2h;≥55 → 正常走鏈尾;triage 分不入終裁,只授權止損",
+ "sequencing": "E43(已終裁)→ E44(本案)→ E45(E44 勝者窗態上跑 e2e 三臂);鏈尾=標準 e2e FKL 1200(與 baseline 同配方)→ 每級單變因",
+ "discipline": {
+  "official_only": "官方三科唯一判準;drift_rel/revisit/窗 loss/specaccept 一律 monitor-only(12 起 proxy 失效在案)",
+  "no_pt_in_git": ".pt 不進 git;manifest sha 留痕",
+  "frozen_gate": "本檔經用戶 FROZEN 後才可開 GPU;發射前 smoke:①--smoke --beta-denoise 1.0(含 resume 斷點)②--smoke --beta-denoise 1.0 --gamma-field(場接線+revisit 計數 sanity:ev_flips≥revisit≥0)③β=0 且無 --gamma-field=位元等同現行(旗標關閉全跳過新分支,靜態可證+臂2 已實跑)",
+  "single_variable": "階梯:baseline→A 只動目標;A→B 只動路徑;B→B' 只動預算"
+ },
+ "budget_estimate": "每臂 drain ~6.9h + e2e 3.6h + export/eval ~0.6h(w128)≈ 11.1h;加速定序成功路徑 ~11h(臂B 單臂)、+B' ~9h、臂A 拆帳選配 +11h;殺閘命中省 ~4.2h/臂",
+ "reanchor_set": "w128 新座標四錨(2026-08-20 收卷):冠軍 e41_g16 71.16/39.02/77.56(舊 72.27,IFEval 漂 −1.11、he 零漂)+ 基線 e42b_r1 67.47/46.95/74.45(舊 68.02/44.51/77.48;he +2.44、gs −3.03 反向漂移)+ bf16 92.79/94.51/95.53(舊 IFEval 90.94,+1.85)+ 9元冠軍 e33pre_9e IFEval 88.91(零漂移)——此後官方分一律 w128;smoke:①β=1+resume PASS(val CE 位元一致 1.599894)②γ-field+revisit PASS(ev_flips≥revisit≥0,γ=0 部署量測,field=True)③β=0 位元等同由 E43 臂2 實跑證",
+ "date_draft": "2026-08-20(v2:培養桿 γ-field + revisit 儀器併入;v1 β-denoise 保留為臂A)"
+}

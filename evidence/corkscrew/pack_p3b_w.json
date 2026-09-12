@@ -1,0 +1,101 @@
+{
+ "modules": 200,
+ "weights": 3565158400,
+ "bits_code": 9227468800,
+ "bits_alpha": 238288896,
+ "R1_code_mismatch": 0,
+ "R2_bf16_mismatch": 0,
+ "R3_bf16_mismatch": 105457626,
+ "R3_max_abs": 0.001953125,
+ "R3_max_rel": 0.0078125,
+ "per_grid": {
+  "g4_a8": {
+   "modules": 104,
+   "weights": 1761607680,
+   "R3": 38003585
+  },
+  "g8_a8": {
+   "modules": 72,
+   "weights": 1677721600,
+   "R3": 61616460
+  },
+  "g256_a16": {
+   "modules": 16,
+   "weights": 41943040,
+   "R3": 1557684
+  },
+  "g16_a8": {
+   "modules": 8,
+   "weights": 83886080,
+   "R3": 4279897
+  }
+ },
+ "bpw_code": 2.588235294117647,
+ "bpw_alpha": 0.06683823529411764,
+ "bpw_body": 2.655073529411765,
+ "R3_frac": 0.029580067466287052,
+ "worst_R3": [
+  {
+   "name": "model.language_model.layers.15.self_attn.o_proj",
+   "frac": 0.061914,
+   "n": 649212,
+   "max_abs": 0.00048828125
+  },
+  {
+   "name": "model.language_model.layers.3.self_attn.o_proj",
+   "frac": 0.059069,
+   "n": 619382,
+   "max_abs": 0.0009765625
+  },
+  {
+   "name": "model.language_model.layers.11.self_attn.o_proj",
+   "frac": 0.057819,
+   "n": 606273,
+   "max_abs": 0.00048828125
+  },
+  {
+   "name": "model.language_model.layers.7.self_attn.o_proj",
+   "frac": 0.056135,
+   "n": 588613,
+   "max_abs": 0.0009765625
+  },
+  {
+   "name": "model.language_model.layers.19.self_attn.o_proj",
+   "frac": 0.047637,
+   "n": 499510,
+   "max_abs": 0.00048828125
+  },
+  {
+   "name": "model.language_model.layers.23.self_attn.o_proj",
+   "frac": 0.045992,
+   "n": 482266,
+   "max_abs": 0.0009765625
+  },
+  {
+   "name": "model.language_model.layers.2.mlp.up_proj",
+   "frac": 0.041406,
+   "n": 976882,
+   "max_abs": 0.000244140625
+  },
+  {
+   "name": "model.language_model.layers.31.self_attn.k_proj",
+   "frac": 0.041055,
+   "n": 107623,
+   "max_abs": 0.00048828125
+  }
+ ],
+ "container_bytes": 1183332136,
+ "container_bpw_body": 2.6553258020737593,
+ "lm_params": {
+  "body": 3565158400,
+  "embed_tied": 635699200,
+  "other_bf16": 4893696,
+  "total": 4205751296
+ },
+ "bpw_whole_lm": {
+  "embed_bf16(=評測態)": 4.687686609227404,
+  "embed_int8_per_row(假設,未評測)": 3.4794315027419063,
+  "embed_4.5bpw(假設,GGUF Q4_K 同級,未評測)": 2.949461905604796
+ },
+ "runtime_s": 105.0
+}

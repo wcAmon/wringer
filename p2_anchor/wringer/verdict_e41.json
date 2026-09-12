@@ -1,0 +1,32 @@
+{
+ "experiment": "E41 格子應變雙臂:深層細粒(g16)× 應變導引打磨(strain W_max)",
+ "prereg": "prereg_e41_strain.json FROZEN @ce3c7c2(amendment_impl + amendment_band 啟動前入檔)",
+ "date": "2026-08-16",
+ "baseline": "exports/e40_3g:IFEval 70.43 / humaneval 31.71 / gsm8k 79.38",
+ "scores": {
+  "arm1_g16": {"ifeval_strict_prompt": 0.7227, "humaneval": 0.3598, "gsm8k": 0.7817,
+               "delta_vs_e40": {"ifeval": "+1.85pp", "humaneval": "+4.27pp", "gsm8k": "-1.21pp"}},
+  "arm2_sp": {"ifeval_strict_prompt": 0.7116, "humaneval": 0.3537, "gsm8k": 0.7763,
+              "delta_vs_e40": {"ifeval": "+0.73pp", "humaneval": "+3.66pp", "gsm8k": "-1.75pp"}}
+ },
+ "verdicts": {
+  "G1_champion": "PASS(臂1):B_g16-IFEval 72.27 > 70.43 → 新冠軍 exports/e41_g16;冠軍軌跡 44.55→50.28→54.90→70.43→72.27(距 bf16 錨 90.94 差 18.67pp);位元成本註記 +0.125 b/w(L24-31 g32→g16 全模型攤提)。臂2 71.16 亦 >70.43 但低於臂1,非冠軍",
+  "H_grain": "位元等值帶(記錄不判 PASS):ΔIF +1.85pp ∈ (+1, +4.6];線性律 36.8 點/b·w × 0.125 b/w 預測 +4.6pp,實現 40%=scale 位元在 IFEval 軸為 4 折匯率;humaneval +4.27pp ≈ 34 點/b·w 全價=碼軸紅利集中 code 科。conditional_extension(>+7pp → E41b 全模型 g16)未觸發",
+  "H_strain": "無效(FAIL 照實):ΔIF +0.73pp ∈ (−1, +1);深帶 epochs 至 50(2×)+ W_max 至 14 的打磨未產生可判增益;humaneval +3.66pp 與臂1 同向但幅度較低(記錄,無地板);零位元成本但也零可判回報",
+  "R6_stability": "PASS 雙臂:gdisc1_exit_rel max 0.0399(g16)/0.0377(sp)≤ 0.1724;31/31 finalize;nonfinite 0;holdout 窗內單調收斂無擴口;e2e t_flip 1e-06 兩臂同(連續載體簽名)",
+  "R_strain_gauge": "碼分佈凍結——主歸因證據:兩臂 export 逃逸剖面(vs e33pre_9e 同法,200 共同張量)六帶至 4 位小數與 E40 基線重合(g16 逐位全同;sp 差 ±0.0002)。g16 未降深層逃逸、未鬆動 ±1 占用(L30-31 esc 0.0673/pm1 0.8005 原封);打磨臂 t_flip 0.118%(vs 基線 0.089%)但帶級剖面不動。診斷檔 diag_strain_e41.json"
+ },
+ "attribution": {
+  "code_frozen_scale_carries": "三臂(E40/g16/sp)終碼分佈帶級相同+e2e t_flip 1e-06 → E41 全部增益走 α(scale)連續軸,非碼重排。g16 的 +1.85pp IFEval/+4.27pp humaneval = 細粒 α 吸收深層幅度壓力,碼原地不動;與 E37『水走連續載體』、E35-C『分數主宰權在碼軸(降元 régime)』合讀:恢復 régime 內連續軸主導增量、碼軸決定天花板",
+  "escape_profile_is_basin_property": "逃逸剖面由起點(st39r_e2e)+水庫(res40)決定,排水配置(粒度/打磨排程)不改它——應變計讀數是盆地屬性非配方旋鈕",
+  "strain_polish_null": "深帶 3× 打磨無效證實:排水在基線配置已飽和(τ 閉環早退主導),更多 epoch 只是原地重覆;與 E38 ρ₂ 吞吐約束互補——瓶頸在吞吐與語料,不在打磨強度"
+ },
+ "next_ladder": "prereg 分岔:臂1 位元等值帶 → 位元預算改投 E42 加步(語料 2×+fill 7200-8000+e2e 1200);臂2 無效 → 打磨軸關閉;E41c 疊加臂不觸發(需雙 PASS)。E42 基底態 = exports/e41_g16(g16 帶保留:humaneval 全價紅利+名義冠軍)",
+ "artifacts": {
+  "train": ["train_st41g.json", "train_st41g_e2e.json", "train_st41s.json", "train_st41s_e2e.json"],
+  "eval": ["a1eval/{ifeval,humaneval,gsm8k}_e41_{g16,sp}/"],
+  "diag": "diag_strain_e41.json",
+  "exports": "exports/e41_g16(冠軍)、exports/e41_sp(.pt/.npz 不進 git;bit-exact verify 200/200 兩臂)"
+ },
+ "discipline_notes": "官方三科唯一判準;val CE monitor-only(post_drain 1.6235/1.6374、e2e 後 1.6042/1.6027——sp e2e CE 較低但官方分較低=與第八筆反轉同型態,再證 proxy 不可裁);e36_3m 殘留 raw 檔維持未追蹤原狀"
+}

@@ -1,0 +1,1726 @@
+{
+ "id": "E61-S1",
+ "prereg": "prereg_e61_bucket.json (FROZEN @4338e20; amendment_0 @1aa11f2; amendment_1 @4ff0372 於官方讀出前)",
+ "arm": "st61a = 甲 st58rb 原 hparams + --mix-block 128 --mix-lr 1e-4;同 A 態(st54r+res58r1),唯一變數=在線塊混合 M",
+ "official_B": {
+  "st61a": {
+   "ifeval": 73.2,
+   "humaneval": 27.44,
+   "gsm8k": 62.09
+  },
+  "comp": 0.5764,
+  "empties": {
+   "ifeval": 30,
+   "humaneval": 29,
+   "gsm8k": 46
+  }
+ },
+ "paired_jia": {
+  "st58rb": {
+   "ifeval": 68.39,
+   "humaneval": 25.61,
+   "gsm8k": 60.5
+  },
+  "comp": 0.5471,
+  "empties": {
+   "ifeval": 36,
+   "humaneval": 24,
+   "gsm8k": 35
+  }
+ },
+ "delta_pp_vs_jia": {
+  "ifeval": 4.81,
+  "humaneval": 1.83,
+  "gsm8k": 1.59
+ },
+ "rho": {
+  "st61a": 0.819,
+  "jia": 0.777,
+  "by_subject": {
+   "ifeval": 0.898,
+   "humaneval": 0.608,
+   "gsm8k": 0.86
+  },
+  "jia_by_subject": {
+   "ifeval": 0.839,
+   "humaneval": 0.568,
+   "gsm8k": 0.838
+  }
+ },
+ "bands": {
+  "PASS": ">=0.90",
+  "PARTIAL": "[0.82,0.90)",
+  "FAIL": "<0.82"
+ },
+ "verdict": "FAIL(ρ 0.819 < 0.82,差 0.001;ρ_he 0.608 < 0.75 FAIL)",
+ "verdict_reading": "三科全數高於甲(IF +4.8/he +1.8/gs +1.6 pp)、ρ +0.042 超出甲噪音帶 ±0.016,方向與 H_bucket 一致但未達 PARTIAL 線;依 prereg 字面 FAIL。amendment_1(官方讀出前落筆)已預註冊:本臂 comp 解法器帶座標偏置(偽殘差≈水量級),FAIL 不作終局裁決,需修正版配對重跑 st61b 解除混淆;連續載體擴容路線不在此關閉,由用戶裁",
+ "mechanism": {
+  "net_flip": {
+   "st61a": 0.000674,
+   "jia": 0.001249,
+   "ratio": 0.54,
+   "vote": "PASS(≤0.7)"
+  },
+  "final_level_ratio_mean": 1.137,
+  "final_level_vote": "VOID(amendment_1:水位含偽項)",
+  "solver_flips": {
+   "st61a": 1223690,
+   "jia": 1228298,
+   "note": "相同(comp-cap 卡死);st61a 約半數瞄向不可實現的假目標"
+  },
+  "gradient_path_flips_est": {
+   "st61a": 3584639,
+   "jia": 7680559
+  },
+  "gdisc1_ratio_mean": 0.455,
+  "holdout_loss_ratio_mean": 0.483,
+  "post_drain_val_ce": {
+   "st61a": 1.971954345703125,
+   "jia": 1.985152706503868
+  },
+  "anti_M_alignment": "cos(D_61a, W0q(Bd⁻¹−I)) 0.00–0.04(out_proj 0.12–0.37)=碼未抵銷 M;‖w61·Bd−w甲‖/‖w61−w甲‖ 1.06–1.55"
+ },
+ "morphology": {
+  "empties": {
+   "ifeval": 30,
+   "humaneval": 29,
+   "gsm8k": 46
+  },
+  "A4": {
+   "ifeval": 30,
+   "humaneval": 35,
+   "gsm8k": 65
+  },
+  "vote": "PASS(全≤A4)"
+ },
+ "M_profile_summary": {
+  "dist_I_range": [
+   0.0192,
+   0.0782
+  ],
+  "rot_deg_mean_range": [
+   0.55,
+   1.69
+  ],
+  "rotation_energy_share": 0.47,
+  "outlier": "layer0 in_proj_z sv_min 0.217 / max 30°",
+  "reading": "‖M−I‖ 深度持平、非對角 rms≈0.003≈√steps·lr 隨機遊走尺度=Adam 定步長節流;功能效果(gdisc1/holdout 減半)真實但 M 統計量近噪音=S2 需 M 梯度範數/符號一致率儀器"
+ },
+ "M_profile": [
+  {
+   "module": "0.linear_attn.in_proj_qkv",
+   "dist_I": 0.055,
+   "sv_min": 0.67,
+   "sv_max": 1.262,
+   "rot_deg_mean": 1.32,
+   "rot_deg_max": 14.5
+  },
+  {
+   "module": "0.linear_attn.in_proj_z",
+   "dist_I": 0.0782,
+   "sv_min": 0.217,
+   "sv_max": 1.528,
+   "rot_deg_mean": 1.3,
+   "rot_deg_max": 30.0
+  },
+  {
+   "module": "0.linear_attn.out_proj",
+   "dist_I": 0.0474,
+   "sv_min": 0.73,
+   "sv_max": 1.253,
+   "rot_deg_mean": 1.13,
+   "rot_deg_max": 14.5
+  },
+  {
+   "module": "0.mlp.gate_proj",
+   "dist_I": 0.0387,
+   "sv_min": 0.842,
+   "sv_max": 1.154,
+   "rot_deg_mean": 1.13,
+   "rot_deg_max": 7.6
+  },
+  {
+   "module": "0.mlp.up_proj",
+   "dist_I": 0.0388,
+   "sv_min": 0.856,
+   "sv_max": 1.18,
+   "rot_deg_mean": 1.14,
+   "rot_deg_max": 8.7
+  },
+  {
+   "module": "0.mlp.down_proj",
+   "dist_I": 0.0263,
+   "sv_min": 0.885,
+   "sv_max": 1.115,
+   "rot_deg_mean": 0.78,
+   "rot_deg_max": 6.5
+  },
+  {
+   "module": "1.linear_attn.in_proj_qkv",
+   "dist_I": 0.0333,
+   "sv_min": 0.749,
+   "sv_max": 1.195,
+   "rot_deg_mean": 0.95,
+   "rot_deg_max": 13.2
+  },
+  {
+   "module": "1.linear_attn.in_proj_z",
+   "dist_I": 0.0287,
+   "sv_min": 0.89,
+   "sv_max": 1.155,
+   "rot_deg_mean": 0.82,
+   "rot_deg_max": 7.4
+  },
+  {
+   "module": "1.linear_attn.out_proj",
+   "dist_I": 0.0266,
+   "sv_min": 0.823,
+   "sv_max": 1.142,
+   "rot_deg_mean": 0.74,
+   "rot_deg_max": 8.4
+  },
+  {
+   "module": "1.mlp.gate_proj",
+   "dist_I": 0.0347,
+   "sv_min": 0.759,
+   "sv_max": 1.309,
+   "rot_deg_mean": 0.98,
+   "rot_deg_max": 12.2
+  },
+  {
+   "module": "1.mlp.up_proj",
+   "dist_I": 0.0337,
+   "sv_min": 0.83,
+   "sv_max": 1.238,
+   "rot_deg_mean": 0.98,
+   "rot_deg_max": 10.4
+  },
+  {
+   "module": "1.mlp.down_proj",
+   "dist_I": 0.0243,
+   "sv_min": 0.891,
+   "sv_max": 1.186,
+   "rot_deg_mean": 0.74,
+   "rot_deg_max": 6.7
+  },
+  {
+   "module": "2.linear_attn.in_proj_qkv",
+   "dist_I": 0.0294,
+   "sv_min": 0.853,
+   "sv_max": 1.148,
+   "rot_deg_mean": 0.85,
+   "rot_deg_max": 8.9
+  },
+  {
+   "module": "2.linear_attn.in_proj_z",
+   "dist_I": 0.0271,
+   "sv_min": 0.893,
+   "sv_max": 1.168,
+   "rot_deg_mean": 0.73,
+   "rot_deg_max": 7.1
+  },
+  {
+   "module": "2.linear_attn.out_proj",
+   "dist_I": 0.0239,
+   "sv_min": 0.824,
+   "sv_max": 1.178,
+   "rot_deg_mean": 0.64,
+   "rot_deg_max": 10.4
+  },
+  {
+   "module": "2.mlp.gate_proj",
+   "dist_I": 0.032,
+   "sv_min": 0.887,
+   "sv_max": 1.172,
+   "rot_deg_mean": 0.92,
+   "rot_deg_max": 7.5
+  },
+  {
+   "module": "2.mlp.up_proj",
+   "dist_I": 0.0308,
+   "sv_min": 0.908,
+   "sv_max": 1.146,
+   "rot_deg_mean": 0.9,
+   "rot_deg_max": 6.2
+  },
+  {
+   "module": "2.mlp.down_proj",
+   "dist_I": 0.024,
+   "sv_min": 0.764,
+   "sv_max": 1.241,
+   "rot_deg_mean": 0.69,
+   "rot_deg_max": 11.7
+  },
+  {
+   "module": "3.self_attn.q_proj",
+   "dist_I": 0.0287,
+   "sv_min": 0.901,
+   "sv_max": 1.112,
+   "rot_deg_mean": 0.82,
+   "rot_deg_max": 5.9
+  },
+  {
+   "module": "3.self_attn.k_proj",
+   "dist_I": 0.0287,
+   "sv_min": 0.867,
+   "sv_max": 1.14,
+   "rot_deg_mean": 0.78,
+   "rot_deg_max": 10.3
+  },
+  {
+   "module": "3.self_attn.v_proj",
+   "dist_I": 0.0243,
+   "sv_min": 0.923,
+   "sv_max": 1.086,
+   "rot_deg_mean": 0.7,
+   "rot_deg_max": 4.7
+  },
+  {
+   "module": "3.self_attn.o_proj",
+   "dist_I": 0.032,
+   "sv_min": 0.729,
+   "sv_max": 1.154,
+   "rot_deg_mean": 0.73,
+   "rot_deg_max": 12.0
+  },
+  {
+   "module": "3.mlp.gate_proj",
+   "dist_I": 0.0367,
+   "sv_min": 0.83,
+   "sv_max": 1.243,
+   "rot_deg_mean": 1.05,
+   "rot_deg_max": 12.3
+  },
+  {
+   "module": "3.mlp.up_proj",
+   "dist_I": 0.0347,
+   "sv_min": 0.868,
+   "sv_max": 1.187,
+   "rot_deg_mean": 1.01,
+   "rot_deg_max": 9.2
+  },
+  {
+   "module": "3.mlp.down_proj",
+   "dist_I": 0.0264,
+   "sv_min": 0.878,
+   "sv_max": 1.117,
+   "rot_deg_mean": 0.81,
+   "rot_deg_max": 6.9
+  },
+  {
+   "module": "4.linear_attn.in_proj_qkv",
+   "dist_I": 0.0304,
+   "sv_min": 0.858,
+   "sv_max": 1.134,
+   "rot_deg_mean": 0.89,
+   "rot_deg_max": 8.1
+  },
+  {
+   "module": "4.linear_attn.in_proj_z",
+   "dist_I": 0.0311,
+   "sv_min": 0.861,
+   "sv_max": 1.183,
+   "rot_deg_mean": 0.84,
+   "rot_deg_max": 9.1
+  },
+  {
+   "module": "4.linear_attn.out_proj",
+   "dist_I": 0.0247,
+   "sv_min": 0.746,
+   "sv_max": 1.142,
+   "rot_deg_mean": 0.68,
+   "rot_deg_max": 12.6
+  },
+  {
+   "module": "4.mlp.gate_proj",
+   "dist_I": 0.0363,
+   "sv_min": 0.816,
+   "sv_max": 1.255,
+   "rot_deg_mean": 1.05,
+   "rot_deg_max": 11.2
+  },
+  {
+   "module": "4.mlp.up_proj",
+   "dist_I": 0.0321,
+   "sv_min": 0.815,
+   "sv_max": 1.17,
+   "rot_deg_mean": 0.95,
+   "rot_deg_max": 12.1
+  },
+  {
+   "module": "4.mlp.down_proj",
+   "dist_I": 0.0272,
+   "sv_min": 0.883,
+   "sv_max": 1.121,
+   "rot_deg_mean": 0.84,
+   "rot_deg_max": 6.5
+  },
+  {
+   "module": "5.linear_attn.in_proj_qkv",
+   "dist_I": 0.0314,
+   "sv_min": 0.831,
+   "sv_max": 1.118,
+   "rot_deg_mean": 0.94,
+   "rot_deg_max": 8.0
+  },
+  {
+   "module": "5.linear_attn.in_proj_z",
+   "dist_I": 0.0313,
+   "sv_min": 0.874,
+   "sv_max": 1.129,
+   "rot_deg_mean": 0.89,
+   "rot_deg_max": 5.8
+  },
+  {
+   "module": "5.linear_attn.out_proj",
+   "dist_I": 0.0281,
+   "sv_min": 0.844,
+   "sv_max": 1.126,
+   "rot_deg_mean": 0.79,
+   "rot_deg_max": 8.1
+  },
+  {
+   "module": "5.mlp.gate_proj",
+   "dist_I": 0.0366,
+   "sv_min": 0.854,
+   "sv_max": 1.185,
+   "rot_deg_mean": 1.07,
+   "rot_deg_max": 9.5
+  },
+  {
+   "module": "5.mlp.up_proj",
+   "dist_I": 0.0316,
+   "sv_min": 0.882,
+   "sv_max": 1.111,
+   "rot_deg_mean": 0.94,
+   "rot_deg_max": 6.6
+  },
+  {
+   "module": "5.mlp.down_proj",
+   "dist_I": 0.0299,
+   "sv_min": 0.832,
+   "sv_max": 1.124,
+   "rot_deg_mean": 0.92,
+   "rot_deg_max": 8.3
+  },
+  {
+   "module": "6.linear_attn.in_proj_qkv",
+   "dist_I": 0.0335,
+   "sv_min": 0.855,
+   "sv_max": 1.143,
+   "rot_deg_mean": 0.98,
+   "rot_deg_max": 8.4
+  },
+  {
+   "module": "6.linear_attn.in_proj_z",
+   "dist_I": 0.0335,
+   "sv_min": 0.896,
+   "sv_max": 1.155,
+   "rot_deg_mean": 0.94,
+   "rot_deg_max": 7.6
+  },
+  {
+   "module": "6.linear_attn.out_proj",
+   "dist_I": 0.0295,
+   "sv_min": 0.854,
+   "sv_max": 1.138,
+   "rot_deg_mean": 0.84,
+   "rot_deg_max": 6.8
+  },
+  {
+   "module": "6.mlp.gate_proj",
+   "dist_I": 0.0367,
+   "sv_min": 0.811,
+   "sv_max": 1.155,
+   "rot_deg_mean": 1.08,
+   "rot_deg_max": 9.7
+  },
+  {
+   "module": "6.mlp.up_proj",
+   "dist_I": 0.0318,
+   "sv_min": 0.87,
+   "sv_max": 1.118,
+   "rot_deg_mean": 0.94,
+   "rot_deg_max": 7.3
+  },
+  {
+   "module": "6.mlp.down_proj",
+   "dist_I": 0.0313,
+   "sv_min": 0.896,
+   "sv_max": 1.117,
+   "rot_deg_mean": 0.94,
+   "rot_deg_max": 6.1
+  },
+  {
+   "module": "7.self_attn.q_proj",
+   "dist_I": 0.037,
+   "sv_min": 0.892,
+   "sv_max": 1.113,
+   "rot_deg_mean": 1.09,
+   "rot_deg_max": 5.7
+  },
+  {
+   "module": "7.self_attn.k_proj",
+   "dist_I": 0.0443,
+   "sv_min": 0.789,
+   "sv_max": 1.243,
+   "rot_deg_mean": 1.11,
+   "rot_deg_max": 11.8
+  },
+  {
+   "module": "7.self_attn.v_proj",
+   "dist_I": 0.0317,
+   "sv_min": 0.91,
+   "sv_max": 1.204,
+   "rot_deg_mean": 0.91,
+   "rot_deg_max": 7.3
+  },
+  {
+   "module": "7.self_attn.o_proj",
+   "dist_I": 0.032,
+   "sv_min": 0.889,
+   "sv_max": 1.119,
+   "rot_deg_mean": 0.93,
+   "rot_deg_max": 6.7
+  },
+  {
+   "module": "7.mlp.gate_proj",
+   "dist_I": 0.0383,
+   "sv_min": 0.842,
+   "sv_max": 1.203,
+   "rot_deg_mean": 1.09,
+   "rot_deg_max": 10.3
+  },
+  {
+   "module": "7.mlp.up_proj",
+   "dist_I": 0.0301,
+   "sv_min": 0.915,
+   "sv_max": 1.118,
+   "rot_deg_mean": 0.89,
+   "rot_deg_max": 6.1
+  },
+  {
+   "module": "7.mlp.down_proj",
+   "dist_I": 0.0311,
+   "sv_min": 0.809,
+   "sv_max": 1.123,
+   "rot_deg_mean": 0.94,
+   "rot_deg_max": 8.1
+  },
+  {
+   "module": "8.linear_attn.in_proj_qkv",
+   "dist_I": 0.0347,
+   "sv_min": 0.845,
+   "sv_max": 1.137,
+   "rot_deg_mean": 1.01,
+   "rot_deg_max": 8.4
+  },
+  {
+   "module": "8.linear_attn.in_proj_z",
+   "dist_I": 0.0334,
+   "sv_min": 0.877,
+   "sv_max": 1.128,
+   "rot_deg_mean": 0.92,
+   "rot_deg_max": 6.8
+  },
+  {
+   "module": "8.linear_attn.out_proj",
+   "dist_I": 0.0303,
+   "sv_min": 0.875,
+   "sv_max": 1.135,
+   "rot_deg_mean": 0.88,
+   "rot_deg_max": 7.1
+  },
+  {
+   "module": "8.mlp.gate_proj",
+   "dist_I": 0.0395,
+   "sv_min": 0.832,
+   "sv_max": 1.219,
+   "rot_deg_mean": 1.14,
+   "rot_deg_max": 11.2
+  },
+  {
+   "module": "8.mlp.up_proj",
+   "dist_I": 0.0319,
+   "sv_min": 0.918,
+   "sv_max": 1.087,
+   "rot_deg_mean": 0.97,
+   "rot_deg_max": 5.7
+  },
+  {
+   "module": "8.mlp.down_proj",
+   "dist_I": 0.0332,
+   "sv_min": 0.833,
+   "sv_max": 1.139,
+   "rot_deg_mean": 1.01,
+   "rot_deg_max": 8.2
+  },
+  {
+   "module": "9.linear_attn.in_proj_qkv",
+   "dist_I": 0.0343,
+   "sv_min": 0.793,
+   "sv_max": 1.192,
+   "rot_deg_mean": 0.99,
+   "rot_deg_max": 11.1
+  },
+  {
+   "module": "9.linear_attn.in_proj_z",
+   "dist_I": 0.0317,
+   "sv_min": 0.903,
+   "sv_max": 1.135,
+   "rot_deg_mean": 0.88,
+   "rot_deg_max": 6.7
+  },
+  {
+   "module": "9.linear_attn.out_proj",
+   "dist_I": 0.0304,
+   "sv_min": 0.837,
+   "sv_max": 1.106,
+   "rot_deg_mean": 0.88,
+   "rot_deg_max": 7.5
+  },
+  {
+   "module": "9.mlp.gate_proj",
+   "dist_I": 0.0399,
+   "sv_min": 0.875,
+   "sv_max": 1.171,
+   "rot_deg_mean": 1.15,
+   "rot_deg_max": 7.9
+  },
+  {
+   "module": "9.mlp.up_proj",
+   "dist_I": 0.0314,
+   "sv_min": 0.894,
+   "sv_max": 1.099,
+   "rot_deg_mean": 0.96,
+   "rot_deg_max": 6.3
+  },
+  {
+   "module": "9.mlp.down_proj",
+   "dist_I": 0.0321,
+   "sv_min": 0.807,
+   "sv_max": 1.134,
+   "rot_deg_mean": 1.0,
+   "rot_deg_max": 8.8
+  },
+  {
+   "module": "10.linear_attn.in_proj_qkv",
+   "dist_I": 0.0376,
+   "sv_min": 0.789,
+   "sv_max": 1.245,
+   "rot_deg_mean": 1.06,
+   "rot_deg_max": 13.3
+  },
+  {
+   "module": "10.linear_attn.in_proj_z",
+   "dist_I": 0.0344,
+   "sv_min": 0.878,
+   "sv_max": 1.148,
+   "rot_deg_mean": 0.94,
+   "rot_deg_max": 8.0
+  },
+  {
+   "module": "10.linear_attn.out_proj",
+   "dist_I": 0.0313,
+   "sv_min": 0.869,
+   "sv_max": 1.122,
+   "rot_deg_mean": 0.91,
+   "rot_deg_max": 6.8
+  },
+  {
+   "module": "10.mlp.gate_proj",
+   "dist_I": 0.0407,
+   "sv_min": 0.815,
+   "sv_max": 1.147,
+   "rot_deg_mean": 1.19,
+   "rot_deg_max": 10.2
+  },
+  {
+   "module": "10.mlp.up_proj",
+   "dist_I": 0.031,
+   "sv_min": 0.888,
+   "sv_max": 1.082,
+   "rot_deg_mean": 0.96,
+   "rot_deg_max": 6.0
+  },
+  {
+   "module": "10.mlp.down_proj",
+   "dist_I": 0.0323,
+   "sv_min": 0.859,
+   "sv_max": 1.126,
+   "rot_deg_mean": 1.0,
+   "rot_deg_max": 7.6
+  },
+  {
+   "module": "11.self_attn.q_proj",
+   "dist_I": 0.0396,
+   "sv_min": 0.862,
+   "sv_max": 1.118,
+   "rot_deg_mean": 1.18,
+   "rot_deg_max": 6.4
+  },
+  {
+   "module": "11.self_attn.k_proj",
+   "dist_I": 0.0488,
+   "sv_min": 0.814,
+   "sv_max": 1.229,
+   "rot_deg_mean": 1.29,
+   "rot_deg_max": 11.3
+  },
+  {
+   "module": "11.self_attn.v_proj",
+   "dist_I": 0.0347,
+   "sv_min": 0.918,
+   "sv_max": 1.173,
+   "rot_deg_mean": 1.03,
+   "rot_deg_max": 6.7
+  },
+  {
+   "module": "11.self_attn.o_proj",
+   "dist_I": 0.035,
+   "sv_min": 0.863,
+   "sv_max": 1.105,
+   "rot_deg_mean": 1.06,
+   "rot_deg_max": 6.8
+  },
+  {
+   "module": "11.mlp.gate_proj",
+   "dist_I": 0.0407,
+   "sv_min": 0.855,
+   "sv_max": 1.15,
+   "rot_deg_mean": 1.18,
+   "rot_deg_max": 8.2
+  },
+  {
+   "module": "11.mlp.up_proj",
+   "dist_I": 0.0312,
+   "sv_min": 0.886,
+   "sv_max": 1.136,
+   "rot_deg_mean": 0.95,
+   "rot_deg_max": 7.0
+  },
+  {
+   "module": "11.mlp.down_proj",
+   "dist_I": 0.0325,
+   "sv_min": 0.884,
+   "sv_max": 1.125,
+   "rot_deg_mean": 1.01,
+   "rot_deg_max": 6.5
+  },
+  {
+   "module": "12.linear_attn.in_proj_qkv",
+   "dist_I": 0.0367,
+   "sv_min": 0.884,
+   "sv_max": 1.142,
+   "rot_deg_mean": 1.08,
+   "rot_deg_max": 6.5
+  },
+  {
+   "module": "12.linear_attn.in_proj_z",
+   "dist_I": 0.0345,
+   "sv_min": 0.897,
+   "sv_max": 1.138,
+   "rot_deg_mean": 0.97,
+   "rot_deg_max": 6.2
+  },
+  {
+   "module": "12.linear_attn.out_proj",
+   "dist_I": 0.0336,
+   "sv_min": 0.842,
+   "sv_max": 1.133,
+   "rot_deg_mean": 0.99,
+   "rot_deg_max": 8.2
+  },
+  {
+   "module": "12.mlp.gate_proj",
+   "dist_I": 0.0423,
+   "sv_min": 0.879,
+   "sv_max": 1.118,
+   "rot_deg_mean": 1.24,
+   "rot_deg_max": 6.2
+  },
+  {
+   "module": "12.mlp.up_proj",
+   "dist_I": 0.0327,
+   "sv_min": 0.892,
+   "sv_max": 1.099,
+   "rot_deg_mean": 1.0,
+   "rot_deg_max": 6.1
+  },
+  {
+   "module": "12.mlp.down_proj",
+   "dist_I": 0.0348,
+   "sv_min": 0.853,
+   "sv_max": 1.102,
+   "rot_deg_mean": 1.09,
+   "rot_deg_max": 7.2
+  },
+  {
+   "module": "13.linear_attn.in_proj_qkv",
+   "dist_I": 0.0375,
+   "sv_min": 0.859,
+   "sv_max": 1.149,
+   "rot_deg_mean": 1.08,
+   "rot_deg_max": 8.2
+  },
+  {
+   "module": "13.linear_attn.in_proj_z",
+   "dist_I": 0.0348,
+   "sv_min": 0.892,
+   "sv_max": 1.15,
+   "rot_deg_mean": 0.93,
+   "rot_deg_max": 7.0
+  },
+  {
+   "module": "13.linear_attn.out_proj",
+   "dist_I": 0.0328,
+   "sv_min": 0.758,
+   "sv_max": 1.118,
+   "rot_deg_mean": 0.95,
+   "rot_deg_max": 8.5
+  },
+  {
+   "module": "13.mlp.gate_proj",
+   "dist_I": 0.0423,
+   "sv_min": 0.869,
+   "sv_max": 1.145,
+   "rot_deg_mean": 1.23,
+   "rot_deg_max": 7.3
+  },
+  {
+   "module": "13.mlp.up_proj",
+   "dist_I": 0.0318,
+   "sv_min": 0.885,
+   "sv_max": 1.109,
+   "rot_deg_mean": 0.98,
+   "rot_deg_max": 6.4
+  },
+  {
+   "module": "13.mlp.down_proj",
+   "dist_I": 0.0344,
+   "sv_min": 0.871,
+   "sv_max": 1.093,
+   "rot_deg_mean": 1.08,
+   "rot_deg_max": 6.2
+  },
+  {
+   "module": "14.linear_attn.in_proj_qkv",
+   "dist_I": 0.0386,
+   "sv_min": 0.883,
+   "sv_max": 1.131,
+   "rot_deg_mean": 1.15,
+   "rot_deg_max": 6.7
+  },
+  {
+   "module": "14.linear_attn.in_proj_z",
+   "dist_I": 0.0393,
+   "sv_min": 0.885,
+   "sv_max": 1.178,
+   "rot_deg_mean": 1.08,
+   "rot_deg_max": 8.4
+  },
+  {
+   "module": "14.linear_attn.out_proj",
+   "dist_I": 0.0334,
+   "sv_min": 0.886,
+   "sv_max": 1.12,
+   "rot_deg_mean": 1.0,
+   "rot_deg_max": 6.2
+  },
+  {
+   "module": "14.mlp.gate_proj",
+   "dist_I": 0.0421,
+   "sv_min": 0.86,
+   "sv_max": 1.126,
+   "rot_deg_mean": 1.25,
+   "rot_deg_max": 7.1
+  },
+  {
+   "module": "14.mlp.up_proj",
+   "dist_I": 0.0322,
+   "sv_min": 0.905,
+   "sv_max": 1.11,
+   "rot_deg_mean": 1.0,
+   "rot_deg_max": 5.8
+  },
+  {
+   "module": "14.mlp.down_proj",
+   "dist_I": 0.0355,
+   "sv_min": 0.83,
+   "sv_max": 1.13,
+   "rot_deg_mean": 1.1,
+   "rot_deg_max": 8.6
+  },
+  {
+   "module": "15.self_attn.q_proj",
+   "dist_I": 0.0392,
+   "sv_min": 0.866,
+   "sv_max": 1.123,
+   "rot_deg_mean": 1.16,
+   "rot_deg_max": 6.8
+  },
+  {
+   "module": "15.self_attn.k_proj",
+   "dist_I": 0.051,
+   "sv_min": 0.78,
+   "sv_max": 1.165,
+   "rot_deg_mean": 1.42,
+   "rot_deg_max": 9.1
+  },
+  {
+   "module": "15.self_attn.v_proj",
+   "dist_I": 0.0338,
+   "sv_min": 0.92,
+   "sv_max": 1.09,
+   "rot_deg_mean": 1.02,
+   "rot_deg_max": 4.7
+  },
+  {
+   "module": "15.self_attn.o_proj",
+   "dist_I": 0.033,
+   "sv_min": 0.879,
+   "sv_max": 1.111,
+   "rot_deg_mean": 1.0,
+   "rot_deg_max": 6.6
+  },
+  {
+   "module": "15.mlp.gate_proj",
+   "dist_I": 0.0441,
+   "sv_min": 0.886,
+   "sv_max": 1.146,
+   "rot_deg_mean": 1.29,
+   "rot_deg_max": 6.7
+  },
+  {
+   "module": "15.mlp.up_proj",
+   "dist_I": 0.0327,
+   "sv_min": 0.906,
+   "sv_max": 1.105,
+   "rot_deg_mean": 1.01,
+   "rot_deg_max": 5.6
+  },
+  {
+   "module": "15.mlp.down_proj",
+   "dist_I": 0.0363,
+   "sv_min": 0.853,
+   "sv_max": 1.1,
+   "rot_deg_mean": 1.13,
+   "rot_deg_max": 6.8
+  },
+  {
+   "module": "16.linear_attn.in_proj_qkv",
+   "dist_I": 0.0404,
+   "sv_min": 0.863,
+   "sv_max": 1.193,
+   "rot_deg_mean": 1.17,
+   "rot_deg_max": 8.3
+  },
+  {
+   "module": "16.linear_attn.in_proj_z",
+   "dist_I": 0.0403,
+   "sv_min": 0.835,
+   "sv_max": 1.184,
+   "rot_deg_mean": 1.03,
+   "rot_deg_max": 9.5
+  },
+  {
+   "module": "16.linear_attn.out_proj",
+   "dist_I": 0.0356,
+   "sv_min": 0.875,
+   "sv_max": 1.122,
+   "rot_deg_mean": 1.06,
+   "rot_deg_max": 6.8
+  },
+  {
+   "module": "16.mlp.gate_proj",
+   "dist_I": 0.0462,
+   "sv_min": 0.887,
+   "sv_max": 1.143,
+   "rot_deg_mean": 1.37,
+   "rot_deg_max": 6.3
+  },
+  {
+   "module": "16.mlp.up_proj",
+   "dist_I": 0.032,
+   "sv_min": 0.917,
+   "sv_max": 1.09,
+   "rot_deg_mean": 0.99,
+   "rot_deg_max": 4.7
+  },
+  {
+   "module": "16.mlp.down_proj",
+   "dist_I": 0.0385,
+   "sv_min": 0.817,
+   "sv_max": 1.118,
+   "rot_deg_mean": 1.2,
+   "rot_deg_max": 8.5
+  },
+  {
+   "module": "17.linear_attn.in_proj_qkv",
+   "dist_I": 0.0414,
+   "sv_min": 0.838,
+   "sv_max": 1.21,
+   "rot_deg_mean": 1.21,
+   "rot_deg_max": 10.7
+  },
+  {
+   "module": "17.linear_attn.in_proj_z",
+   "dist_I": 0.0417,
+   "sv_min": 0.882,
+   "sv_max": 1.15,
+   "rot_deg_mean": 1.15,
+   "rot_deg_max": 7.3
+  },
+  {
+   "module": "17.linear_attn.out_proj",
+   "dist_I": 0.0368,
+   "sv_min": 0.87,
+   "sv_max": 1.134,
+   "rot_deg_mean": 1.09,
+   "rot_deg_max": 7.4
+  },
+  {
+   "module": "17.mlp.gate_proj",
+   "dist_I": 0.044,
+   "sv_min": 0.905,
+   "sv_max": 1.111,
+   "rot_deg_mean": 1.33,
+   "rot_deg_max": 6.0
+  },
+  {
+   "module": "17.mlp.up_proj",
+   "dist_I": 0.0319,
+   "sv_min": 0.923,
+   "sv_max": 1.086,
+   "rot_deg_mean": 1.0,
+   "rot_deg_max": 4.6
+  },
+  {
+   "module": "17.mlp.down_proj",
+   "dist_I": 0.0384,
+   "sv_min": 0.838,
+   "sv_max": 1.1,
+   "rot_deg_mean": 1.2,
+   "rot_deg_max": 7.4
+  },
+  {
+   "module": "18.linear_attn.in_proj_qkv",
+   "dist_I": 0.0364,
+   "sv_min": 0.897,
+   "sv_max": 1.093,
+   "rot_deg_mean": 1.11,
+   "rot_deg_max": 5.4
+  },
+  {
+   "module": "18.linear_attn.in_proj_z",
+   "dist_I": 0.0405,
+   "sv_min": 0.917,
+   "sv_max": 1.157,
+   "rot_deg_mean": 1.16,
+   "rot_deg_max": 6.4
+  },
+  {
+   "module": "18.linear_attn.out_proj",
+   "dist_I": 0.0352,
+   "sv_min": 0.907,
+   "sv_max": 1.105,
+   "rot_deg_mean": 1.05,
+   "rot_deg_max": 5.5
+  },
+  {
+   "module": "18.mlp.gate_proj",
+   "dist_I": 0.0404,
+   "sv_min": 0.92,
+   "sv_max": 1.102,
+   "rot_deg_mean": 1.22,
+   "rot_deg_max": 5.3
+  },
+  {
+   "module": "18.mlp.up_proj",
+   "dist_I": 0.0292,
+   "sv_min": 0.939,
+   "sv_max": 1.077,
+   "rot_deg_mean": 0.9,
+   "rot_deg_max": 4.1
+  },
+  {
+   "module": "18.mlp.down_proj",
+   "dist_I": 0.0358,
+   "sv_min": 0.854,
+   "sv_max": 1.106,
+   "rot_deg_mean": 1.1,
+   "rot_deg_max": 6.7
+  },
+  {
+   "module": "19.self_attn.q_proj",
+   "dist_I": 0.037,
+   "sv_min": 0.911,
+   "sv_max": 1.104,
+   "rot_deg_mean": 1.12,
+   "rot_deg_max": 5.1
+  },
+  {
+   "module": "19.self_attn.k_proj",
+   "dist_I": 0.0595,
+   "sv_min": 0.752,
+   "sv_max": 1.155,
+   "rot_deg_mean": 1.69,
+   "rot_deg_max": 11.1
+  },
+  {
+   "module": "19.self_attn.v_proj",
+   "dist_I": 0.0308,
+   "sv_min": 0.912,
+   "sv_max": 1.101,
+   "rot_deg_mean": 0.92,
+   "rot_deg_max": 4.9
+  },
+  {
+   "module": "19.self_attn.o_proj",
+   "dist_I": 0.0337,
+   "sv_min": 0.913,
+   "sv_max": 1.098,
+   "rot_deg_mean": 1.0,
+   "rot_deg_max": 5.1
+  },
+  {
+   "module": "19.mlp.gate_proj",
+   "dist_I": 0.0406,
+   "sv_min": 0.906,
+   "sv_max": 1.122,
+   "rot_deg_mean": 1.25,
+   "rot_deg_max": 5.4
+  },
+  {
+   "module": "19.mlp.up_proj",
+   "dist_I": 0.0266,
+   "sv_min": 0.924,
+   "sv_max": 1.077,
+   "rot_deg_mean": 0.84,
+   "rot_deg_max": 4.4
+  },
+  {
+   "module": "19.mlp.down_proj",
+   "dist_I": 0.0354,
+   "sv_min": 0.87,
+   "sv_max": 1.112,
+   "rot_deg_mean": 1.1,
+   "rot_deg_max": 6.7
+  },
+  {
+   "module": "20.linear_attn.in_proj_qkv",
+   "dist_I": 0.0386,
+   "sv_min": 0.908,
+   "sv_max": 1.109,
+   "rot_deg_mean": 1.17,
+   "rot_deg_max": 5.6
+  },
+  {
+   "module": "20.linear_attn.in_proj_z",
+   "dist_I": 0.0419,
+   "sv_min": 0.891,
+   "sv_max": 1.145,
+   "rot_deg_mean": 1.21,
+   "rot_deg_max": 6.6
+  },
+  {
+   "module": "20.linear_attn.out_proj",
+   "dist_I": 0.0352,
+   "sv_min": 0.806,
+   "sv_max": 1.135,
+   "rot_deg_mean": 1.03,
+   "rot_deg_max": 7.3
+  },
+  {
+   "module": "20.mlp.gate_proj",
+   "dist_I": 0.0423,
+   "sv_min": 0.888,
+   "sv_max": 1.101,
+   "rot_deg_mean": 1.3,
+   "rot_deg_max": 5.8
+  },
+  {
+   "module": "20.mlp.up_proj",
+   "dist_I": 0.0295,
+   "sv_min": 0.911,
+   "sv_max": 1.073,
+   "rot_deg_mean": 0.95,
+   "rot_deg_max": 4.5
+  },
+  {
+   "module": "20.mlp.down_proj",
+   "dist_I": 0.0354,
+   "sv_min": 0.817,
+   "sv_max": 1.1,
+   "rot_deg_mean": 1.11,
+   "rot_deg_max": 7.2
+  },
+  {
+   "module": "21.linear_attn.in_proj_qkv",
+   "dist_I": 0.0431,
+   "sv_min": 0.904,
+   "sv_max": 1.112,
+   "rot_deg_mean": 1.31,
+   "rot_deg_max": 5.6
+  },
+  {
+   "module": "21.linear_attn.in_proj_z",
+   "dist_I": 0.0469,
+   "sv_min": 0.883,
+   "sv_max": 1.16,
+   "rot_deg_mean": 1.36,
+   "rot_deg_max": 7.8
+  },
+  {
+   "module": "21.linear_attn.out_proj",
+   "dist_I": 0.0357,
+   "sv_min": 0.888,
+   "sv_max": 1.137,
+   "rot_deg_mean": 1.06,
+   "rot_deg_max": 7.4
+  },
+  {
+   "module": "21.mlp.gate_proj",
+   "dist_I": 0.041,
+   "sv_min": 0.893,
+   "sv_max": 1.111,
+   "rot_deg_mean": 1.27,
+   "rot_deg_max": 6.0
+  },
+  {
+   "module": "21.mlp.up_proj",
+   "dist_I": 0.03,
+   "sv_min": 0.927,
+   "sv_max": 1.073,
+   "rot_deg_mean": 0.96,
+   "rot_deg_max": 3.7
+  },
+  {
+   "module": "21.mlp.down_proj",
+   "dist_I": 0.0347,
+   "sv_min": 0.873,
+   "sv_max": 1.097,
+   "rot_deg_mean": 1.09,
+   "rot_deg_max": 6.2
+  },
+  {
+   "module": "22.linear_attn.in_proj_qkv",
+   "dist_I": 0.0453,
+   "sv_min": 0.892,
+   "sv_max": 1.129,
+   "rot_deg_mean": 1.38,
+   "rot_deg_max": 6.1
+  },
+  {
+   "module": "22.linear_attn.in_proj_z",
+   "dist_I": 0.0501,
+   "sv_min": 0.861,
+   "sv_max": 1.196,
+   "rot_deg_mean": 1.41,
+   "rot_deg_max": 8.3
+  },
+  {
+   "module": "22.linear_attn.out_proj",
+   "dist_I": 0.0365,
+   "sv_min": 0.894,
+   "sv_max": 1.121,
+   "rot_deg_mean": 1.09,
+   "rot_deg_max": 7.0
+  },
+  {
+   "module": "22.mlp.gate_proj",
+   "dist_I": 0.0398,
+   "sv_min": 0.903,
+   "sv_max": 1.094,
+   "rot_deg_mean": 1.25,
+   "rot_deg_max": 5.5
+  },
+  {
+   "module": "22.mlp.up_proj",
+   "dist_I": 0.0269,
+   "sv_min": 0.944,
+   "sv_max": 1.064,
+   "rot_deg_mean": 0.86,
+   "rot_deg_max": 3.4
+  },
+  {
+   "module": "22.mlp.down_proj",
+   "dist_I": 0.0303,
+   "sv_min": 0.798,
+   "sv_max": 1.101,
+   "rot_deg_mean": 0.95,
+   "rot_deg_max": 8.6
+  },
+  {
+   "module": "23.self_attn.q_proj",
+   "dist_I": 0.0345,
+   "sv_min": 0.898,
+   "sv_max": 1.11,
+   "rot_deg_mean": 1.03,
+   "rot_deg_max": 5.1
+  },
+  {
+   "module": "23.self_attn.k_proj",
+   "dist_I": 0.0519,
+   "sv_min": 0.794,
+   "sv_max": 1.152,
+   "rot_deg_mean": 1.47,
+   "rot_deg_max": 9.9
+  },
+  {
+   "module": "23.self_attn.v_proj",
+   "dist_I": 0.0265,
+   "sv_min": 0.916,
+   "sv_max": 1.098,
+   "rot_deg_mean": 0.77,
+   "rot_deg_max": 4.7
+  },
+  {
+   "module": "23.self_attn.o_proj",
+   "dist_I": 0.0324,
+   "sv_min": 0.914,
+   "sv_max": 1.101,
+   "rot_deg_mean": 0.9,
+   "rot_deg_max": 5.1
+  },
+  {
+   "module": "23.mlp.gate_proj",
+   "dist_I": 0.0401,
+   "sv_min": 0.887,
+   "sv_max": 1.108,
+   "rot_deg_mean": 1.24,
+   "rot_deg_max": 5.9
+  },
+  {
+   "module": "23.mlp.up_proj",
+   "dist_I": 0.0261,
+   "sv_min": 0.936,
+   "sv_max": 1.072,
+   "rot_deg_mean": 0.83,
+   "rot_deg_max": 3.7
+  },
+  {
+   "module": "23.mlp.down_proj",
+   "dist_I": 0.0313,
+   "sv_min": 0.874,
+   "sv_max": 1.094,
+   "rot_deg_mean": 0.97,
+   "rot_deg_max": 6.2
+  },
+  {
+   "module": "24.linear_attn.in_proj_qkv",
+   "dist_I": 0.0366,
+   "sv_min": 0.902,
+   "sv_max": 1.114,
+   "rot_deg_mean": 1.08,
+   "rot_deg_max": 5.8
+  },
+  {
+   "module": "24.linear_attn.in_proj_z",
+   "dist_I": 0.0397,
+   "sv_min": 0.896,
+   "sv_max": 1.149,
+   "rot_deg_mean": 1.14,
+   "rot_deg_max": 6.9
+  },
+  {
+   "module": "24.linear_attn.out_proj",
+   "dist_I": 0.0325,
+   "sv_min": 0.879,
+   "sv_max": 1.124,
+   "rot_deg_mean": 0.95,
+   "rot_deg_max": 7.2
+  },
+  {
+   "module": "24.mlp.gate_proj",
+   "dist_I": 0.0441,
+   "sv_min": 0.832,
+   "sv_max": 1.131,
+   "rot_deg_mean": 1.34,
+   "rot_deg_max": 8.5
+  },
+  {
+   "module": "24.mlp.up_proj",
+   "dist_I": 0.0276,
+   "sv_min": 0.935,
+   "sv_max": 1.087,
+   "rot_deg_mean": 0.88,
+   "rot_deg_max": 3.9
+  },
+  {
+   "module": "24.mlp.down_proj",
+   "dist_I": 0.0329,
+   "sv_min": 0.897,
+   "sv_max": 1.105,
+   "rot_deg_mean": 1.03,
+   "rot_deg_max": 5.1
+  },
+  {
+   "module": "25.linear_attn.in_proj_qkv",
+   "dist_I": 0.0433,
+   "sv_min": 0.869,
+   "sv_max": 1.147,
+   "rot_deg_mean": 1.25,
+   "rot_deg_max": 7.8
+  },
+  {
+   "module": "25.linear_attn.in_proj_z",
+   "dist_I": 0.0429,
+   "sv_min": 0.867,
+   "sv_max": 1.155,
+   "rot_deg_mean": 1.19,
+   "rot_deg_max": 7.5
+  },
+  {
+   "module": "25.linear_attn.out_proj",
+   "dist_I": 0.0322,
+   "sv_min": 0.866,
+   "sv_max": 1.22,
+   "rot_deg_mean": 0.91,
+   "rot_deg_max": 9.7
+  },
+  {
+   "module": "25.mlp.gate_proj",
+   "dist_I": 0.0446,
+   "sv_min": 0.893,
+   "sv_max": 1.144,
+   "rot_deg_mean": 1.33,
+   "rot_deg_max": 6.0
+  },
+  {
+   "module": "25.mlp.up_proj",
+   "dist_I": 0.0278,
+   "sv_min": 0.943,
+   "sv_max": 1.078,
+   "rot_deg_mean": 0.87,
+   "rot_deg_max": 3.9
+  },
+  {
+   "module": "25.mlp.down_proj",
+   "dist_I": 0.0331,
+   "sv_min": 0.927,
+   "sv_max": 1.097,
+   "rot_deg_mean": 1.03,
+   "rot_deg_max": 4.7
+  },
+  {
+   "module": "26.linear_attn.in_proj_qkv",
+   "dist_I": 0.039,
+   "sv_min": 0.889,
+   "sv_max": 1.125,
+   "rot_deg_mean": 1.14,
+   "rot_deg_max": 7.0
+  },
+  {
+   "module": "26.linear_attn.in_proj_z",
+   "dist_I": 0.04,
+   "sv_min": 0.881,
+   "sv_max": 1.153,
+   "rot_deg_mean": 1.11,
+   "rot_deg_max": 7.3
+  },
+  {
+   "module": "26.linear_attn.out_proj",
+   "dist_I": 0.0311,
+   "sv_min": 0.87,
+   "sv_max": 1.138,
+   "rot_deg_mean": 0.86,
+   "rot_deg_max": 7.7
+  },
+  {
+   "module": "26.mlp.gate_proj",
+   "dist_I": 0.0426,
+   "sv_min": 0.825,
+   "sv_max": 1.135,
+   "rot_deg_mean": 1.22,
+   "rot_deg_max": 8.7
+  },
+  {
+   "module": "26.mlp.up_proj",
+   "dist_I": 0.0261,
+   "sv_min": 0.876,
+   "sv_max": 1.096,
+   "rot_deg_mean": 0.7,
+   "rot_deg_max": 5.6
+  },
+  {
+   "module": "26.mlp.down_proj",
+   "dist_I": 0.0301,
+   "sv_min": 0.893,
+   "sv_max": 1.111,
+   "rot_deg_mean": 0.88,
+   "rot_deg_max": 5.7
+  },
+  {
+   "module": "27.self_attn.q_proj",
+   "dist_I": 0.0276,
+   "sv_min": 0.887,
+   "sv_max": 1.09,
+   "rot_deg_mean": 0.79,
+   "rot_deg_max": 5.0
+  },
+  {
+   "module": "27.self_attn.k_proj",
+   "dist_I": 0.0467,
+   "sv_min": 0.837,
+   "sv_max": 1.135,
+   "rot_deg_mean": 1.34,
+   "rot_deg_max": 8.2
+  },
+  {
+   "module": "27.self_attn.v_proj",
+   "dist_I": 0.0214,
+   "sv_min": 0.932,
+   "sv_max": 1.078,
+   "rot_deg_mean": 0.6,
+   "rot_deg_max": 4.1
+  },
+  {
+   "module": "27.self_attn.o_proj",
+   "dist_I": 0.0256,
+   "sv_min": 0.918,
+   "sv_max": 1.092,
+   "rot_deg_mean": 0.7,
+   "rot_deg_max": 4.8
+  },
+  {
+   "module": "27.mlp.gate_proj",
+   "dist_I": 0.0369,
+   "sv_min": 0.874,
+   "sv_max": 1.128,
+   "rot_deg_mean": 1.07,
+   "rot_deg_max": 7.7
+  },
+  {
+   "module": "27.mlp.up_proj",
+   "dist_I": 0.0251,
+   "sv_min": 0.938,
+   "sv_max": 1.088,
+   "rot_deg_mean": 0.76,
+   "rot_deg_max": 3.8
+  },
+  {
+   "module": "27.mlp.down_proj",
+   "dist_I": 0.0299,
+   "sv_min": 0.921,
+   "sv_max": 1.104,
+   "rot_deg_mean": 0.9,
+   "rot_deg_max": 4.3
+  },
+  {
+   "module": "28.linear_attn.in_proj_qkv",
+   "dist_I": 0.0298,
+   "sv_min": 0.916,
+   "sv_max": 1.107,
+   "rot_deg_mean": 0.84,
+   "rot_deg_max": 5.8
+  },
+  {
+   "module": "28.linear_attn.in_proj_z",
+   "dist_I": 0.0333,
+   "sv_min": 0.899,
+   "sv_max": 1.115,
+   "rot_deg_mean": 0.91,
+   "rot_deg_max": 5.7
+  },
+  {
+   "module": "28.linear_attn.out_proj",
+   "dist_I": 0.0327,
+   "sv_min": 0.659,
+   "sv_max": 1.159,
+   "rot_deg_mean": 0.9,
+   "rot_deg_max": 12.4
+  },
+  {
+   "module": "28.mlp.gate_proj",
+   "dist_I": 0.0359,
+   "sv_min": 0.858,
+   "sv_max": 1.137,
+   "rot_deg_mean": 1.07,
+   "rot_deg_max": 8.1
+  },
+  {
+   "module": "28.mlp.up_proj",
+   "dist_I": 0.027,
+   "sv_min": 0.944,
+   "sv_max": 1.067,
+   "rot_deg_mean": 0.85,
+   "rot_deg_max": 3.4
+  },
+  {
+   "module": "28.mlp.down_proj",
+   "dist_I": 0.0314,
+   "sv_min": 0.917,
+   "sv_max": 1.099,
+   "rot_deg_mean": 0.96,
+   "rot_deg_max": 4.3
+  },
+  {
+   "module": "29.linear_attn.in_proj_qkv",
+   "dist_I": 0.0249,
+   "sv_min": 0.933,
+   "sv_max": 1.08,
+   "rot_deg_mean": 0.73,
+   "rot_deg_max": 3.9
+  },
+  {
+   "module": "29.linear_attn.in_proj_z",
+   "dist_I": 0.0291,
+   "sv_min": 0.921,
+   "sv_max": 1.109,
+   "rot_deg_mean": 0.81,
+   "rot_deg_max": 4.9
+  },
+  {
+   "module": "29.linear_attn.out_proj",
+   "dist_I": 0.0305,
+   "sv_min": 0.841,
+   "sv_max": 1.129,
+   "rot_deg_mean": 0.86,
+   "rot_deg_max": 8.5
+  },
+  {
+   "module": "29.mlp.gate_proj",
+   "dist_I": 0.0286,
+   "sv_min": 0.922,
+   "sv_max": 1.087,
+   "rot_deg_mean": 0.83,
+   "rot_deg_max": 4.7
+  },
+  {
+   "module": "29.mlp.up_proj",
+   "dist_I": 0.0218,
+   "sv_min": 0.943,
+   "sv_max": 1.076,
+   "rot_deg_mean": 0.66,
+   "rot_deg_max": 3.2
+  },
+  {
+   "module": "29.mlp.down_proj",
+   "dist_I": 0.0273,
+   "sv_min": 0.908,
+   "sv_max": 1.098,
+   "rot_deg_mean": 0.81,
+   "rot_deg_max": 4.1
+  },
+  {
+   "module": "30.linear_attn.in_proj_qkv",
+   "dist_I": 0.0236,
+   "sv_min": 0.937,
+   "sv_max": 1.072,
+   "rot_deg_mean": 0.68,
+   "rot_deg_max": 3.7
+  },
+  {
+   "module": "30.linear_attn.in_proj_z",
+   "dist_I": 0.0281,
+   "sv_min": 0.924,
+   "sv_max": 1.101,
+   "rot_deg_mean": 0.79,
+   "rot_deg_max": 4.8
+  },
+  {
+   "module": "30.linear_attn.out_proj",
+   "dist_I": 0.0345,
+   "sv_min": 0.838,
+   "sv_max": 1.15,
+   "rot_deg_mean": 0.95,
+   "rot_deg_max": 8.8
+  },
+  {
+   "module": "30.mlp.gate_proj",
+   "dist_I": 0.0296,
+   "sv_min": 0.929,
+   "sv_max": 1.098,
+   "rot_deg_mean": 0.86,
+   "rot_deg_max": 4.4
+  },
+  {
+   "module": "30.mlp.up_proj",
+   "dist_I": 0.0271,
+   "sv_min": 0.928,
+   "sv_max": 1.079,
+   "rot_deg_mean": 0.8,
+   "rot_deg_max": 4.0
+  },
+  {
+   "module": "30.mlp.down_proj",
+   "dist_I": 0.0347,
+   "sv_min": 0.879,
+   "sv_max": 1.14,
+   "rot_deg_mean": 1.04,
+   "rot_deg_max": 5.7
+  },
+  {
+   "module": "31.self_attn.q_proj",
+   "dist_I": 0.0205,
+   "sv_min": 0.952,
+   "sv_max": 1.085,
+   "rot_deg_mean": 0.55,
+   "rot_deg_max": 3.7
+  },
+  {
+   "module": "31.self_attn.k_proj",
+   "dist_I": 0.0392,
+   "sv_min": 0.879,
+   "sv_max": 1.14,
+   "rot_deg_mean": 1.11,
+   "rot_deg_max": 6.9
+  },
+  {
+   "module": "31.self_attn.v_proj",
+   "dist_I": 0.0192,
+   "sv_min": 0.934,
+   "sv_max": 1.058,
+   "rot_deg_mean": 0.55,
+   "rot_deg_max": 3.0
+  },
+  {
+   "module": "31.self_attn.o_proj",
+   "dist_I": 0.0226,
+   "sv_min": 0.929,
+   "sv_max": 1.071,
+   "rot_deg_mean": 0.63,
+   "rot_deg_max": 3.9
+  },
+  {
+   "module": "31.mlp.gate_proj",
+   "dist_I": 0.0219,
+   "sv_min": 0.939,
+   "sv_max": 1.083,
+   "rot_deg_mean": 0.6,
+   "rot_deg_max": 4.5
+  },
+  {
+   "module": "31.mlp.up_proj",
+   "dist_I": 0.0197,
+   "sv_min": 0.943,
+   "sv_max": 1.064,
+   "rot_deg_mean": 0.55,
+   "rot_deg_max": 2.7
+  },
+  {
+   "module": "31.mlp.down_proj",
+   "dist_I": 0.0326,
+   "sv_min": 0.92,
+   "sv_max": 1.109,
+   "rot_deg_mean": 0.97,
+   "rot_deg_max": 4.9
+  }
+ ],
+ "candidates_for_user": [
+  "(a) st61b:同 A 態+同 M 設定+修正解法器 配對重跑(9.5h),st61a→st61b=解法器單獨貢獻、st61b→甲=無手銬擴桶效果",
+  "(b) 直接進 S2(冠軍蓄水→A 閘→修正解法器+mix128 排水),把 st61b 併入 S2 排水段",
+  "(c) 關閉擴桶路線,回 E59 三選項"
+ ],
+ "assets": {
+  "train": "evidence/p1_grouping/corkscrew/train_st61a.json",
+  "qs": "data/qs_st61a(.pt 不進 git)",
+  "export": "exports/e61_st61a(位面包 200 tensors bit-exact)",
+  "eval": [
+   "ifeval_e61_st61a",
+   "humaneval_e61_st61a",
+   "gsm8k_e61_st61a"
+  ]
+ }
+}

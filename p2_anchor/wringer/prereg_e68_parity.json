@@ -1,0 +1,103 @@
+{
+ "experiment": "E68-P 帳面對齊臂(八元留零 + g128 fp16 α + k/v int8 + o 4bit;零訓練閉式排水)",
+ "status": "CLOSED 2026-09-10 08:xx(J_P PASS +2.37 / J_S SOLVER_WINS +8.54 / J_C PASS:p1alpha comp 0.9799 vs U 0.9607 +0.0192;P2-champ 58.54 源天花板;冠軍 p1alpha)",
+ "design_doc": "docs/2026-09-09-e68-ledger-parity-design.md",
+ "ledger_rule": "固定帳:碼 bit 固定寬(8 級=3.0、16 級=4.0、int8=8.0)+ α fp16/block;對 GGUF body bpw 內插(U27/U30/U34)",
+ "points": {
+  "P0-rtn": {
+   "grid": 8,
+   "block": 128,
+   "solver": "rtn+scale_search(E[x^2] 加權)",
+   "total_bpw_est": 3.125,
+   "U_at": 84.6
+  },
+  "P0-gptq": {
+   "grid": 8,
+   "block": 128,
+   "solver": "closed-form(XX^T, scale_joint prior, GPTQ 逐列, α 雙向)",
+   "total_bpw_est": 3.125,
+   "U_at": 84.6
+  },
+  "P1-gptq": {
+   "grid": 8,
+   "block": 128,
+   "overrides": {
+    "self_attn.k_proj": "int8_row",
+    "self_attn.v_proj": "int8_row",
+    "self_attn.o_proj": "grid16_b128"
+   },
+   "solver": "same as P0-gptq",
+   "total_bpw_est": 3.21,
+   "U_at": 88.7
+  },
+  "P1-alpha": {
+   "from": "P1-gptq",
+   "solver": "e2e_soft α-only 拋光 800 步(率項 λ0.05 釘碼;判準:翻碼須 0、H 不變)",
+   "total_bpw_est": 3.21,
+   "U_at": 88.7,
+   "basis": "E67-B stage1 +9.76 pp 零翻碼"
+  },
+  "P2-champ": {
+   "from": "pa64_asymrefitq2 W_eff(碼+水)",
+   "solver": "closed-form 吸收進 P1 格式(E64 機制)",
+   "total_bpw_est": 3.21,
+   "judge": "comp 對 U 同帳;官方三科需用戶另核"
+  }
+ },
+ "calib": {
+  "data": "evidence/p1_grouping/calib_e58r1b_traj.pt",
+  "n": 128
+ },
+ "judges": {
+  "J_P": "he(P1-gptq 或 P1-alpha) - U(total 內插) > 0 PASS;> +3 STRONG",
+  "J_S": "he(P0-gptq) - he(P0-rtn) > +3 求解器有價值;<= 0 記錄無優勢",
+  "falsifier": "he(P0-gptq) < 79.9(R1 82.93 - 3)⇒ 八元/g128 路線封盤",
+  "kill_gate": "任一點 he < 同格 bf16 直投 - 5 ⇒ 求解器事故不入卷",
+  "north_star": "P1 PASS 後 IF/GS(官方三科需用戶另核)"
+ },
+ "not_judges": [
+  "區塊誤差",
+  "val CE",
+  "KD loss"
+ ],
+ "engineering": [
+  "ktier grid 8/16 整數格(t2=0)",
+  "α 負號方向位",
+  "k/v int8 逐列 module type",
+  "quantize --grid 8 --block 128 --grid-map",
+  "ledger/state_entropy grid 8/16"
+ ],
+ "schedule": "GPU 等 E67-B 第一階 he1(~17:30 09-09)後;工程半天可與 B 並行(CPU)",
+ "anchors": {
+  "R1": [
+   3.003,
+   82.93
+  ],
+  "g9_fixed_total": [
+   3.7,
+   88.41
+  ],
+  "U": {
+   "u27": [
+    2.763,
+    63.41
+   ],
+   "u30": [
+    2.972,
+    77.44
+   ],
+   "u34": [
+    3.295,
+    92.68
+   ]
+  }
+ },
+ "risk_probe": "P0-gptq < 79.9 時補 block 64 點分辨八元 vs g128",
+ "order": [
+  "P0-rtn",
+  "P0-gptq",
+  "P1-gptq",
+  "P1-alpha",
+  "P2-champ"
+ ]
+}

@@ -1,0 +1,35 @@
+{
+ "experiment": "E46 蓄排一體化(臂A 4層×500步×7 交錯重蓄)終裁:H_fresh FAIL,用戶裁殺 e2e、棄路徑",
+ "date": "2026-08-22",
+ "verdicts": {
+  "H_fresh(主判)": "FAIL——triage IFEval w128 57.67 vs 標準排水錨 63.96 = −6.29pp;亦低於場+β 65.06 達 −7.39pp。重蓄交錯在窗態座標為主動反噬,非『未解時間差稅』",
+  "kill_gate_55": "PASS(57.67>55,鏈未觸殺閘;e2e 由用戶裁決終止,非殺閘)",
+  "H_dose(條件判)": "N/A——臂A 淨負,prereg 條款生效:臂B 免發射,直接歸因=重蓄無效或反噬",
+  "G1_balanced/R_he/H_tailroom": "N/A——用戶裁決『蓄排一體失敗則 e2e 不需再做』,e2e 於 40/1200 步終止止損(~4h GPU);e42b_r1 0.6677 衛冕不受挑戰",
+  "audit_program_vs_mechanism": "PASS(結果為真)——hparams 逐字同 st42r(僅新增欄位且全為關閉值);煙測等價閘 rel=0.00e+00、resume-skip、B/A 熱初始化均如 prereg 語義。−6.29pp 歸因於設計機制,非實作落差"
+ },
+ "mechanism_autopsy": {
+  "redistribution_hypothesis(主嫌)": "refill 是端到端 logit 級 KD、梯度只入開放後綴旁路→旁路被重塑為『分散式全模型修正』(兼職補償凍結前綴殘差),不再是『各層局部可吸收補償』。排水吸收是逐層局部的(窗內 γ 階梯把該層旁路烘進該層三元碼),低秩旁路能表達的跨層修正,三元碼增量吸不進去=E38 排水吞吐牆(ρ₂ 0.485)在重蓄軸重演",
+  "evidence_1_churn": "全鏈 sum_flips 6.30e7 = st42r(4.3e7)的 1.46×,深段(L15 起)承載絕大多數翻轉(逐段 3.1e5/6.0e5/1.6e6/5.4e6/1.41e7/1.29e7/1.45e7/1.36e7)=碼元追逐吸不進的目標而空轉",
+  "evidence_2_water_level": "排水 level(虧欠水位)隨 γ 階梯放大至 4.35e7 級,absorb 每事件僅 0.004-0.04 量級",
+  "evidence_3_refill_curves": "七次重蓄 Δval CE 由淺至深 +0.042/+0.031/+0.004/+0.021/−0.009/−0.032/−0.016(深層看似修復)、KD 起點隨深度 0.111→0.153 墊高——監控座標的『深層修復』與官方 −6.29pp 反向=第 17 筆 proxy 型態候選(refill 曲線樂觀方向不可信)",
+  "user_questions_answered": {
+   "為何比排髒水更差": "髒水(t=0 舊補償)至少是『各層局部、排水可吸收』的水;重蓄把水換成『全局分散、排水吸不進』的水——水更新鮮但倒不進碼裡,吸收失敗的殘渣直接毀碼",
+   "逐窗KD上限": "現況:窗態最佳 65.06(場+β)=bf16 錨 92.79 的 70.1%;鏈尾後冠軍 67.47=72.7%。teacher-KD 非線性槓桿有多筆證據(E38 牆/E42b 容量反噬/E45 快取定罪/本案)——KD loss 改善不線性映射官方回復。但『上限鎖死<80%』僅由單一 cadence 單一整合方案不能定論,屬工作假說"
+  }
+ },
+ "numbers": {
+  "triage_ifeval_w128": 57.67,
+  "anchors": {"std_drain_ne_w128": 63.96, "field_beta_st44f": 65.06, "champion_comp": 0.6677, "bf16_if_w128": 92.79},
+  "churn_total": 62960000.0,
+  "refill_delta_val_ce": [0.0422, 0.0314, 0.0044, 0.0209, -0.0089, -0.0324, -0.016],
+  "drain_runtime_per_seg_s": [2969, 2986, 2991, 3035, 3303, 3305, 3391, 3129],
+  "refill_runtime_s": [2144, 1956, 1772, 1586, 1401, 1215, 1032]
+ },
+ "user_rulings_2026-08-22": [
+  "『可是逐窗蓄水排水的機制怎麼可能比排髒水更差?是否程式運作跟機制有差距?』→稽核執行,結果為真",
+  "『如果蓄排一體失敗 那e2e不需要再做,直接放棄蓄排一體路徑』→e2e 於 40/1200 步終止,蓄排一體路徑關閉"
+ ],
+ "path_closure": "蓄排一體軸關閉(含臂B、E43 翻案臂、加密 cadence 重試——除非用戶重開);候選回鏈尾收割線(damped e2e/span on e42b_r1)與 O1 固定稅軸",
+ "artifacts": {"partial_recs": "train_st46r.partial_L{03..27}.json + train_st46r.json", "refills": "refill_rf46_L{03..27}.json", "triage_eval": "a1eval/ifeval_st46r_tri", "leftover_states": "data/qs_st46r、data/res_res46r(.pt 不入 git,可依 evidence 重生後刪)"}
+}
