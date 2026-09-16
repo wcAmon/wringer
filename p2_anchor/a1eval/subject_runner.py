@@ -28,7 +28,7 @@ import time
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
-from p2_anchor.a1eval.ifeval_runner import SAMPLING, gen_one
+from p2_anchor.a1eval.ifeval_runner import SAMPLING, gen_one, dump_usage
 
 MMLU_SUBJECTS = None  # lazy;57 configs
 
@@ -196,6 +196,8 @@ def main():
             for it, r in zip(items, responses):
                 f.write(json.dumps({"prompt": it["prompt"], "response": r},
                                    ensure_ascii=False) + "\n")
+        usage_stats = dump_usage(out_dir, [args.seed + i for i in idxs])
+        print("usage", json.dumps(usage_stats), flush=True)
 
     scorer = SCORERS[args.subject]
     scores = [scorer(r, it) for r, it in zip(responses, items)]
@@ -206,6 +208,7 @@ def main():
                                if k != "extra_body"},
                             **SAMPLING["extra_body"]},
                "max_tokens": args.max_tokens, "generation_s": gen_s,
+               "usage": (usage_stats if not args.skip_gen else None),
                "workers": args.workers,
                "scoring": "self-built A1-protocol scorer(見模組 docstring)"}
     if args.limit and args.limit < n_full:

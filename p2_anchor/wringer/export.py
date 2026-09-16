@@ -18,9 +18,10 @@ from p2_anchor.wringer.modelio import enumerate_targets, load_model
 from p2_anchor.wringer.state import apply_k2, load_state
 
 EVC = Path("evidence/p1_grouping/corkscrew")
+from p1_grouping.modelio import MODEL_ID, MODEL_REVISION
+
 SNAPSHOT = (Path.home() / ".cache/huggingface/hub/"
-            "models--InternScience--Agents-A1-4B/snapshots/"
-            "945c40a4aa6f534d434a353207b8d42ecf7a5293")
+            f"models--{MODEL_ID.replace('/', '--')}/snapshots/{MODEL_REVISION}")   # E70:隨 WRINGER_MODEL 切換
 
 
 def build_planes(st, alphas, out, c=0.6, grid=9):

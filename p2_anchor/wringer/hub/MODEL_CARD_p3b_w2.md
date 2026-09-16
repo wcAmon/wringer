@@ -76,7 +76,7 @@ calibration rows; scales by a joint least-squares closed form with a prior (λ =
 
 ## How it was made
 
-Article: `[HF article link TBD]`. Code, pre-registrations and evidence: `[repo link TBD]`.
+Article: on the Hugging Face blog (link added after publication). Code, pre-registrations and evidence: https://github.com/wcAmon/wringer.
 
 ## License
 

@@ -32,6 +32,23 @@ SAMPLING = {"temperature": 1.0, "top_p": 0.95, "presence_penalty": 1.5,
             "extra_body": {"top_k": 20, "min_p": 0.0,
                            "repetition_penalty": 1.0}}
 THINK_RE = re.compile(r"<think>.*?</think>\s*", flags=re.S)
+USAGE = {}   # seed → {completion_tokens, prompt_tokens, finish_reason};儀器(不入裁決),main 寫 usage.jsonl
+
+
+def dump_usage(out_dir, seeds):
+    rows = [USAGE.get(s) for s in seeds]
+    with (Path(out_dir) / "usage.jsonl").open("w") as f:
+        for s, u in zip(seeds, rows):
+            f.write(json.dumps({"seed": s, **(u or {})}) + "\n")
+    ct = sorted(u["completion_tokens"] for u in rows if u and isinstance(u.get("completion_tokens"), int))  # server_error 列為 None,排除
+    if not ct:
+        return {}
+    fr = {}
+    for u in rows:
+        if u:
+            fr[u.get("finish_reason")] = fr.get(u.get("finish_reason"), 0) + 1
+    return {"n": len(ct), "completion_tokens_mean": round(sum(ct) / len(ct), 1), "median": ct[len(ct) // 2],
+            "p90": ct[int(len(ct) * 0.9)], "max": ct[-1], "total": sum(ct), "finish_reason": fr}
 
 
 def gen_one(base_url, model, prompt, seed, max_tokens, retries=3):
@@ -43,8 +60,16 @@ def gen_one(base_url, model, prompt, seed, max_tokens, retries=3):
         try:
             r = requests.post(f"{base_url}/chat/completions", json=body,
                               timeout=1800)
+            if r.status_code == 500 and "peg-native" in r.text:
+                # llama.cpp jinja/peg 解析器拒收劣化模型的亂碼輸出(E70 IQ2_S):記 server_error、視為空答(計 0 分),不中止整場
+                USAGE[seed] = {"completion_tokens": None, "prompt_tokens": None, "finish_reason": "server_error"}
+                print(f"server_error(peg-native) seed={seed}: 空答計 0", file=sys.stderr, flush=True)
+                return ""
             r.raise_for_status()
-            msg = r.json()["choices"][0]["message"]
+            j = r.json()
+            msg = j["choices"][0]["message"]
+            USAGE[seed] = {**{k: (j.get("usage") or {}).get(k) for k in ("completion_tokens", "prompt_tokens")},
+                           "finish_reason": j["choices"][0].get("finish_reason")}
             content = msg.get("content") or ""
             return THINK_RE.sub("", content).strip()
         except Exception as e:
@@ -90,6 +115,8 @@ def main():
             for p, r in zip(prompts, responses):
                 f.write(json.dumps({"prompt": p, "response": r},
                                    ensure_ascii=False) + "\n")
+        usage_stats = dump_usage(out_dir, [args.seed + i for i in range(len(prompts))])
+        print("usage", json.dumps(usage_stats), flush=True)
 
     proc = subprocess.run(
         [sys.executable, "-m",
@@ -110,6 +137,7 @@ def main():
                                if k != "extra_body"},
                             **SAMPLING["extra_body"]},
                "max_tokens": args.max_tokens, "generation_s": gen_s,
+               "usage": (usage_stats if not args.skip_gen else None),
                "workers": args.workers,
                "vendor": (VENDOR / "VENDOR_NOTE.txt").read_text().strip()}
     if len(accs) == 2:

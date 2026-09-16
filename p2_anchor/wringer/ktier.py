@@ -7,6 +7,7 @@ T₂ 約束階梯(c=0.6 時網格嵌套 3 ⊂ 5 ⊂ 7 ⊂ 9):
   9:T₂ 自由;7:T₁·T₂ ≥ 0;5:T₂≠0 僅限 T₁=0;3:T₂=0。
 加法路徑帳:任一檔位 = 兩條 ternary 加法累加器,每 block 兩次縮放(α, c·α)。
 """
+import sys
 import torch
 import torch.nn as nn
 
@@ -129,7 +130,16 @@ def gptq_grid(W, Sigma, level, c=C_K2, damp=GPTQ_DAMP, a0=None):
     dead = diag <= 0
     diag[dead] = 1.0
     diag += damp * diag.mean()
-    L = torch.linalg.cholesky(H)
+    for k in range(4):                       # E70:Qwen3-4B down_proj Σ 離群通道極大 → 均值阻尼不足;失敗則阻尼十倍升階重試(記錄於 stderr)
+        try:
+            L = torch.linalg.cholesky(H)
+            break
+        except torch._C._LinAlgError:
+            if k == 3:
+                raise
+            extra = damp * (10 ** (k + 1) - 10 ** k) * diag.mean()
+            diag += extra
+            print(f"GPTQ_DAMP_ESCALATE k={k + 1} damp={damp * 10 ** (k + 1):.3g}", file=sys.stderr, flush=True)
     Hinv = torch.cholesky_inverse(L)
     U = torch.linalg.cholesky(Hinv, upper=True)
     del L, Hinv, H
@@ -176,7 +186,16 @@ def gptq_grid_rd(W, Sigma, level, A, bits, lam, c=C_K2, damp=GPTQ_DAMP):
     dead = diag <= 0
     diag[dead] = 1.0
     diag += damp * diag.mean()
-    L = torch.linalg.cholesky(H)
+    for k in range(4):                       # E70:Qwen3-4B down_proj Σ 離群通道極大 → 均值阻尼不足;失敗則阻尼十倍升階重試(記錄於 stderr)
+        try:
+            L = torch.linalg.cholesky(H)
+            break
+        except torch._C._LinAlgError:
+            if k == 3:
+                raise
+            extra = damp * (10 ** (k + 1) - 10 ** k) * diag.mean()
+            diag += extra
+            print(f"GPTQ_DAMP_ESCALATE k={k + 1} damp={damp * 10 ** (k + 1):.3g}", file=sys.stderr, flush=True)
     Hinv = torch.cholesky_inverse(L)
     U = torch.linalg.cholesky(Hinv, upper=True)
     del L, Hinv, H

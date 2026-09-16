@@ -1,0 +1,30 @@
+{
+ "tag": "s1_a8",
+ "grid": 8,
+ "grid_map": null,
+ "c": 0.6,
+ "solver": "gptq",
+ "alpha_init": "auto",
+ "prior_lam": 0.01,
+ "module_map": "self_attn.k_proj:256:row,self_attn.v_proj:256:row,self_attn.o_proj:16:128",
+ "ledger": {
+  "code_fixed": 3.3636,
+  "code_entropy": 3.0723,
+  "code_entropy_joint": 3.0723,
+  "alpha": 0.0641,
+  "beta": 0.0,
+  "r": 0.0,
+  "weights": 3633315840,
+  "total_fixed": 3.4278,
+  "total_entropy": 3.1364,
+  "total_entropy_joint": 3.1364
+ },
+ "block": 128,
+ "n_calib": 128,
+ "seed": 20260806,
+ "zerotrain_val_ce": 0.6923448741436005,
+ "t1_nonzero": 0.7851,
+ "t2_nonzero": 0.0,
+ "runtime_s": 2241.4,
+ "timestamp": "2026-09-13T00:25:15.895561"
+}

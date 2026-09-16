@@ -1,0 +1,287 @@
+{
+ "experiment": "E72 外部基線(用戶 09-13 裁:GPTQ、AWQ 做;QuIP# 不做;HQQ 順手)",
+ "status": "CLOSED 2026-09-15 14:0x(E72 全點 + E72P 查證收卷;J1 PASS/J2 FAIL/J3 GPTQ 主弱基線/J4 上錨 Qwen awq4 asym 0.989、A1 gptq3 0.985)",
+ "purpose": "技術報告的『同格式弱基線』與『免校準基線』兩格:在同一評測管線(假量化 → bf16 材化 → vLLM 官方三科)上,把 Wringer 2.64 b/w 的 comp 放進 GPTQ 2/3-bit 括號、AWQ 4-bit 上錨、HQQ 2/3-bit 之間。QuIP#/AQLM/PV-tuning 只放已發表數字脈絡表(Llama 系,不可直接比較),並明寫 Wringer 定位為 uniform 固定格、部署格式與 GPTQ/Marlin 相容。",
+ "engine": {
+  "gptq_awq": "llm-compressor(vLLM 團隊維護;GPTQModifier num_bits 2/3、group 128、asymmetric(標準 GPTQ zero-point);AWQModifier 4-bit group 128 symmetric)。校準資料=各模型自己的 Wringer 語料(calib_e70 / calib_e58r1b 128 窗 × 16k;與 Wringer 同資料,公平)。輸出 save_compressed=False 假量化 bf16 → 我方 export 格式 → vLLM。",
+  "hqq": "hqq 套件(免校準,min-max 逐群組 + 半二次優化):nbits 2/3、group 64(HQQ 慣例;群組更小=尺度開銷更大,帳面照實計);dequantize → bf16 export。",
+  "ledger": "帳面統一由我方計算:碼位元 + 每群組 fp16 尺度(+ 非對稱 zero-point 位元)/ 群組大小;只計 decoder 層內 nn.Linear(與 Wringer 本體同集合;A1 含 linear_attn 三張),embed/lm_head bf16 不入帳。",
+  "eval": "與各模型 Wringer 同協定:Qwen3-4B E70 協定(KV fp8、w128;he 4 seed + IF + GS);A1 E69 協定(KV bf16、IF/GS w16;he 4 seed)。",
+  "risk": "A1 為 Qwen3.5 混合架構(GatedDeltaNet linear_attn),llm-compressor 的逐層序列校準對非標準 decoder 需指定 sequential_targets;煙測失敗則 A1 的 GPTQ/AWQ 改用我方 ktier.gptq_grid 以標準非對稱 min-max 格實作(演算法同 GPTQ,註明實作來源),AWQ 於 A1 缺席照實記。"
+ },
+ "points_per_model": [
+  {
+   "tag": "gptq2",
+   "bits": 2,
+   "group": 128,
+   "est_bpw_body": 2.14,
+   "role": "括號下緣(預期崩塌)",
+   "note": "煙測實測 Qwen3-0.6B 2.1406(fp16 scale + 2-bit zp / 128)"
+  },
+  {
+   "tag": "gptq3",
+   "bits": 3,
+   "group": 128,
+   "est_bpw_body": 3.14,
+   "role": "括號上緣"
+  },
+  {
+   "tag": "awq4",
+   "bits": 4,
+   "group": 128,
+   "est_bpw_body": 4.125,
+   "role": "上方錨(AWQ 只有 4-bit 官方路徑)"
+  },
+  {
+   "tag": "hqq2",
+   "bits": 2,
+   "group": 64,
+   "est_bpw_body": 2.5,
+   "role": "免校準 2-bit",
+   "note": "HQQ zero-point 存 fp16(quant_zero=False)=每群 32 bit/64"
+  },
+  {
+   "tag": "hqq3",
+   "bits": 3,
+   "group": 64,
+   "est_bpw_body": 3.5,
+   "role": "免校準 3-bit"
+  }
+ ],
+ "judgments": {
+  "J1_bracket": "Wringer comp(2.64)> GPTQ 2↔3-bit 在 2.64 的線性內插 comp + 0.02 ⇒ 高於同格式弱基線曲線(預期成立;不成立=Wringer 敗給 GPTQ 內插,報告主張撤)",
+  "J2_beats_3bit": "Wringer comp(2.64)≥ GPTQ 3-bit comp(3.16)− 0.02 ⇒ 『2.64 b/w 達 3-bit GPTQ 水準』可寫;否則只寫 J1",
+  "J3_hqq": "同 J1 對 HQQ 2↔3 內插;HQQ 為免校準,若 HQQ 內插 ≥ GPTQ 內插,報告改以 HQQ 為主要弱基線",
+  "J4_awq_anchor": "AWQ 4-bit comp 記為上錨;Wringer 與其差距 = 『再省 1.5 b/w 的代價』,只描述不裁",
+  "two_model_rule": "兩模型分別裁;報告列兩表",
+  "instruments_not_judges": [
+   "各法的 val CE",
+   "量化耗時"
+  ]
+ },
+ "falsifiers": "GPTQ 3-bit comp < 0.80 或 AWQ 4-bit comp < 0.90(在 A1 錨 IF 92.79 / Qwen 錨 IF 82.53 下)⇒ 疑基線工具鏈或校準資料問題(格式轉換/材化錯),先查再裁,不入表。",
+ "schedule_est": "每點:量化 0.5–1 h + 評測 Qwen3-4B 0.5 h / A1 1.7 h。Qwen3-4B 5 點 ~6 h;A1 5 點 ~12 h(+A1 架構煙測風險 0.5 天)。串行 ~18 h,E71 收後(09-15 上午)起 → 09-16 收。",
+ "rules": [
+  "點火前呈用戶核准",
+  "官方三科每點都跑(基線表需全三科)",
+  "帳面由我方統一計算,不用各工具自報",
+  "Bash 內不得出現受禁字面;發射指令獨立一個 Bash;nohup setsid + Monitor",
+  "fail() 殺子伺服器"
+ ],
+ "smoke": {
+  "2026-09-13 21:xx": "Qwen3-0.6B CPU:hqq2 PASS(190 s)、gptq2 PASS(446 s,llm-compressor 0.13 independent 管線);awq4 CPU 撞 pin_memory CUDA-only → GPU 補測見 smoke_awq_gpu",
+  "2026-09-13 21:4x": "Qwen3-0.6B GPU:awq4/gptq2 PASS、hqq2 CPU PASS(乾淨 bf16 落盤:AWQ 明確 fake_quantize 寫回;剔除 scale/zp/quantization_config);三者 vLLM 純 bf16 載入 OK(awq4 輸出 Paris;2-bit 亂碼=0.6B 2 樣本預期)。鏈 chain_e72_baselines.sh 已寫(等 E71_CHAIN_DONE;單點失敗記錄後繼續;評測後刪 export 省磁碟)。"
+ },
+ "amendment_1": {
+  "time": "2026-09-15 01:1x(用戶核「視為崩塌就適當跳過節省時間」)",
+  "trigger": "Qwen gptq2(2.14 b/w)he 四 seed 全 0.0,156/164 題寫滿 16384 token(length 截斷),每 seed 21 min;推算 IF+GS 需再 4 h、A1(IF/GS w16)崩塌點需 8–10 h,全程晚 12–18 h。",
+  "rule": "崩塌判定:同一點四個 he seed score 全為 0 且每 seed length 截斷比例 ≥ 0.90(gptq2 實測 0.933/0.951/0.933,0.95 會誤判;其餘 stop 列亦全錯) ⇒ 該點視為崩塌,IF/GS 不跑;E72_OFFICIAL 記 if=NA gs=NA、comp 記 0.0(假設三科皆 0,he 實測 0 為支持證據),哨兵加 COLLAPSED 字樣。J1/J3 內插以 comp 0.0 代入(崩塌點本就趨近 0,對判準無實質影響)。",
+  "not_collapsed": "任一 seed he > 0 或截斷比例 < 0.90 ⇒ 照原規則跑全三科。",
+  "ops": "E72 鏈殺後重點火(檔案守衛跳過已收 he;等 gptq2 seed 3 收完再換鏈,零損失);E73 交接只看最後一次 E72_START 之後的哨兵,不受影響。"
+ },
+ "falsifier_check_1": {
+  "time": "2026-09-15 03:1x",
+  "trigger": "Qwen awq4(sym,4.125 b/w)官方 IF 81.33 / he 93.75±1.35(近 bf16)但 GS 57.54 → comp 0.8605 < 0.90 觸發 falsifier,不入表。",
+  "diagnosis_offline": "GS 錯 560 題中 484 題 content 為空;usage completion_tokens 250–16384、finish stop 474 / length 10 ⇒ 整段輸出留在思考段、以 EOS 結束未吐 </think>(reasoning parser 把 content 留空)。跨跑次普查:空回應 bf16 1、gptq3 1、p3a 17、iq2_s 25、awq4 484;同模型 IF 0 空、he 4 空 ⇒ AWQ 特有且科目特有。AWQ 日誌:36 mappings skipped(v_proj→o_proj GQA 形狀不合,標準);smoothing 3 組/層正常;fake_quantize 寫回、乾淨 bf16 落盤(含被 smoothing 改動的 norm 權重)。",
+  "probe": "chain_e72p_awq.sh(等 E72 收尾,E73 改等本鏈):A 同配置重做 awq4 sym → e72_awq_probe.py think 模式抓 reasoning_content(content 空是否 = 思考段 EOS)+ nothink 模式(數學能力儀器);B awq4 asymmetric(llm-compressor 預設 zero-point、AWQ 論文預設)官方三科 → E72P_OFFICIAL:q_awq4a。",
+  "ruling_rule": "若 think 探針證實空答 = 思考段 EOS 且 nothink 正確率 ≥ 0.90:判『AWQ sym 4-bit 在本協定下的真實行為(思考終止失律),非工具鏈錯』,awq4(sym)入表照實記 0.8605 並附註;若 asym 版 comp ≥ 0.90,J4 上錨改用 asym 版(amendment_2,呈用戶)並同列 sym 版。若 nothink 也崩 ⇒ 疑工具鏈(smoothing/落盤),再查。",
+  "probe_result": {
+   "time": "2026-09-15 13:0x",
+   "think": {
+    "n": 150,
+    "empty_content": 55,
+    "eos_in_think": 54,
+    "empty_len_trunc": 1,
+    "acc_content_only": 0.5867,
+    "tok_mean": 1845.5,
+    "instrument_reasoning_scored": {
+     "acc_reasoning_plus_content": 0.9533,
+     "empty_rows_acc_on_reasoning": 1.0,
+     "note": "55 題空答的思考段尾全含『#### <答案>』且全對;儀器,不入裁決"
+    }
+   },
+   "nothink": {
+    "n": 150,
+    "empty_content": 0,
+    "eos_in_think": 0,
+    "acc": 0.9067,
+    "tok_mean": 280.3,
+    "finish": {
+     "stop": 150
+    }
+   },
+   "verdict": "ruling_rule 兩條件皆成立(空答 54/55 = 思考段 EOS;nothink 0.9067 ≥ 0.90)⇒ 判『AWQ sym 4-bit 在本協定下的真實行為:模型在 <think> 內寫完 #### 答案後直接 EOS、漏 </think>,思考終止失律;數學能力完好』,非工具鏈錯。awq4(sym)入表照實記 0.8605 附註。asym 版官方三科待 E72P_OFFICIAL,依 amendment_2 取高者上錨、另一版同列。",
+   "files": [
+    "evidence/p1_grouping/corkscrew/e72p_awq4s_think.json",
+    "evidence/p1_grouping/corkscrew/e72p_awq4s_nothink.json"
+   ]
+  },
+  "asym_official": {
+   "time": "2026-09-15 14:02",
+   "if": 83.36,
+   "gs": 91.05,
+   "he": "94.51±1.32",
+   "comp": 0.989,
+   "bpw": 4.1562,
+   "gs_empty": 49,
+   "verdict": "asym comp 0.989 ≥ 0.90 ⇒ J4 上錨改用 asym(amendment_2),sym 同列。sym 與 asym 唯一差別為 zero-point;sym 空答 484 vs asym 49 ⇒ 對稱格點(無零點偏移)在 4-bit 即足以擾動 Qwen3 思考終止的薄 RL 增量(與 H_rl_delta 一致),數學能力不受影響。"
+  }
+ },
+ "amendment_1b": {
+  "time": "2026-09-15 07:3x(用戶核「放寬崩塌判定節省時間」)",
+  "trigger": "Qwen hqq2(2.5 b/w)he 四 seed 全 0、IF 0,但 length 截斷僅 65–73% 未達 0.90 ⇒ 未判崩塌,多跑 IF 1 h + GS 3 h。",
+  "rule": "崩塌判定改為:四個 he seed score 全為 0(656 次嘗試零通過)即崩塌,不再要求截斷比例;截斷比例只記錄。其餘同 amendment_1(IF/GS 不跑、comp 記 0.0、COLLAPSED)。",
+  "ops": "hqq2 GS 進行中即殺鏈重點火(結果為 0 不需要,省 ~1 h);hqq2 依新規則記 COLLAPSED(已跑的 IF 0.0 照實留檔)。"
+ },
+ "amendment_2": {
+  "time": "2026-09-15 07:3x(用戶核「symmetric / asymmetric 看哪個 comp 高放哪個」)",
+  "rule": "J4 AWQ 4-bit 上錨取 sym / asym 兩版 comp 較高者,另一版並列附註;兩版皆入表(sym 版 falsifier 查證結果一併記)。"
+ },
+ "incident_a1_format": {
+  "time": "2026-09-15 07:5x–08:2x",
+  "what": "A1 gptq2 首跑:(1) llm-compressor 經 AutoModelForCausalLM 只載 Qwen3.5 文字子模型,落盤 Qwen3_5TextModel(鍵 model.*、無 visual),vLLM 拒載 → POINT_FAIL serve;(2) 基線把 linear_attn.in_proj_a/in_proj_b(各 1.97 M,GatedDeltaNet 衰減/β 閘)量到 2-bit,Wringer 留 bf16,帳面參數 3,569,090,560 vs Wringer 3,565,158,400 差恰為兩張;(3) 檢查器抽到 conv1d(3-D,只看到首列 4 元素)誤報 unique 4,實際 conv1d 與 resA 逐位相同未量化。",
+  "fix": "a1_wrap.py:以 HF 快照全鍵為骨架,身體張量取 export(含 AWQ 平滑後 norm)、排除模組與 visual 取快照原始,config/processor 檔取快照 → Qwen3_5ForConditionalGeneration;baseline_quant 加 EXCLUDE_RE(in_proj_a/b 不量化、不入帳、llm-compressor ignore)、落盤後自動包裝、檢查器只看 2-D 非排除張量。gptq2 export 原地包裝(排除模組 48 張還原)、帳面改 weights 3,565,158,400 / n_modules 200 / bpw 2.140625 不變;vLLM 煙測 92 s 就緒。gptq3 重做。Qwen 段不受影響(無此模組、model_type qwen3)。",
+  "ledger_note": "A1 基線帳面與 Wringer 同一參數集合(3,565,158,400);均勻配置下排除兩張小閘不改 bpw_body。"
+ },
+ "result": {
+  "time": "2026-09-15 12:2x E72_CHAIN_DONE(RELAUNCH4 段;前段 POINT_FAIL a_gptq2 serve / q_gptq3 OOM 為舊段不入表)",
+  "qwen3_4b": {
+   "denominators": "IF 82.53 / GS 94.9962 / he 94.66;E70 協定",
+   "points": {
+    "gptq2": {
+     "bpw": 2.1406,
+     "comp": 0.0,
+     "note": "COLLAPSED(he 4 seed 0/0/0/0,156–161/164 寫滿 16k;amendment_1)"
+    },
+    "gptq3": {
+     "bpw": 3.1484,
+     "if": 78.19,
+     "gs": 91.96,
+     "he": "87.04±2.19",
+     "comp": 0.945
+    },
+    "awq4_sym": {
+     "bpw": 4.125,
+     "if": 81.33,
+     "gs": 57.54,
+     "he": "93.75±1.35",
+     "comp": 0.8605,
+     "note": "falsifier 已查證(falsifier_check_1.probe_result):GS 484/1319 content 空 = 思考段 EOS 漏 </think>(探針 54/55;思考段計分 0.953、nothink 0.907)=真實失律非工具鏈;依協定只計 content 照實入表 0.8605"
+    },
+    "hqq2": {
+     "bpw": 2.5,
+     "comp": 0.0,
+     "note": "COLLAPSED(he 4 seed 全 0、IF 0.0 已跑照留;GS 依 amendment_1b 中止)"
+    },
+    "hqq3": {
+     "bpw": 3.5,
+     "if": 74.86,
+     "gs": 82.71,
+     "he": "65.55±1.76",
+     "comp": 0.8234
+    },
+    "awq4_asym": {
+     "bpw": 4.1562,
+     "if": 83.36,
+     "gs": 91.05,
+     "he": "94.51±1.32",
+     "comp": 0.989,
+     "note": "E72P 補點(llm-compressor 預設 zero-point,AWQ 論文預設);GS 空答 49/1319(sym 484)⇒ 失律主要由 symmetric 觸發;IF 83.36 > bf16 82.53 在噪音帶內"
+    }
+   },
+   "wringer": {
+    "p3a_w": {
+     "bpw": 2.6383,
+     "comp": 0.9066,
+     "he": 78.96
+    }
+   },
+   "J1_bracket": {
+    "gptq_interp_at_2.6383": 0.4667,
+    "threshold": 0.4867,
+    "wringer": 0.9066,
+    "verdict": "PASS(+0.440;但括號下緣為崩塌點,內插無曲線資訊,見 note)"
+   },
+   "J2_beats_3bit": {
+    "gptq3": 0.945,
+    "threshold": 0.925,
+    "wringer": 0.9066,
+    "verdict": "FAIL(−0.038;差距集中 he 78.96 vs 87.04)"
+   },
+   "J3_hqq": {
+    "hqq_interp_at_2.6383": 0.1139,
+    "vs_gptq_interp": "HQQ 內插 < GPTQ 內插 ⇒ GPTQ 仍為主要弱基線;Wringer @2.64 亦高於 HQQ 3.5 b/w(0.823)"
+   },
+   "J4_awq_anchor": {
+    "anchor": "awq4_asym 0.989 @4.156 b/w(amendment_2:sym/asym 取高者;sym 0.8605 同列並附失律註)",
+    "gap_wringer_vs_anchor": -0.0824,
+    "reading": "Wringer @2.64 距 4-bit AWQ 上錨 −0.082;A1 上錨為 gptq3 0.985(AWQ 缺席)差 −0.042。兩模型上錨皆 ≈ bf16 −1~1.5%,4-bit 為『無損帶』,Wringer 2.64 位於 3-bit GPTQ 之下、崩塌點之上。"
+   },
+   "falsifiers": "gptq3 0.945 ≥ 0.80 OK;awq4 sym 0.8605 < 0.90 觸發 → E72P 查證裁真實失律(falsifier_check_1.probe_result);asym 0.989 無觸發"
+  },
+  "a1": {
+   "denominators": "IF 92.79 / GS 95.53 / he 93.75;E69 協定;in_proj_a/b 排除(incident_a1_format)",
+   "points": {
+    "gptq2": {
+     "bpw": 2.1406,
+     "comp": 0.0,
+     "note": "COLLAPSED(he 4 seed 全 0;amendment_1b)"
+    },
+    "gptq3": {
+     "bpw": 3.1484,
+     "if": 90.76,
+     "gs": 94.69,
+     "he": "92.38±1.45",
+     "comp": 0.9849
+    },
+    "awq4": {
+     "note": "缺席:llm-compressor AWQ 平滑步重跑 Qwen3_5GatedDeltaNet.forward 缺 hidden_states(混合架構不支援;prereg risk 預留)"
+    },
+    "hqq2": {
+     "bpw": 2.5,
+     "comp": 0.0,
+     "note": "COLLAPSED(he 4 seed 全 0)"
+    },
+    "hqq3": {
+     "bpw": 3.5,
+     "if": 76.34,
+     "gs": 88.7,
+     "he": "72.71±2.74",
+     "comp": 0.8423
+    }
+   },
+   "wringer": {
+    "p3b_w": {
+     "bpw": 2.6551,
+     "comp": 0.9433,
+     "he": 85.37
+    },
+    "p3b_w2": {
+     "bpw": 2.6551,
+     "comp": 0.9468
+    }
+   },
+   "J1_bracket": {
+    "gptq_interp_at_2.6551": 0.5028,
+    "threshold": 0.5228,
+    "wringer": 0.9433,
+    "verdict": "PASS(+0.441;同 Qwen note)"
+   },
+   "J2_beats_3bit": {
+    "gptq3": 0.9849,
+    "threshold": 0.9649,
+    "wringer": "0.9433 / w2 0.9468",
+    "verdict": "FAIL(−0.042 / −0.038;A1 對 3-bit GPTQ 近無損)"
+   },
+   "J3_hqq": {
+    "hqq_interp_at_2.6551": 0.1306,
+    "vs_gptq_interp": "HQQ 內插 < GPTQ 內插 ⇒ GPTQ 主要弱基線;Wringer @2.66 高於 HQQ 3.5 b/w(0.842)"
+   },
+   "J4_awq_anchor": "AWQ 缺席,上錨由 gptq3(0.985 @3.15)承擔",
+   "falsifiers": "gptq3 0.9849 ≥ 0.80 OK;AWQ 無值"
+  },
+  "two_model_rule": "J1 PASS/J2 FAIL 兩模型同向:Wringer @2.64–2.66 高於同格式 GPTQ 2↔3 括號內插,但未達 3-bit GPTQ(差 −0.04,兩模型皆然);報告可寫『2.64 b/w 達 3-bit GPTQ −0.04』不可寫『達 3-bit 水準』。 J4:兩模型 4-bit 級上錨皆 ≈ bf16(Qwen awq4 asym 0.989 / A1 gptq3 0.985),Wringer 距上錨 −0.08 / −0.04。",
+  "shape_note": "零訓練曲線形狀(用戶 12:xx 觀察):3 b/w 以上緩降(Qwen @3.1 已 −5.5%,A1 −1.5%),2.5–2.7 之間斷崖(GGUF 三點定位:Qwen 2.73→0.887、2.52→0.652;A1 2.66→0.527),GPTQ/HQQ 2-bit 歸零(思考不終止)。GPTQ/HQQ 各僅兩點,膝點未定位;J1 內插形式成立但無曲線資訊。Wringer 可讀為把膝點左移 ~0.15–0.3 b/w(零訓練 P3 0.814 → 0.907/0.943 同帳)。候補點(待用戶裁):GPTQ 2-bit g32(~2.56 b/w)定位膝點與同帳直比;GGUF Q4_K_M 一點量『4→3 緩降』。",
+  "instruments": "量化耗時:gptq ~12 min(A1 695 s)、awq ~10 min、hqq ~3 min;崩塌點 he 每 seed ~21 min(寫滿 16k)。"
+ }
+}

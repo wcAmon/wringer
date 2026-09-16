@@ -3,10 +3,25 @@
 load_model 沿用 p1_grouping.modelio(釘定 revision);target 枚舉與 Σ 來源
 代表移植自 guava-qat modelio(spec §2.1 凍結,同一模型同一 200 linears)。
 """
-from p1_grouping.modelio import load_model  # noqa: F401(re-export)
+import os
+from pathlib import Path
 
-N_LAYERS = 32
-LAYER_PREFIX = "model.language_model.layers"
+from p1_grouping.modelio import MODEL_ID, MODEL_REVISION, load_model  # noqa: F401(re-export)
+
+
+def _resolve_layers():
+    """E70:層路徑與層數由模型 config 決定(A1/Qwen3.5 有 text_config → model.language_model.layers;純 Qwen3 → model.layers)。"""
+    from transformers import AutoConfig
+    cfg = AutoConfig.from_pretrained(MODEL_ID, revision=MODEL_REVISION)
+    tc = getattr(cfg, "text_config", None)
+    if tc is not None:
+        return int(tc.num_hidden_layers), "model.language_model.layers"
+    return int(cfg.num_hidden_layers), "model.layers"
+
+
+N_LAYERS, LAYER_PREFIX = _resolve_layers()
+EV = Path("evidence/p1_grouping")
+CALIB_VAL = Path(os.environ.get("WRINGER_CALIB_VAL", str(EV / "calib_val.pt")))   # E70:val 集隨模型切換
 
 # 排除 in_proj_b / in_proj_a(<0.3%,decay/gate 敏感參數)
 TARGET_SUFFIXES = (

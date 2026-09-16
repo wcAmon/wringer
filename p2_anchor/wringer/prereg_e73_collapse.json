@@ -1,0 +1,127 @@
+{
+ "experiment": "E73 收尾歸因探針(E71 留下的唯一未決:STE 與 Wringer 的差距在『收尾方法』還是『訓練軌跡』)",
+ "status": "CLOSED 2026-09-15 19:5x;audit_v0_2(2026-09-16):A1 變體為第二輪目標,求解器歸因撤回,見 audit_v0_2",
+ "purpose": "E71 的 STE 臂翻碼率僅 0.29%/1.26%,實質退化為『蓄水 + 硬取整』,與 Wringer 只差最後一步:Wringer 以含水權重為目標做 GPTQ 碼重解 + 閉式尺度,STE extract 做逐權重最近點取整。本探針在**同一含水權重**(E70/E69 蓄水後 resA 匯出,零額外訓練)上換收尾法,單因子隔離收尾步的價值。",
+ "design": {
+  "target_weights": {
+   "qwen3_4b": "exports/e70_p3a_resA(E70 S3 蓄水終態,A 閘 he 79.88;Wringer 排水後 p3a_w comp 0.9066)",
+   "a1": "exports/e69_p3b_w_resA(E69 W 鏈蓄水終態;Wringer 排水後 p3b_w comp 0.9433)"
+  },
+  "variants": {
+   "rtn": "quantize --solver rtn --rtn-scale search:逐 block 尺度搜尋(diag(Σ) 加權)+ 最近格點;無 Hessian、無列補償=STE extract 的類比(STE 的 α 由梯度學,此處由搜尋定;碼同為最近點)",
+   "rtnj": "quantize --solver rtn --rtn-scale joint:最近格點碼 + scale_joint 閉式尺度(帶先驗 λ 0.01,與 gptq 分支同一尺度解法)=只把『碼求解器 GPTQ vs 最近點』隔離出來",
+   "reference_gptq": "已有:Wringer 排水(gptq + scale_joint)= p3a_w / p3b_w,不重跑"
+  },
+  "config_identity": "grid/block/module-map/alpha_bits/calib 全同各模型的 Wringer 排水(Qwen MM p3a α fp16;A1 MM_B α int8);帳面須等於 P3(Qwen 2.6383 / A1 2.6551),不等則 FAIL",
+  "eval": "各模型同協定(Qwen E70:vLLM KV fp8 w128;A1 E69:KV bf16、IF/GS w16);he 4 seed + IF + GS;comp 分母同 E70/E69"
+ },
+ "comparators": {
+  "qwen3_4b": {
+   "P3": 0.8143,
+   "ste_e71": 0.8583,
+   "wringer_p3a_w": 0.9066,
+   "ste_he": 74.09,
+   "wringer_he": 78.96
+  },
+  "a1": {
+   "P3": 0.8144,
+   "ste_e71": 0.9263,
+   "wringer_p3b_w": 0.9433,
+   "ste_he": 80.79,
+   "wringer_he": 85.37
+  }
+ },
+ "judgments": {
+  "J1_collapse_explains": "comp(rtn) ≤ comp(STE) + 0.02 且 comp(rtn) < comp(Wringer) − 0.02 ⇒ 差距由收尾步(Hessian 重解)承擔;E71 機制主張改寫為『蓄水後的閉式重解是增益來源,訓練機制(碼凍 vs STE)非主因』",
+  "J2_trajectory_explains": "comp(rtn) ≥ comp(Wringer) − 0.02 ⇒ 最近點取整同一含水權重也達 Wringer 水準;差距在 STE 的訓練軌跡(偏置梯度把潛在權重帶到對取整不利的位置),收尾步非主因",
+  "J3_codes_vs_scales": "在 J1 成立時再分:comp(rtnj) − comp(rtn) 為尺度解法貢獻、comp(Wringer) − comp(rtnj) 為 GPTQ 碼解法貢獻;各自 > 0.02 才記為『有貢獻』",
+  "J4_he_axis": "he 單獨同上三判(噪音帶 ±1.3 pp 均值制 → 用 2.6 pp);E71 兩臂差距集中於 he,he 軸結論優先寫入報告",
+  "two_model_rule": "兩模型同向才下歸因結論;不同向記模型相依",
+  "instruments_not_judges": [
+   "量化耗時",
+   "重建誤差",
+   "翻碼率(rtn vs gptq 碼差異比例,記錄)"
+  ]
+ },
+ "falsifiers": "帳面 ≠ P3 ⇒ 配置錯,FAIL 不入表;rtn comp < P3 − 0.02(收尾把水全排掉還低於零訓練)⇒ 疑 base-dir/尺度搜尋錯,先查再裁。",
+ "schedule_est": "每變體:量化 ~0.5 h + 評測(Qwen 0.7 h / A1 1.7 h);Qwen 2 變體 ~2.5 h、A1 2 變體 ~4.5 h;串行 ~7 h,E72 收後起。",
+ "rules": [
+  "點火前呈用戶核准(已核)",
+  "官方三科每變體都跑",
+  "不用重建誤差/val CE 裁決",
+  "Bash 內不得出現受禁字面;發射指令獨立一個 Bash;nohup setsid + Monitor",
+  "fail() 殺子伺服器;交接只看最後一次 E72_START 之後的收尾哨兵"
+ ],
+ "result": {
+  "time": "2026-09-15 19:5x",
+  "qwen3_4b": {
+   "rtn": {
+    "if": 75.23,
+    "gs": 82.64,
+    "he": "75.15±1.89 (76.83/76.22/72.56/75.00)",
+    "comp": 0.8585,
+    "ledger": 2.6383
+   },
+   "rtnj": {
+    "if": 79.11,
+    "gs": 88.25,
+    "he": "83.23±2.25 (84.76/82.32/80.49/85.37)",
+    "comp": 0.9223,
+    "ledger": 2.6383
+   },
+   "reference": {
+    "ste_e71": 0.8583,
+    "wringer_p3a_w": 0.9066,
+    "wringer_he": 78.96
+   },
+   "J1_collapse_explains": "成立(rtn 0.8585 ≤ STE+0.02;< Wringer−0.02):最近點取整同一含水權重 = STE 到 0.0002 ⇒ STE 臂實質即『蓄水 + 硬取整』的量測複現;差距由收尾步承擔",
+   "J2_trajectory_explains": "不成立",
+   "J3_codes_vs_scales": "尺度解法貢獻 rtnj−rtn = +0.064(> 0.02,有貢獻;he +8.1 pp);GPTQ 碼解法貢獻 Wringer−rtnj = −0.016(負,非貢獻;he −4.3 pp)⇒ 增益全在 scale_joint 閉式尺度,GPTQ 逐列補償在含水權重上反而略損",
+   "J4_he_axis": "同向:rtn 75.15 ≈ STE 74.09;rtnj 83.23 > Wringer 78.96(+4.3 pp > 2.6 pp 噪音帶)",
+   "note": "rtnj 0.9223 > 目前 Qwen 冠軍 p3a_w 0.9066,為單模型觀測,待 A1 兩變體(two_model_rule)再裁;若 A1 同向,候選動作:rtnj 取代 GPTQ 為 Wringer 排水預設、HF 模型更新(需用戶裁)"
+  },
+  "a1": {
+   "rtn": {
+    "if": 87.43,
+    "gs": 92.19,
+    "he": "84.76±3.23 (80.49/86.59/87.80/84.15)",
+    "comp": 0.9371,
+    "ledger": 2.6551
+   },
+   "rtnj": {
+    "if": 86.51,
+    "gs": 92.57,
+    "he": "82.16±0.91 (82.93/81.71/81.10/82.93)",
+    "comp": 0.9259,
+    "ledger": 2.6551
+   },
+   "reference": {
+    "ste_e71": 0.9263,
+    "wringer_p3b_w": 0.9433,
+    "wringer_he": 85.37,
+    "ste_he": 80.79
+   },
+   "J1_collapse_explains": "不成立(rtn 0.9371 > Wringer−0.02=0.9233)",
+   "J2_trajectory_explains": "字面成立(rtn ≥ Wringer−0.02),但 A1 的 STE↔Wringer 全距僅 0.017,本判準帶 ±0.02 在 A1 無解析力;四種收尾(STE/rtn/rtnj/Wringer)全落 0.926–0.943,展幅 0.017 ≈ E69 協定噪音帶 ±0.011 的 1.5×",
+   "J3_codes_vs_scales": "尺度解法貢獻 rtnj−rtn = −0.011(負,he −2.6 pp 恰在噪音帶);GPTQ 碼貢獻 Wringer−rtnj = +0.017(he +3.2 pp);與 Qwen 相反方向",
+   "J4_he_axis": "rtn 84.76±3.23(單 seed 80.49–87.80 展幅大)≈ Wringer 85.37;rtnj 82.16 低於 Wringer 3.2 pp(> 2.6 pp 噪音帶)"
+  },
+  "two_model_rule": "不同向 ⇒ 模型相依。Qwen:差距由收尾步承擔(J1),增益全在閉式尺度、GPTQ 碼略損;A1:四種收尾差距在噪音帶內,含水權重對收尾法不敏感,GPTQ 碼略優。歸因結論不下通則;報告寫『收尾步價值模型相依:Qwen 閉式尺度 +0.064、A1 各法等價』。",
+  "candidate_explanations_not_tested": [
+   "A1 α 存 int8(Qwen fp16):scale_joint 解出的連續尺度被 int8 取整吃掉部分增益",
+   "A1 水量/蓄水態不同(E69 W 鏈二輪蓄排)使含水權重已高度格點友善,收尾法無差",
+   "Qwen 的 STE↔Wringer 全距 0.048 大,分辨力足;A1 0.017 小於判準帶"
+  ],
+  "E71_mechanism_rewrite": "僅 Qwen 支持『閉式重解(尺度)是增益來源』;A1 不支持也不否證。E71 機制段改寫為模型相依敘述,不改為通則。",
+  "champion_note": "Qwen rtnj 0.9223 > p3a_w 0.9066 為單模型新高;是否改排水預設/更新 HF 待 E74 零訓練對照 + 用戶裁。",
+  "instruments": {
+   "ledger_all_four": "2.6383/2.6383/2.6551/2.6551 全等 P3",
+   "code_flip_rate": "未量測(quantize 未輸出 rtn vs gptq 碼差;列為待補儀器)"
+  }
+ },
+ "audit_v0_2": {
+  "time": "2026-09-16 11:xx",
+  "finding": "A1 兩個 rtn 變體的 base-dir exports/e69_p3b_w_resA 是 **第二輪** 蓄水終態(chain_e69_w2.sh 對 p3b_w 再蓄水 → p3b_w2),而 result.a1 的 GPTQ 對照 p3b_w 0.9433 是第一輪排水;E73 A1 的『同一含水權重換求解器』比較不成立(混合輪次)。同目標的 GPTQ 對照應為 p3b_w2 研究態(4 seed 均值制)。Qwen 兩變體與 p3a_w 皆為第一輪 e70_p3a_resA,比較成立。",
+  "consequence": "result.a1.J1/J2/J3 的求解器歸因撤回;E73 two_model_rule 改記『Qwen 成立;A1 未做成配對比較』。技術報告 v0.2 §4.2 已據此改寫。原 result 欄位保留為歷史紀錄。"
+ }
+}

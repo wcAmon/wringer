@@ -143,6 +143,10 @@ def main():
                        args.per_domain_counts.split(","))}
 
     tok = AutoTokenizer.from_pretrained(MODEL_ID, revision=MODEL_REVISION)
+    global THINK_END, IM_END                      # E70:特殊 token id 隨模型 tokenizer(A1 248069/248046;Qwen3 151668/151645)
+    THINK_END = tok.convert_tokens_to_ids("</think>")
+    IM_END = tok.convert_tokens_to_ids("<|im_end|>")
+    print(f"special ids: </think>={THINK_END} <|im_end|>={IM_END} model={MODEL_ID}", flush=True)
     rows, lens, dom_stats = [], [], {}
     names = [d for d in args.domains.split(",") if d]
     for di, name in enumerate(names):

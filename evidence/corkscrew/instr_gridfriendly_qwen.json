@@ -1,0 +1,79 @@
+{
+ "model": "qwen",
+ "states": {
+  "zero": "e74_q_rtnj0",
+  "water": "e73_q_rtnj",
+  "gptq": "e70_p3a_w",
+  "start": "e70_p3a"
+ },
+ "residual_rel_fro": {
+  "zero_training(bf16 target)": 0.4589916211842045,
+  "after_fill(watered target)": 0.07371819048861478
+ },
+ "by_grid": {
+  "g4": {
+   "zero": 0.5174537447883798,
+   "water": 0.07794401774996106
+  },
+  "g256": {
+   "zero": 0.011033176926304619,
+   "water": 0.008245844253081242
+  },
+  "g8": {
+   "zero": 0.2239161379477612,
+   "water": 0.06750005492546986
+  }
+ },
+ "code_change_frac": {
+  "nearest_codes_bf16_vs_watered": 0.20277822833040576,
+  "nearest_vs_gptq_on_watered": 0.01651748970989541,
+  "nearest_on_watered_vs_frozen_start_codes(P3 gptq)": 0.025586341538642563,
+  "nearest_vs_gptq_on_bf16(zero training)": 0.18399937314560574
+ },
+ "n_modules": 252,
+ "n_codes": 3633315840,
+ "by_module_type": {
+  "mlp.down_proj": {
+   "res_zero": 0.5634015098835446,
+   "res_water": 0.027624015141699196,
+   "flip_fill": 0.18175651037205032,
+   "flip_solver": 0.0010013636092693486
+  },
+  "mlp.gate_proj": {
+   "res_zero": 0.4004771207412294,
+   "res_water": 0.07680014946420723,
+   "flip_fill": 0.18358713339643867,
+   "flip_solver": 0.01624866284822163
+  },
+  "mlp.up_proj": {
+   "res_zero": 0.395266644849591,
+   "res_water": 0.08830317058396424,
+   "flip_fill": 0.15946633299888924,
+   "flip_solver": 0.009047970018888775
+  },
+  "self_attn.k_proj": {
+   "res_zero": 0.011267371373005639,
+   "res_water": 0.00921315130314746,
+   "flip_fill": 0.6418097072177463,
+   "flip_solver": 0.1687353875901964
+  },
+  "self_attn.o_proj": {
+   "res_zero": 0.2238360906330813,
+   "res_water": 0.036134777992372205,
+   "flip_fill": 0.2021764940685696,
+   "flip_solver": 0.004790388213263617
+  },
+  "self_attn.q_proj": {
+   "res_zero": 0.22177297982056396,
+   "res_water": 0.08094734834436385,
+   "flip_fill": 0.21168264547983806,
+   "flip_solver": 0.020439958572387694
+  },
+  "self_attn.v_proj": {
+   "res_zero": 0.010765008866923562,
+   "res_water": 0.007143334586452908,
+   "flip_fill": 0.5240207460191515,
+   "flip_solver": 0.11643561257256402
+  }
+ }
+}

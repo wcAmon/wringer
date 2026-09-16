@@ -1,0 +1,30 @@
+{
+ "subject": "gsm8k",
+ "n": 1319,
+ "score": 0.887036,
+ "seed": 20260806,
+ "sampling": {
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "presence_penalty": 1.5,
+  "top_k": 20,
+  "min_p": 0.0,
+  "repetition_penalty": 1.0
+ },
+ "max_tokens": 16384,
+ "generation_s": 490.9,
+ "usage": {
+  "n": 1319,
+  "completion_tokens_mean": 1880.4,
+  "median": 1236,
+  "p90": 3817,
+  "max": 16384,
+  "total": 2480268,
+  "finish_reason": {
+   "stop": 1315,
+   "length": 4
+  }
+ },
+ "workers": 128,
+ "scoring": "self-built A1-protocol scorer(見模組 docstring)"
+}

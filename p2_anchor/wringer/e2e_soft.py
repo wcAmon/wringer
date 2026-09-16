@@ -25,7 +25,7 @@ import torch.nn as nn
 import torch.nn.functional as F
 import torch.nn.utils.parametrize as parametrize
 
-from p2_anchor.wringer.modelio import (enumerate_targets, get_module,
+from p2_anchor.wringer.modelio import (CALIB_VAL, enumerate_targets, get_module,
                                          layer_index, load_model)
 from p2_anchor.wringer.polish import (kd_loss, kd_loss_hidchunk,
                                         closure_weights)
@@ -156,7 +156,7 @@ def main():
               f"{'凍結' if args.rot_frozen else f'可學 lr {args.rot_lr}'}  "
               f"手術折 γ 非目標讀者 {n_fold}", flush=True)
     data = torch.load(args.data, weights_only=False)
-    val = torch.load(EV / "calib_val.pt", weights_only=False)
+    val = torch.load(CALIB_VAL, weights_only=False)
     lens = (torch.load(args.lengths, weights_only=False)
             if args.lengths else None)
     if lens is not None:
@@ -189,6 +189,7 @@ def main():
 
     grids = {}
     stq = {}
+    n_zero_alpha = 0
     for n in targets:
         gn = int(st[n].get("grid", args.grid or 3))
         cn = float(st[n].get("c", 0.6))       # E34:c 從 state 讀,禁默認洩漏
@@ -198,11 +199,21 @@ def main():
             p = AlphaOnlyParam(st[n]["T1"].cuda(), st[n]["T2"].cuda(), st[n]["a0"].cuda().float(),
                                grids[(gn, cn)], c=cn)
         else:
-            p = STQParam(st[n]["a0"].cuda().float(), grids[(gn, cn)],
+            a0 = st[n]["a0"].cuda().float()
+            # E71 amendment_1:閉式解可給出 α=0 的 block(E70 p3a gate/down 各 1 個,材化為全零);
+            # _u 做 w/α 會除出 NaN。置 1e-8:前向 α·round(w/α)=0 與材化態恆等,STE 梯度 α·(1/α)=1 不變;
+            # extract 後 fp16 α 仍為 0(1e-8 低於 fp16 次正規),帳面與 P3 同。
+            z = a0 == 0
+            if z.any():
+                n_zero_alpha += int(z.sum())
+                a0 = torch.where(z, torch.full_like(a0, 1e-8), a0)
+            p = STQParam(a0, grids[(gn, cn)],
                          r=args.lora_r, c=cn, learn_theta=True)
         parametrize.register_parametrization(get_module(model, n), "weight", p)
         stq[n] = p
     params = list(stq.values())
+    if n_zero_alpha:
+        print(f"amendment_1:α=0 block 消毒 {n_zero_alpha} 個(置 1e-8,前向恆等零、梯度不變)", flush=True)
     rate_params = []
     if args.rate_lam > 0:
         if args.rate_bits:

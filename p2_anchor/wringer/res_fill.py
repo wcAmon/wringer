@@ -29,7 +29,7 @@ import torch.nn as nn
 import torch.nn.utils.parametrize as parametrize
 
 from p2_anchor.wringer.export import SNAPSHOT
-from p2_anchor.wringer.modelio import (enumerate_targets, get_module,
+from p2_anchor.wringer.modelio import (CALIB_VAL, enumerate_targets, get_module,
                                          layer_index, load_model)
 from p2_anchor.wringer.polish import (closure_weights, kd_loss,
                                         kd_loss_hidchunk)
@@ -147,7 +147,7 @@ def main():
               f"{float(lens.sum()) / data.numel():.3f}"
               f" / 滿窗列 {(lens == data.shape[1]).sum().item()}",
               flush=True)
-    val = torch.load(EV / "calib_val.pt", weights_only=False)
+    val = torch.load(CALIB_VAL, weights_only=False)
     from p1_grouping.e3_runner import eval_ce
     close_id = tok.convert_tokens_to_ids("</think>")
     if args.close_weight > 1.0:

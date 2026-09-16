@@ -1,0 +1,66 @@
+{
+ "method": "awq",
+ "bits": 4,
+ "group": 128,
+ "symmetric": false,
+ "zp_bits": 4,
+ "weights_body": 3633315840,
+ "bpw_body": 4.15625,
+ "n_modules": 252,
+ "per_type_weights": {
+  "q_proj": 377487360,
+  "k_proj": 94371840,
+  "v_proj": 94371840,
+  "o_proj": 377487360,
+  "gate_proj": 896532480,
+  "up_proj": 896532480,
+  "down_proj": 896532480
+ },
+ "n_tensors_saved": 398,
+ "fakequant_check": {
+  "max_allowed": 16,
+  "checked": [
+   {
+    "tensor": "model.layers.0.mlp.down_proj.weight",
+    "unique_in_first_group": 11
+   },
+   {
+    "tensor": "model.layers.12.self_attn.k_proj.weight",
+    "unique_in_first_group": 12
+   },
+   {
+    "tensor": "model.layers.16.self_attn.v_proj.weight",
+    "unique_in_first_group": 14
+   },
+   {
+    "tensor": "model.layers.20.mlp.up_proj.weight",
+    "unique_in_first_group": 12
+   },
+   {
+    "tensor": "model.layers.24.self_attn.q_proj.weight",
+    "unique_in_first_group": 13
+   },
+   {
+    "tensor": "model.layers.29.mlp.gate_proj.weight",
+    "unique_in_first_group": 14
+   },
+   {
+    "tensor": "model.layers.32.self_attn.o_proj.weight",
+    "unique_in_first_group": 12
+   },
+   {
+    "tensor": "model.layers.5.mlp.down_proj.weight",
+    "unique_in_first_group": 11
+   }
+  ],
+  "n_bad": 0,
+  "leftover_quant_tensors": 0,
+  "config_has_quantization_config": false
+ },
+ "model": "Qwen/Qwen3-4B",
+ "revision": "1cfa9a7208912126459214e8b04321603b3df60c",
+ "out": "exports/e72_q_awq4a",
+ "runtime_s": 2108.0,
+ "n_calib": 128,
+ "max_len": 16384
+}

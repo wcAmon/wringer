@@ -1,0 +1,30 @@
+{
+ "tag": "e70_p1",
+ "grid": 8,
+ "grid_map": null,
+ "c": 0.6,
+ "solver": "gptq",
+ "alpha_init": "auto",
+ "prior_lam": 0.01,
+ "module_map": "self_attn.k_proj:256:row,self_attn.v_proj:256:row,self_attn.o_proj:16:128",
+ "ledger": {
+  "code_fixed": 3.3636,
+  "code_entropy": 3.0723,
+  "code_entropy_joint": 3.0723,
+  "alpha": 0.1188,
+  "beta": 0.0,
+  "r": 0.0,
+  "weights": 3633315840,
+  "total_fixed": 3.4825,
+  "total_entropy": 3.1912,
+  "total_entropy_joint": 3.1912
+ },
+ "block": 128,
+ "n_calib": 128,
+ "seed": 20260806,
+ "zerotrain_val_ce": 0.6888494119048119,
+ "t1_nonzero": 0.7851,
+ "t2_nonzero": 0.0,
+ "runtime_s": 2238.8,
+ "timestamp": "2026-09-12T23:39:07.973636"
+}

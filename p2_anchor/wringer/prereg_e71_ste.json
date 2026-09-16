@@ -1,0 +1,207 @@
+{
+ "experiment": "E71 STE-QAT 同預算對照(消融主證;用戶 09-13 裁「STE 提到前面先跑」)",
+ "status": "CLOSED 2026-09-14 23:5x:臂 1 J1 機制 / 臂 2 J2 同效 ⇒ 模型相依;E72 接手",
+ "purpose": "回答審稿人第一問:Wringer 的增益是『蓄水+閉式擰乾』機制帶來的,還是只要在同碼上做同預算的 KD 微調(標準 QAT)就有?同碼、同語料、同步數、同 KD 目標、同閉合加權、同可訓容量(LoRA r128 + α),只換訓練機制:STE 直穿硬取整、訓練中允許翻碼。",
+ "history_prior": "STE 路線戰績:E28 9 級成功(IFEval 88.54);E32 三元 e2e 44.55 被 E37 蓄排 50.28 擊敗;E58R1b he 隨翻碼量單調降;E68 P1-alpha 8 級整數格 e2e_soft --gamma 0 --alpha-only PASS(未開翻碼)。4/8 級整數格開翻碼的 STE 從未跑過 → 先驗預測輸給蓄排,但不能拿三元舊帳直接下結論。",
+ "engine": {
+  "trainer": "p2_anchor.wringer.e2e_soft(STQParam mode=hard 全程:--gamma 0.0 ⇒ 0 步軟段,第一步起純 STE;SoftGrid 支援 INT_LEVELS 4/8/16/256)",
+  "trainable": "LoRA r128(量化前加在 W 上,extract 時吸收進碼+α,部署無 adapter)+ δ_α logit;dθ 不開(門檻固定,與 GPTQ 碼定義一致)",
+  "objective": "對 bf16 自身老師全詞表 logit KD(fwd KL),hidchunk,閉合加權 32/16/8,batch 2 × microbatch 1,grad-ckpt(與 res_fill 完全同款)",
+  "lr": "e2e_soft 預設 lora-lr 1e-4 / factor-lr 3e-4(res_fill 為 2e-4 單一 lr;不調,照預設記錄;若臂 1 loss 發散則降半重跑一次,記為 amendment)",
+  "budget": "3000 步 = res_fill 同步數;預估 10–12 s/步 ⇒ 8–10 h/臂",
+  "instruments": "e2e_soft 印 flip 率(翻碼比例)與 val CE(監控不裁決);extract 後 QUANT 帳面須與 P3 同(total_fixed 不變:碼翻不改位寬)"
+ },
+ "arms": {
+  "arm1_qwen3_4b": {
+   "state_tag": "e70_p3a(E70 S2 勝者零訓練碼:k/v 256 row、o_proj 8、MLP 三張 4;帳 2.638)",
+   "tag": "e71_ste_q",
+   "data": "evidence/p1_grouping/calib_e70_traj.pt + calib_e70_len.pt(E70 S3 同語料)",
+   "eval": "E70 協定(vLLM KV fp8、workers 128):he 4 seed(20260806,1,2,3)+ IF seed 20260806 + GS seed 20260806;comp 分母 HE 94.66 / IF 82.53 / GS 94.9962",
+   "comparators": {
+    "P3_zero_training": {
+     "if": 74.12,
+     "gs": 73.62,
+     "he": 72.87,
+     "comp": 0.8143
+    },
+    "wringer_p3a_w": {
+     "if": 78.56,
+     "gs": 88.7,
+     "he": 78.96,
+     "he_sd": 1.17,
+     "comp": 0.9066,
+     "A_fill_ceiling_he": 79.88
+    }
+   },
+   "result": {
+    "train": {
+     "steps": 3000,
+     "sec_per_step": 10.5,
+     "val_ce_pre": 0.916487,
+     "val_ce_post": 0.761656,
+     "flip_vs_input": 0.012572,
+     "note": "val CE/flip 僅儀器;蓄水同款 res_fill val CE 0.916→0.771 供對照(STE 0.762 更低=第 N 筆 proxy 反轉候選:CE 更好官方更差)"
+    },
+    "ledger": "export 由 qs 態同 grid(4/8/256)同 block 生成,位寬與 P3 同 2.638(碼翻不改位寬;int-grid export 不印 QUANT_LEDGER)",
+    "he_seeds": [
+     75.6098,
+     78.0488,
+     69.5122,
+     73.1707
+    ],
+    "he_mean": 74.09,
+    "he_sd": 3.64,
+    "official": {
+     "if": 74.6765,
+     "gs": 84.3063,
+     "he": 74.09,
+     "comp": 0.8583,
+     "ratios": {
+      "if": 0.9048,
+      "gs": 0.8875,
+      "he": 0.7827
+     }
+    },
+    "delta_vs_wringer": {
+     "if": -3.88,
+     "gs": -4.39,
+     "he": -4.87,
+     "comp": -0.0483
+    },
+    "delta_vs_P3": {
+     "if": 0.56,
+     "gs": 10.69,
+     "he": 1.22,
+     "comp": 0.044
+    },
+    "judgment_arm1": "comp(STE) − comp(Wringer) = -0.0483 < −0.02 ⇒ J1_mechanism 成立(臂 1);J2/J3 不成立",
+    "falsifier_engine": "NOT_TRIGGERED(val CE 0.916→0.762 下降;flip 1.26% ≪ 30%;he 74.09 > P3 72.87)",
+    "note": "STE 同預算拿回 comp +0.044(Wringer +0.092):GS +10.7(Wringer +15.1)、he +1.2(+6.1)、IF +0.6(+4.4);he seed sd 3.64 vs Wringer 1.17=STE 態的 he 更不穩",
+    "timing": "09-14 04:31 訓練起 → 13:1x E2E → 14:1x 官方",
+    "amendment": "amendment_1 α=0 消毒 2 block"
+   }
+  },
+  "arm2_a1": {
+   "state_tag": "p3b(E69 S2 零訓練碼:BASE k/v 256 row + o_proj 16 + in_proj_z/qkv 4 + gate 4 + out_proj 4,alpha_bits 8;帳 2.655)。data/qs_p3b 已於磁碟清理時刪除 → 鏈守衛用 chain_e69_s2 同參數閉式重解(quantize --grid 8 --block 128 --solver gptq --prior-lam 0.01 --alpha-bits 8,calib_e58r1b 128 窗);重解後 he 1 seed 對照 70.73 差 > 5.5 pp 則停報(解法器非決定性疑慮)",
+   "tag": "e71_ste_a",
+   "data": "evidence/p1_grouping/calib_e58r1b_traj.pt + calib_e58r1b_len.pt(E69 W 鏈同語料)",
+   "eval": "E69 協定(vLLM KV bf16、IF/GS workers 16、he workers 128):he 4 seed + IF + GS;comp 分母 HE 93.75 / IF 92.79 / GS 95.53",
+   "comparators": {
+    "P3_zero_training": {
+     "if": 75.97,
+     "gs": 83.7,
+     "he": 70.73,
+     "comp": 0.8144
+    },
+    "wringer_p3b_w": {
+     "if": 87.8,
+     "gs": 92.95,
+     "he": 85.37,
+     "he_sd": 2.63,
+     "comp": 0.9433
+    },
+    "wringer_p3b_w2_materialized": {
+     "if": 88.17,
+     "gs": 93.48,
+     "he": 85.37,
+     "comp": 0.9465
+    }
+   },
+   "result": {
+    "p3b_redo": {
+     "ledger_total_fixed": 2.6551,
+     "he_1seed": 68.9,
+     "e69_he": 70.73,
+     "gate": "|Δ| 1.83 ≤ 5.5 PASS(同一性閘)",
+     "note": "data/qs_p3b 清磁碟時已刪,chain_e69_s2 同參數閉式重解"
+    },
+    "train": {
+     "steps": 3000,
+     "sec_per_step": 9.6,
+     "val_ce_pre": 1.862931,
+     "val_ce_post": 1.721493,
+     "flip_vs_input": 0.002918,
+     "runtime_s": 28771.5,
+     "note": "儀器不裁決"
+    },
+    "ledger": "同起點 p3b 2.6551(碼翻不改位寬)",
+    "he_seeds": [
+     81.0976,
+     81.0976,
+     80.4878,
+     80.4878
+    ],
+    "he_mean": 80.79,
+    "he_sd": 0.35,
+    "official": {
+     "if": 87.9852,
+     "gs": 92.5701,
+     "he": 80.79,
+     "comp": 0.9263,
+     "ratios": {
+      "if": 0.9482,
+      "gs": 0.969,
+      "he": 0.8618
+     }
+    },
+    "delta_vs_wringer_p3b_w": {
+     "if": 0.19,
+     "gs": -0.38,
+     "he": -4.58,
+     "comp": -0.017
+    },
+    "delta_vs_wringer_p3b_w2_mat": {
+     "comp": -0.0202
+    },
+    "delta_vs_P3": {
+     "if": 12.02,
+     "gs": 8.87,
+     "he": 10.06,
+     "comp": 0.1119
+    },
+    "judgment_arm2": "comp(STE) − comp(Wringer p3b_w) = -0.0170,|Δ| ≤ 0.02 ⇒ J2_parity(臂 2);對材化 p3b_w2 -0.0202 恰在帶緣。分科:IF +0.19 / GS −0.38 同帶,he −4.58 pp 超出 he 均值噪音帶(±1.3)= 差距集中在 he",
+    "falsifier_engine": "NOT_TRIGGERED(val CE 1.863→1.721 下降;flip 0.29%;he 80.79 > P3 70.73)",
+    "timing": "09-14 14:0x p3b 重解 → 14:5x 閘 → 15:0x 訓練起 → 23:0x E2E → 23:5x 官方"
+   }
+  }
+ },
+ "judgments": {
+  "J1_mechanism": "comp(STE) < comp(Wringer 同模型) − 0.02(兩科噪音帶:IF ±2 / he 均值 ±1.3)⇒ 增益歸機制(蓄排 > 標準 QAT 同預算);報告主張成立",
+  "J2_parity": "|comp(STE) − comp(Wringer)| ≤ 0.02 ⇒ 同效;報告主張縮為『與 STE-QAT 同效、但無 adapter、格式與 GPTQ/Marlin 相容、閉式排水可重複』;蓄排的獨有價值改由 ρ 與零訓練起點敘事承擔",
+  "J3_ste_wins": "comp(STE) > comp(Wringer) + 0.02 ⇒ STE 為更好的第二段;Wringer 改為『蓄水 → STE 收尾』候選,E72 立案",
+  "falsifier_engine": "STE 臂 val CE 3000 步後仍 > 起點(P3 材化 val CE)或 flip 率 > 30% 伴 he < P3 ⇒ 引擎在 4/8 級開翻碼下不穩,記錄為『STE 在此格點失律』而非機制裁決;附屬臂(軟退火 gamma 0.8)接手作為 STE 家族代表",
+  "two_model_rule": "兩臂同向才下機制結論;一勝一負記『模型相依』,報告如實列",
+  "instruments_not_judges": [
+   "val CE",
+   "flip 率",
+   "訓練 loss 曲線"
+  ]
+ },
+ "auxiliary_arm": "軟退火版(--gamma 0.8 --s0 30,Wringer 前身 e2e 的原設定)只在主對照失律(falsifier_engine)或用戶要求時跑;預設不跑",
+ "schedule_est": "臂 1 ~10 h(訓練 8–9 h + export + 評測 0.7 h);臂 2 ~12 h(P3 重解 1 h + 訓練 9 h + E69 協定評測 1.7 h);串行 ~22 h,S1U2 收後(09-14 上午)起 → 09-15 上午收",
+ "rules": [
+  "點火前呈用戶核准",
+  "官方三科只在最終 extract 檔",
+  "不用 val CE / 訓練 loss 裁決",
+  "Bash 內不得出現受禁字面;發射指令獨立一個 Bash;nohup setsid + Monitor",
+  "fail() 殺子伺服器"
+ ],
+ "amendment_1": {
+  "when": "2026-09-14 04:2x–05:0x",
+  "what": "臂 1 首次點火 step 1 KD loss NaN(E71_FAIL:e2e_e71_ste_q)。根因:e70_p3a 態 gate_proj(L2 row 1940 blk 19)與 down_proj(L1 row 1973 blk 61)各 1 個 block 閉式解 α=0(材化為全零);STQParam._u 做 w/α 除出 NaN。res_fill 走 mode off + 殘差項不除 α,故 E70 S3 未觸發;硬路徑在此態從未驗過。",
+  "fix": "e2e_soft.py 建 STQParam 前對 a0==0 置 1e-8:前向 α·round(w/α)=0 與材化態恆等;STE 梯度 α·(1/α)=1 不隨 α 爆;extract 後 fp16 α 仍為 0(低於 fp16 次正規),帳面與 P3 同。影響 2 / 3.6 B 權重,不改判準。",
+  "smoke": "e2e_soft --steps 2 同鏈參數(WRINGER_MODEL=Qwen3-4B):pre val CE 0.916487 → post 0.916757、flip 0、E2E_DONE;產物已刪。",
+  "relaunch": "E71 鏈重點火(續寫 e71_chain.log);E72 鏈改為只看最後一次 E71_START 之後的 E71_CHAIN_DONE|E71_FAIL 再交接(舊 FAIL 行曾誤觸交接,已停掉並重點火;gptq2 量化未完成、無產物)。"
+ },
+ "result_overall": {
+  "arm1_qwen3_4b": "J1_mechanism(−0.048)",
+  "arm2_a1": "J2_parity(−0.017;he −4.6 pp、IF/GS 同帶)",
+  "two_model_rule": "兩臂不同向 ⇒ 記「模型相依」:蓄排 > STE 同預算在 Qwen3-4B 明確(−0.048,三科全落後),在 A1 落在 ±0.02 同效帶(差距集中於 he −4.6 pp,IF/GS 同分)。報告如實列兩表;機制主張寫為「蓄排在兩模型皆不劣於 STE 同預算,在較難模型(每位元代價高、he 最弱)上顯著優於 STE」;不得寫成兩模型皆顯著。",
+  "he_axis_note": "兩臂 he 皆為 STE 最落後科(−4.9 / −4.6 pp),與 Wringer 一致的模式:he 是排水後最弱科;STE 的 he 修復吞吐更低。他科 A1 同分、Qwen 落後 4 pp。",
+  "he_sd_note": "STE 態 he seed sd:Qwen 3.64(Wringer 1.17)、A1 0.35(Wringer 2.63)——無一致方向,不作結論",
+  "proxy_note": "兩臂 STE 的 val CE 皆低於或接近蓄水態(Qwen 0.762 vs 0.771),官方卻落後 ⇒ val CE 再一次不裁決(第 N 筆)",
+  "ste_wins_J3": "兩臂皆否;E72′「蓄水 → STE 收尾」不立案",
+  "falsifier_engine": "兩臂皆未觸發;軟退火附屬臂不跑",
+  "next": "E72 外部基線鏈已自動接手(23:52 E72_HANDOFF)"
+ }
+}

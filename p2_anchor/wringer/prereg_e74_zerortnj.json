@@ -1,0 +1,99 @@
+{
+ "experiment": "E74 零訓練 rtnj 對照(E73 的 falsifier:『水是增益主因』還是『閉式聯合尺度 + 最近點本身就是強零訓練法』)",
+ "status": "CLOSED 2026-09-16 00:2x(兩模型 J1 成立同向;水是增益主因;求解器二階、模型相依)",
+ "purpose": "E73 Qwen:含水權重 + 最近點碼 + scale_joint 閉式尺度(rtnj)comp 0.9223 > Wringer GPTQ 0.9066。此結果拆不出水的貢獻:零訓練對照只有 GPTQ 版(P3 0.8143),沒有 rtnj 版。本臂對原始 bf16 權重直接做 rtnj(不蓄水、零訓練),配置與 E73 rtnj 逐項相同、只差 --base-dir 省略(=釘定原模型,P3 同路徑)。",
+ "design": {
+  "variants": {
+   "e74_q_rtnj0": "Qwen3-4B bf16 原模型 → quantize --solver rtn --rtn-scale joint,MM/grid/block/alpha/calib 同 e73_q_rtnj;帳面須 2.6383",
+   "e74_a_rtnj0": "A1 bf16 原模型 → 同上,配置同 e73_a_rtnj(α int8);帳面須 2.6551"
+  },
+  "eval": "各模型同協定(Qwen E70 / A1 E69);he 4 seed + IF + GS;分母同"
+ },
+ "comparators": {
+  "qwen3_4b": {
+   "P3_gptq_zero": 0.8143,
+   "rtnj_water_e73": 0.9223,
+   "wringer_p3a_w": 0.9066,
+   "rtnj_water_he": 83.23
+  },
+  "a1": {
+   "P3_gptq_zero": 0.8144,
+   "rtnj_water_e73": "E73 收後填",
+   "wringer_p3b_w": 0.9433
+  }
+ },
+ "judgments": {
+  "J1_water_main": "comp(rtnj_water) − comp(rtnj0) ≥ 0.05 ⇒ 水是增益主因;Wringer 主張『蓄水 + 閉式吸收』成立、求解器為可替換模組",
+  "J2_solver_at_zero": "|comp(rtnj0) − P3| ≤ 0.02 ⇒ 碼求解器在零訓練亦無關;rtnj0 > P3 + 0.02 ⇒ 最近點在零訓練即優於 GPTQ(與 E73 含水同向);rtnj0 < P3 − 0.02 ⇒ GPTQ 在零訓練有用、含水後失效(水把目標搬到格點友善位置的敘事獲支持)",
+  "J3_he_axis": "he 同上兩判,噪音帶 2.6 pp",
+  "two_model_rule": "兩模型同向才下結論;不同向記模型相依",
+  "instruments_not_judges": [
+   "重建誤差",
+   "量化耗時",
+   "翻碼率"
+  ]
+ },
+ "falsifiers": "帳面 ≠ P3 ⇒ 配置錯 FAIL;comp(rtnj0) ≥ comp(rtnj_water) − 0.02 ⇒ 水的貢獻被否證,報告主張改寫為『閉式聯合尺度 + 最近點為強零訓練法』並須對照 OmniQuant 類學尺度文獻。",
+ "schedule_est": "Qwen ~1.1 h、A1 ~2.2 h(E73 實測);E73 ~21:00 收後起,~09-16 00:30 收。",
+ "rules": [
+  "點火前呈用戶核准(已核)",
+  "官方三科都跑",
+  "不用重建誤差/val CE 裁決",
+  "Bash 內不得出現受禁字面;發射指令獨立一個 Bash;nohup setsid + Monitor",
+  "fail() 殺子伺服器;交接只看最後一次 E73_START 之後的收尾哨兵"
+ ],
+ "result": {
+  "time": "2026-09-16 00:2x",
+  "qwen3_4b": {
+   "rtnj0": {
+    "if": 37.89,
+    "gs": 36.77,
+    "he": "14.94±3.05 (18.29/15.85/14.63/11.0)",
+    "comp": 0.3347,
+    "ledger": 2.6383
+   },
+   "J1_water_main": "成立,幅度 +0.588(rtnj_water 0.9223 − rtnj0 0.3347;he +68 pp):不蓄水的最近點取整在 2.64 b/w 近崩塌,蓄水後同一求解器達 0.92 ⇒ 水把目標搬到格點友善位置,求解器只負責落格",
+   "J2_solver_at_zero": "rtnj0 0.3347 < P3 0.8143 − 0.02 ⇒ GPTQ 逐列補償在零訓練有用(+0.48),含水後失效(E73 −0.016);與『格點友善』敘事一致",
+   "falsifier": "未觸發(rtnj0 遠低於 rtnj_water − 0.02)"
+  },
+  "a1": {
+   "rtnj0": {
+    "if": 34.2,
+    "gs": 58.07,
+    "he": "17.84±1.15 (19.51/17.07/17.68/17.07)",
+    "comp": 0.3889,
+    "ledger": 2.6551
+   },
+   "J1_water_main": "成立,幅度 +0.537(rtnj_water 0.9259 − rtnj0 0.3889;he +64 pp)",
+   "J2_solver_at_zero": "rtnj0 0.3889 < P3 0.8144 − 0.02 ⇒ GPTQ 補償在零訓練 +0.43 有用;含水後 +0.017(E73)在噪音帶",
+   "falsifier": "未觸發"
+  },
+  "two_model_rule": "兩模型同向 ⇒ 通則:蓄水是增益主因(Qwen +0.588 / A1 +0.537);不蓄水的最近點取整在 2.64–2.66 b/w 近崩塌(comp 0.33–0.39),同一求解器蓄水後 0.92–0.93。GPTQ 逐列補償只在零訓練時有大貢獻(+0.43–0.48),含水後退為 ±0.02 的二階效應。",
+  "mechanism_statement": "Wringer 的增益來自蓄水把目標權重搬到『最近點取整即正確』的格點友善位置;求解器只負責落格,是可替換模組(Qwen 取最近點、A1 取 GPTQ,兩者差 ±0.02)。",
+  "solver_default": "用戶裁 2026-09-15 23:3x:Qwen 排水預設 rtnj(HF 模型更新為 e73_q_rtnj);A1 維持 GPTQ。"
+ },
+ "release_pack": {
+  "time": "2026-09-16 01:2x",
+  "tag": "e73_q_rtnj",
+  "container": "data/wringer_e73_q_rtnj.safetensors 2.6385 b/w",
+  "R1_R2_R3": [
+   0,
+   0,
+   0.0
+  ],
+  "materialized_official": {
+   "if": 78.56,
+   "gs": 87.87,
+   "he_seeds": [
+    84.15,
+    79.27,
+    84.76,
+    82.32
+   ],
+   "he": "82.62 ± 2.46",
+   "comp": 0.9166
+  },
+  "gate": "he 82.62 ≥ 80.53 PASS(研究態 83.23 同帶)",
+  "publish": "HF wcamon/Qwen3-4B-Wringer-Q2.6 v0.3(模型卡 MODEL_CARD_qwen3_4b_rtnj.md);舊容器 wringer_e70_p3a_w 自 repo 移除,數字留表"
+ }
+}

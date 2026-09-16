@@ -1,0 +1,30 @@
+{
+ "subject": "humaneval",
+ "n": 164,
+ "score": 0.908537,
+ "seed": 3,
+ "sampling": {
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "presence_penalty": 1.5,
+  "top_k": 20,
+  "min_p": 0.0,
+  "repetition_penalty": 1.0
+ },
+ "max_tokens": 16384,
+ "generation_s": 305.5,
+ "usage": {
+  "n": 164,
+  "completion_tokens_mean": 6143.0,
+  "median": 5598,
+  "p90": 10199,
+  "max": 16384,
+  "total": 1007457,
+  "finish_reason": {
+   "stop": 159,
+   "length": 5
+  }
+ },
+ "workers": 128,
+ "scoring": "self-built A1-protocol scorer(見模組 docstring)"
+}

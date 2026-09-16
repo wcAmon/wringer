@@ -1,0 +1,70 @@
+{
+ "method": "hqq",
+ "bits": 2,
+ "group": 64,
+ "symmetric": false,
+ "zp_bits": 16,
+ "weights_body": 3565158400,
+ "bpw_body": 2.5,
+ "n_modules": 200,
+ "per_type_weights": {
+  "out_proj": 251658240,
+  "in_proj_qkv": 503316480,
+  "in_proj_z": 251658240,
+  "gate_proj": 754974720,
+  "up_proj": 754974720,
+  "down_proj": 754974720,
+  "q_proj": 167772160,
+  "k_proj": 20971520,
+  "v_proj": 20971520,
+  "o_proj": 83886080
+ },
+ "n_tensors_saved": 426,
+ "wrapped": "Qwen3_5ForConditionalGeneration(a1_wrap.py)",
+ "fakequant_check": {
+  "max_allowed": 4,
+  "checked": [
+   {
+    "tensor": "model.language_model.layers.0.linear_attn.in_proj_qkv.weight",
+    "unique_in_first_group": 4
+   },
+   {
+    "tensor": "model.language_model.layers.12.linear_attn.in_proj_qkv.weight",
+    "unique_in_first_group": 4
+   },
+   {
+    "tensor": "model.language_model.layers.16.linear_attn.in_proj_qkv.weight",
+    "unique_in_first_group": 4
+   },
+   {
+    "tensor": "model.language_model.layers.2.linear_attn.in_proj_qkv.weight",
+    "unique_in_first_group": 4
+   },
+   {
+    "tensor": "model.language_model.layers.23.mlp.gate_proj.weight",
+    "unique_in_first_group": 4
+   },
+   {
+    "tensor": "model.language_model.layers.27.mlp.gate_proj.weight",
+    "unique_in_first_group": 4
+   },
+   {
+    "tensor": "model.language_model.layers.30.linear_attn.in_proj_qkv.weight",
+    "unique_in_first_group": 4
+   },
+   {
+    "tensor": "model.language_model.layers.6.linear_attn.in_proj_qkv.weight",
+    "unique_in_first_group": 4
+   }
+  ],
+  "n_bad": 0,
+  "leftover_quant_tensors": 0,
+  "config_has_quantization_config": false
+ },
+ "model": "InternScience/Agents-A1-4B",
+ "revision": "945c40a4aa6f534d434a353207b8d42ecf7a5293",
+ "out": "exports/e72_a_hqq2",
+ "runtime_s": 9.4,
+ "n_calib": 0,
+ "max_len": 16384
+}

@@ -1,0 +1,37 @@
+{
+ "n_prompts": 541,
+ "seed": 20260806,
+ "sampling": {
+  "temperature": 1.0,
+  "top_p": 0.95,
+  "presence_penalty": 1.5,
+  "top_k": 20,
+  "min_p": 0.0,
+  "repetition_penalty": 1.0
+ },
+ "max_tokens": 16384,
+ "generation_s": 2347.1,
+ "usage": {
+  "n": 509,
+  "completion_tokens_mean": 2843.1,
+  "median": 1839,
+  "p90": 5145,
+  "max": 16358,
+  "total": 1447119,
+  "finish_reason": {
+   "stop": 486,
+   "server_error": 32,
+   "length": 23
+  }
+ },
+ "workers": 16,
+ "vendor": "vendored from google-research @ 015539128d9a7dbe14b5f5308a198a15da808949 (2026-08-08), Apache-2.0",
+ "strict": {
+  "prompt_level": 0.532347504621072,
+  "instruction_level": 0.6330935251798561
+ },
+ "loose": {
+  "prompt_level": 0.5914972273567468,
+  "instruction_level": 0.6810551558752997
+ }
+}

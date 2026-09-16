@@ -1,10 +1,10 @@
 # Wringer: Fill, then Wring — a 4B Reasoning Model at 2.655 Bits per Weight with 93.7% of Its Benchmark Scores
 
-> **Draft v0.1 (2026-09-11) for a Hugging Face community article.** Numbers marked `[TBD]` are filled after the second wring round (p3b_w2), the p3a water round, and the container re-evaluation finish. Sections marked `[cut?]` are candidates for trimming.
+> **Draft v0.2 (2026-09-12) for a Hugging Face community article.** All numbers final (HumanEval as 4-seed means where marked). Sections marked `[cut?]` are candidates for trimming before posting.
 >
 > Model: [InternScience/Agents-A1-4B](https://huggingface.co/InternScience/Agents-A1-4B) (Qwen3.5 hybrid: 32 layers, 25 linear-attention + 7 full-attention, 3.565B quantized weights).
 > Hardware: one RTX PRO 6000 Blackwell (96 GB). Judges: strict IFEval (541), HumanEval (164), GSM8K test (1319), our own vLLM harness, 16k generation cap.
-> Code, pre-registrations, verdicts and evidence JSON: `[repo link TBD]`. Model: `[HF model link TBD]`.
+> Code, pre-registrations, verdicts and evidence JSON: https://github.com/wcAmon/wringer. Model: https://huggingface.co/wcamon/Agents-A1-4B-Wringer-Q2.6.
 
 ---
 
@@ -169,9 +169,9 @@ Grouping algorithms for ternary scales (magnitude / gradient / correlation / spe
 
 ## 9. Reproducibility
 
-- Pre-registration and verdict JSON for every experiment (E1–E69), evidence JSON for every official run, chain scripts with their sentinels, the calibration-generation pipeline, and the contamination / packing scripts: `[repo link TBD]`.
-- Milestone states kept: `g9` (9-level zero-training floor), `st51c_e2e` (trained ternary champion), `pa64_asymrefitq2` (closed-form ternary champion), `p1alpha`, `p3b_w`, `p3b_w2` `[TBD]`.
-- Model on the Hub: `p3b_w2` (container + unpack script + bf16 materialization), with `p3b_w` kept as the single-round control. `[links TBD]`
+- Pre-registration and verdict JSON for every experiment (E1–E69), evidence JSON for every official run, chain scripts with their sentinels, the calibration-generation pipeline, and the contamination / packing scripts: https://github.com/wcAmon/wringer.
+- Milestone states kept: `g9` (9-level zero-training floor), `st51c_e2e` (trained ternary champion), `pa64_asymrefitq2` (closed-form ternary champion), `p1alpha`, `p3b_w`, `p3b_w2`, `p3a_w`.
+- Model on the Hub: `p3b_w2` (container + unpack script + bf16 materialization), with `p3b_w` kept as the single-round control. https://huggingface.co/wcamon/Agents-A1-4B-Wringer-Q2.6 · https://github.com/wcAmon/wringer
 
 ---
 

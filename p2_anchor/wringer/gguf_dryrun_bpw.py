@@ -1,10 +1,10 @@
 """E67-U:llama-quantize --dry-run 輸出 → 主幹線性層 bpw(不含 embedding/output/norm)與整檔 bpw。
   用法:python gguf_dryrun_bpw.py <preset> [--tensor-type pat=type ...]"""
-import re, subprocess, sys
+import os, re, subprocess, sys
 Q = "~/llama.cpp/build/bin/llama-quantize"
 preset = sys.argv[1]; extra = sys.argv[2:]
 cmd = [Q, "--dry-run", "--token-embedding-type", "q4_k", "--output-tensor-type", "q6_k", *extra,
-       "data/gguf/a1-4b-bf16.gguf", "/tmp/dry.gguf", preset, "8"]
+       os.environ.get("GGUF_BF16", "data/gguf/a1-4b-bf16.gguf"), "/tmp/dry.gguf", preset, "8"]   # E70:GGUF_BF16 覆寫
 out = subprocess.run(cmd, capture_output=True, text=True).stdout + subprocess.run(cmd, capture_output=True, text=True).stderr
 pat = re.compile(r"\]\s+(\S+)\s+-\s+\[\s*(\d+),\s*(\d+),\s*(\d+),\s*(\d+)\], type =\s+\S+, size =\s+([\d.]+) MiB(?: ->\s+([\d.]+) MiB \((\w+)\))?")
 tot_b = tot_n = body_b = body_n = 0.0; types = {}

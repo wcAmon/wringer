@@ -16,7 +16,7 @@ import torch
 
 from p2_anchor.wringer.cov import collect_cov
 from p2_anchor.wringer.ktier import C_K2, gptq_grid, scale_joint
-from p2_anchor.wringer.modelio import (LAYER_PREFIX, N_LAYERS,
+from p2_anchor.wringer.modelio import (CALIB_VAL, LAYER_PREFIX, N_LAYERS,
                                          cov_source_for, enumerate_targets,
                                          get_module, layer_index, load_model)
 from p2_anchor.wringer.state import load_state, qs_dir
@@ -51,6 +51,8 @@ def parse_grid_map(s):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--grid", type=int, required=True, choices=(9, 7, 5, 3, 8, 16, 4))
+    ap.add_argument("--rtn-scale", choices=("search", "joint"), default="search",
+                    help="E73:rtn 的尺度——search=alpha_search(imatrix 加權 min-max,STE extract 類比);joint=最近點碼後 scale_joint 閉式尺度(帶先驗),只把碼求解器與 GPTQ 對照")
     ap.add_argument("--solver", choices=("gptq", "rtn"), default="gptq",
                     help="E68:rtn = GGUF 式(逐 block 尺度搜尋 + 最近格點,diag(Σ) 加權,無列補償);gptq = 舊路 + scale_joint")
     ap.add_argument("--alpha-init", choices=("auto", "twn", "search"), default="auto",
@@ -89,7 +91,7 @@ def main():
     model, tok = load_model()
     model.requires_grad_(False)
     calib = torch.load(args.calib, weights_only=False)[:args.n_calib]
-    val = torch.load(EV / "calib_val.pt", weights_only=False)
+    val = torch.load(CALIB_VAL, weights_only=False)
     targets = enumerate_targets(model)
 
     from p1_grouping.e3_runner import eval_ce
@@ -120,7 +122,12 @@ def main():
                 A = a_init if a_init is not None else ktier.init_alpha(w)
                 T1, T2, _ = round_to_grid(w.reshape(M, nB, Bm) / A, vals, gt1, gt2)
                 T1, T2 = T1.reshape(M, K), T2.reshape(M, K)
-                a_j = A
+                if args.rtn_scale == "joint":                  # E73:最近點碼 + 閉式尺度(與 gptq 分支同一尺度解法)
+                    V = (T1 + args.c * T2).reshape(M, nB, Bm)
+                    a_j = scale_joint(w.reshape(M, nB, Bm), V, Sp,
+                                      prior=(A if args.prior_lam > 0 else None), lam=args.prior_lam)
+                else:
+                    a_j = A
             else:
                 _, T1, T2 = gptq_grid(w, Sp, gm, c=args.c, a0=a_init)
                 V = (T1 + args.c * T2).reshape(M, nB, Bm)
@@ -141,7 +148,7 @@ def main():
                 "T1": T1.reshape(M, nB, Bm).to(torch.int8).cpu(),
                 "T2": T2.reshape(M, nB, Bm).to(torch.int8).cpu(),
                 "inv": torch.arange(K), "a0": a_j.cpu(), "c": args.c,
-                "grid": gm, "block": Bm, "a0_bits": a_bits, "solver": args.solver}
+                "grid": gm, "block": Bm, "a0_bits": a_bits, "solver": args.solver + ("" if args.solver != "rtn" else f"/{args.rtn_scale}")}
             ktier.set_block(B)
             del w, Sp, what, T1, T2, V
         torch.save(layer_state, out / f"layer{li:02d}.pt")

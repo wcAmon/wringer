@@ -1,0 +1,441 @@
+{
+ "experiment": "E70 第二模型 Qwen3-4B(純 transformer)全程 Wringer:bf16 → P1 八元 g128 → S1 代價表 → P3 組配 ≤2.70 → 蓄水排水 → 官方三科對 GGUF U 曲線",
+ "status": "CLOSED(S0–S3+打包+S1U2 全收 2026-09-14;北極星 comp 0.9066 ≥ 0.90 達成;HF 已發布 wcamon/Qwen3-4B-Wringer-Q2.6)",
+ "purpose": "驗 Wringer 通則性:E69 配方(帳面規則、閉式排水、水庫烘焙)在非混合架構上是否同樣落在 GGUF 曲線上方;同時給技術報告第二個模型點",
+ "model": {
+  "id": "Qwen/Qwen3-4B",
+  "revision": "1cfa9a7208912126459214e8b04321603b3df60c",
+  "arch": "Qwen3ForCausalLM 36 層,hidden 2560,inter 9728,heads 32/kv 8,head_dim 128,vocab 151936,tied embed",
+  "targets": "每層 q/k/v/o + gate/up/down = 7 linears × 36 = 252(A1 為 200)",
+  "body_weights": "≈3.63B(MLP 2.69B 74% / attn 0.94B);embed 389M 不入帳(評測態 bf16)",
+  "decontam": "已裁 @1b253ab:三集記憶探針計數均不高於 A1 對照 → 全集主判;HumanEval/129 逐字重現、Qwen 獨有 7 題子集(he 0.9682 vs 0.9695)報告附註"
+ },
+ "anchor": {
+  "bf16_single_seed": {
+   "he": 96.95,
+   "if": 81.33,
+   "gs": 94.84
+  },
+  "comp_rule": "comp = mean(if/IF_anchor, he/HE_anchor_mean, gs/GS_anchor),分母用 Qwen3-4B 自己的錨",
+  "protocol": "vLLM KV fp8 + workers 128(evalspeed A 組 PASS @c8a9929);he seeds 20260806,1,2,3;IF seeds 1,2;GS seed 1",
+  "bf16_kvfp8": {
+   "he_seeds": [
+    95.122,
+    95.122,
+    93.9024,
+    94.5122
+   ],
+   "he_mean": 94.66,
+   "he_sd": 0.58,
+   "if_seeds": [
+    82.994,
+    82.07
+   ],
+   "if_mean": 82.53,
+   "gs": 94.9962
+  },
+  "comp_denominators": {
+   "HE": 94.66,
+   "IF": 82.53,
+   "GS": 94.9962
+  },
+  "he_gate_P1": 89.66,
+  "note": "舊單跑(w16, KV bf16)he 96.95/IF 81.33/GS 94.84 皆在新協定噪音帶內;IF 兩 seed 差 0.92 pp、he sd 0.58"
+ },
+ "ledger_rule": "同 E69:4 級=2.0 / 8 級=3.0 / 16 級=4.0 / int8=8.0 b/w + α(fp16/B 或 int8/B + 逐列 fp16 16/K);水為訓練鷹架,推論前全排不入帳;帳面 bpw 對 body 權重",
+ "base_format_P1": "8 級 {-4..3} g128 fp16 α 全 linears;k/v int8 逐列;o_proj 16 級 g128;閉式排水 gptq + scale_joint prior λ0.01;預估 total ≈3.2(A1 P1 3.206)",
+ "calib": {
+  "how": "gen_e58_examroom 同協定(真模板、考場採樣 temp1/top_p.95/top_k20/presence1.5、eos 入列、--pack 16k),模型改 Qwen3-4B(vLLM,思考模式),題池 ifshape/code/math 同 e58r1b(去 sft 原題)",
+  "target": "128 窗 16k,分科 code 66 / ifshape 33 / math 29(同 calib_e58r1b);falsifier:code 閉合率 < 70% 不點訓練鏈(E57 規則)",
+  "note": "詞表不同(151936 vs 248320),語料必須由 Qwen3-4B 自產;bf16 自身為唯一老師"
+ },
+ "stage0_engineering": {
+  "items": [
+   "p1_grouping.modelio:MODEL_ID/REVISION 改可由環境變數 WRINGER_MODEL/WRINGER_REV 覆寫;類別回退加 AutoModelForCausalLM",
+   "wringer.modelio:N_LAYERS/LAYER_PREFIX 改由 config 推(Qwen3:model.layers,36);TARGET_SUFFIXES 不變(缺的 linear_attn 由 enumerate 自動跳過);_COV_REP 不變",
+   "e2e_soft/res_fill 老師載入:ImageTextToText 失敗回退 CausalLM;--rate-protect 預設對純 transformer 改 self_attn.o_proj,self_attn.v_proj(僅 R-flip 用)",
+   "a1eval 三科 runner 已驗可跑 Qwen3-4B(探針鏈);export/pack_verify 走 modelio 無硬編碼",
+   "煙測:P1 單層 quantize + export + 載入生成 8 提示"
+  ],
+  "est_h": 3,
+  "gate": "煙測 export 可被 vLLM 載入且 he 探針 ≥ bf16 − 5 pp(P1 對 A1 為 −3.5)",
+  "result": {
+   "corpus": {
+    "r0": "ifshape 180/code 260/math 480 題;閉合 ifshape 100%/code 95.4%/math 100%;code len_q [2580,4612,9050]",
+    "r1": "ifshape 補產 1080 題 → 60 列(Qwen3-4B ifshape 短,r0 僅 10 列 < 配額 37)",
+    "closure_gate": "code 0.9538 ≥ 0.70 TRAIN_OK"
+   },
+   "calib": "128 窗(code 66/ifshape 33/math 29)+ val 32×2048;len_q [12576,15097,15942];manifest E70_CALIB_MANIFEST_e70.json",
+   "P1_ledger": {
+    "total_fixed": 3.4825,
+    "code_fixed": 3.3636,
+    "alpha": 0.1188,
+    "weights": 3633315840
+   },
+   "P1_he": {
+    "seeds": [
+     95.122,
+     95.122
+    ],
+    "gate": 89.66,
+    "verdict": "PASS(= bf16 錨均值 94.66 同帶)"
+   },
+   "solver_note": "L6 down_proj Σ Cholesky 非正定 → 阻尼升階 0.01→0.1→1.0 才正定(ktier.gptq_grid 重試,cfa1cc7);36 層僅此一處;其他模型未見",
+   "fixes": [
+    "ee55f8c ifshape 補產 + 抽窗器多來源",
+    "cfa1cc7 Cholesky 阻尼重試 + 守衛看 layer35.pt"
+   ],
+   "timing": "S0 22:15 起(evalspeed C 組讓道 55 分)→ 兩次出局修復 → 23:5x 收"
+  }
+ },
+ "stage1_sensitivity": {
+  "purpose": "同 E69:每個帳面動作單獨施加於 P1,零訓練閉式 → he(4 seed 均值制改為 2 seed 均值,S1 只排序),得 pp per b/w 代價表",
+  "probes": {
+   "s1_a8": "α fp16→int8 逐列(全模組)",
+   "s1_down4": "mlp.down_proj 8→4 級",
+   "s1_up4": "mlp.up_proj 8→4 級",
+   "s1_gate4": "mlp.gate_proj 8→4 級",
+   "s1_q4": "self_attn.q_proj 8→4 級(取代 A1 的 qkv4/z4;純 transformer 的 attention 佔比 26%)",
+   "s1_o4": "self_attn.o_proj 16→8 級(A1 out_proj 對應;E67 保護模組類比)",
+   "s1_b256": "MLP 三張 block 128→256"
+  },
+  "cost_metric": "cost = (he(P1) − he(probe)) / save_bw;同記 dU_he 對 U 同帳",
+  "falsifier_s1": "三張 MLP 4 級探針 he 全部 < U 同帳 − 10 ⇒ 4 級閉式在本模型不可用;改小刀路線且目標下修 2.9,回報用戶",
+  "est_h": 6,
+  "result_cost_table": {
+   "s1_a8": {
+    "total_fixed": 3.4278,
+    "save_bw": 0.0547,
+    "he_seeds": [
+     93.2927,
+     92.6829
+    ],
+    "he_mean": 92.99,
+    "drop_pp": 2.13,
+    "cost_pp_per_bw": 39.0
+   },
+   "s1_down4": {
+    "total_fixed": 3.2357,
+    "save_bw": 0.2468,
+    "he_seeds": [
+     88.4146,
+     89.0244
+    ],
+    "he_mean": 88.72,
+    "drop_pp": 6.4,
+    "cost_pp_per_bw": 25.9
+   },
+   "s1_up4": {
+    "total_fixed": 3.2357,
+    "save_bw": 0.2468,
+    "he_seeds": [
+     90.8537,
+     90.2439
+    ],
+    "he_mean": 90.55,
+    "drop_pp": 4.57,
+    "cost_pp_per_bw": 18.5
+   },
+   "s1_gate4": {
+    "total_fixed": 3.2357,
+    "save_bw": 0.2468,
+    "he_seeds": [
+     87.8049,
+     93.2927
+    ],
+    "he_mean": 90.55,
+    "drop_pp": 4.57,
+    "cost_pp_per_bw": 18.5
+   },
+   "s1_q4": {
+    "total_fixed": 3.3786,
+    "save_bw": 0.1039,
+    "he_seeds": [
+     89.6341,
+     93.2927
+    ],
+    "he_mean": 91.46,
+    "drop_pp": 3.66,
+    "cost_pp_per_bw": 35.2
+   },
+   "s1_o8": {
+    "total_fixed": 3.3786,
+    "save_bw": 0.1039,
+    "he_seeds": [
+     90.8537,
+     93.9024
+    ],
+    "he_mean": 92.38,
+    "drop_pp": 2.74,
+    "cost_pp_per_bw": 26.4
+   },
+   "s1_b256": {
+    "total_fixed": 3.4362,
+    "save_bw": 0.0463,
+    "he_seeds": [
+     90.2439,
+     90.8537
+    ],
+    "he_mean": 90.55,
+    "drop_pp": 4.57,
+    "cost_pp_per_bw": 98.8
+   }
+  }
+ },
+ "stage2_compose": {
+  "purpose": "由代價表貪婪組出 total_fixed ≤ 2.70 的 1–2 個配置 P3a/P3b;零訓練閉式 → he → he 高者官方 IF+GS",
+  "judge_J3": "comp(P3) − U_comp(同帳內插) > 0 PASS;加成性 |Δ| > 3 pp 記交互作用(E69 p3a −6.1 / p3b −9.2)",
+  "est_h": 5,
+  "candidates": {
+   "p3a": {
+    "probes": [
+     "s1_up4",
+     "s1_gate4",
+     "s1_down4",
+     "s1_o8"
+    ],
+    "pred_total_fixed": 2.6382,
+    "pred_drop_pp": 18.28,
+    "pred_he": 76.84,
+    "reach": true,
+    "flags": "--module-map \"self_attn.k_proj:256:row,self_attn.v_proj:256:row,self_attn.o_proj:8:128,mlp.gate_proj:4:128,mlp.up_proj:4:128,mlp.down_proj:4:128\"",
+    "alpha_bits": 16,
+    "module_map": "self_attn.k_proj:256:row,self_attn.v_proj:256:row,self_attn.o_proj:8:128,mlp.gate_proj:4:128,mlp.up_proj:4:128,mlp.down_proj:4:128"
+   },
+   "p3b": {
+    "probes": [
+     "s1_a8",
+     "s1_down4",
+     "s1_up4",
+     "s1_gate4"
+    ],
+    "pred_total_fixed": 2.6874,
+    "pred_drop_pp": 17.67,
+    "pred_he": 77.45,
+    "reach": true,
+    "flags": "--alpha-bits 8 --module-map \"self_attn.k_proj:256:row,self_attn.v_proj:256:row,self_attn.o_proj:16:128,mlp.gate_proj:4:128,mlp.up_proj:4:128,mlp.down_proj:4:128\"",
+    "alpha_bits": 8,
+    "module_map": "self_attn.k_proj:256:row,self_attn.v_proj:256:row,self_attn.o_proj:16:128,mlp.gate_proj:4:128,mlp.up_proj:4:128,mlp.down_proj:4:128"
+   }
+  },
+  "result": {
+   "p3a": {
+    "total_fixed": 2.6383,
+    "code_fixed": 2.5195,
+    "he_seeds": [
+     70.122,
+     75.6098
+    ],
+    "he_mean": 72.87,
+    "pred_he_additive": 76.84,
+    "interaction_pp": -3.97
+   },
+   "p3b": {
+    "total_fixed": 2.6875,
+    "code_fixed": 2.6234,
+    "he_seeds": [
+     73.1707,
+     70.7317
+    ],
+    "he_mean": 71.95,
+    "pred_he_additive": 77.45,
+    "interaction_pp": -5.5
+   },
+   "winner": "p3a(he 均值高 0.9 pp,噪音帶內;prereg 規則取高者)",
+   "official_p3a": {
+    "if": 74.12,
+    "gs": 73.62,
+    "he": 72.87,
+    "comp": 0.8143,
+    "ratios": {
+     "if": 0.8981,
+     "gs": 0.775,
+     "he": 0.7698
+    }
+   },
+   "J3": "comp(P3 2.638)=0.8143 − U_interp 0.7868 = +0.0275 ⇒ PASS;對 IQ2_M 點(2.727)則 -0.0727(零訓練碼在同帳輸 GGUF IQ2_M,he 72.9 vs 81.4)",
+   "note": "GS 掉最重(−21.4 pp),IF −8.4、he −21.8;交互作用 −4.0/−5.5 pp 同 E69 方向(−6.1/−9.2)",
+   "timing": "S2 07:47–09:2x"
+  }
+ },
+ "stage3_recovery": {
+  "R-water": "碼凍 r128 KD 蓄水(hidchunk、閉合加權 32/16/8、3000 步 batch 2、grad-ckpt、bf16 自身老師、calib 128 窗)→ A 閘 he → E64 排水:同 P3 配置閉式重解 → B 閘 he → 官方三科(4 seed he)",
+  "second_round": "p3b_w2 型第二輪僅在 B 閘 he 距 U 同帳 < 3 pp 時考慮(E69 第二輪結論:不傷但無顯著增益)",
+  "judge_J_final": "comp(B) − U_comp(同帳) > 0 且 total_fixed ≤ 2.70;北極星 comp ≥ 0.90",
+  "falsifier_s3": "ρ = (B − P3)/(A − P3) < 0.5 ⇒ 排水吞吐崩塌記錄,R-flip 接手;R-flip 仍 < U ⇒ 2.7 在本模型封盤,報 2.9 檔",
+  "est_h": 16,
+  "result": {
+   "target": "p3a(k/v 256 row, o_proj 8, MLP 三張 4;alpha_bits 16)",
+   "fill": {
+    "steps": 3000,
+    "sec_per_step": 9.4,
+    "val_ce_pre": 0.916487,
+    "val_ce_post": 0.770883,
+    "note": "val CE 僅監控不裁決"
+   },
+   "A_he_seeds": [
+    76.8293,
+    82.9268
+   ],
+   "A_he_mean": 79.88,
+   "drain_ledger": {
+    "total_fixed": 2.6383,
+    "code_fixed": 2.5195,
+    "alpha": 0.1188,
+    "escalate": 2,
+    "note": "帳面與 P3 同"
+   },
+   "B_he_seeds": [
+    78.0488,
+    79.2683,
+    80.4878,
+    78.0488
+   ],
+   "B_he_mean": 78.96,
+   "B_he_sd": 1.17,
+   "official_p3a_w": {
+    "if": 78.56,
+    "gs": 88.7,
+    "he": 78.96,
+    "comp": 0.9066,
+    "ratios": {
+     "if": 0.9519,
+     "gs": 0.9337,
+     "he": 0.8341
+    }
+   },
+   "rho": 0.87,
+   "P3_he": 72.87,
+   "delta_vs_P3": {
+    "if": 4.44,
+    "gs": 15.08,
+    "he": 6.09,
+    "comp": 0.0923
+   },
+   "falsifier_s3": "NOT_TRIGGERED(ρ 0.870 ≥ 0.5;A1 E69 對照 0.846)",
+   "judge_J_final": "comp 0.9066 ≥ 0.90 PASS(total_fixed 2.638 ≤ 2.70);U 同帳項 +0.1198 PASS(對 IQ2_M 2.727 點 +0.0196)",
+   "second_round": "B he 78.96 − U_he_interp 66.71 = +12.25 pp ≥ 3 ⇒ 不觸發第二輪;但對 IQ2_M 點 he 81.40 為 -2.44 pp(材化列 he 83.38 為 +1.98)——he 仍是 Wringer 在本模型的最弱科,GGUF 在 he 上以 +0.09 b/w 追平",
+   "note": "GS 修復最大 +15.1 pp、he +6.1、IF +4.4;三科比率 IF 0.952/GS 0.934/he 0.834——he 仍是最弱科,與 A1 同型(A1 he 0.91)",
+   "timing": "S3 09:44–20:2x(蓄水 7.8 h、A/排水/B/官方 2.7 h)",
+   "pack_materialized": {
+    "R1": 0,
+    "R2": 0,
+    "R3_frac": 0.0,
+    "container_bpw": 2.6385,
+    "he_seeds": [
+     84.1463,
+     85.3659,
+     83.5366,
+     80.4878
+    ],
+    "he_mean": 83.38,
+    "he_sd": 2.07,
+    "if": 75.42,
+    "gs": 89.16,
+    "comp": 0.9111,
+    "note": "權重與研究態逐位相同;差異=採樣噪音+vLLM 批次非決定性;獨立 unpack 398 張量逐位同;發布列=材化列"
+   }
+  }
+ },
+ "gguf_U_curve": {
+  "how": "convert_hf_to_gguf(bf16)→ llama-imatrix(同 calib 文字)→ llama-quantize 三點 IQ2_XXS / IQ2_XS / IQ3_XXS(+UD 式保護,主幹 bpw 記帳)→ llama-server 三科同協定(思考模式、16k)",
+  "target_points": "主幹 ≈2.5 / 2.7 / 3.1,使 2.70 落內插段;he 兩 seed",
+  "est_h": 5,
+  "note": "U25 型崩塌錨(IF/GS 撞 16k)照 E69 handoff 規則:IF 收即殺、GS 延後",
+  "result": {
+   "points": {
+    "iq2_s": {
+     "quant": "IQ2_S",
+     "bpw_body": 2.5194,
+     "bpw_whole": 2.7124,
+     "he_seeds": [
+      47.561,
+      46.3415
+     ],
+     "he_mean": 46.95,
+     "if": 53.23,
+     "gs": 77.41,
+     "comp": 0.652,
+     "ratios": {
+      "if": 0.645,
+      "gs": 0.8148,
+      "he": 0.496
+     }
+    },
+    "iq2_m": {
+     "quant": "IQ2_M",
+     "bpw_body": 2.7267,
+     "bpw_whole": 2.8996,
+     "he_seeds": [
+      80.4878,
+      82.3171
+     ],
+     "he_mean": 81.4,
+     "if": 71.9,
+     "gs": 88.32,
+     "comp": 0.887,
+     "ratios": {
+      "if": 0.8712,
+      "gs": 0.9298,
+      "he": 0.8599
+     }
+    },
+    "iq3_xxs": {
+     "quant": "IQ3_XXS",
+     "bpw_body": 3.066,
+     "bpw_whole": 3.206,
+     "he_seeds": [
+      87.1951,
+      87.1951
+     ],
+     "he_mean": 87.2,
+     "if": 77.26,
+     "gs": 92.42,
+     "comp": 0.9434,
+     "ratios": {
+      "if": 0.9362,
+      "gs": 0.9729,
+      "he": 0.9211
+     }
+    }
+   },
+   "U_interp_at_2.6383": {
+    "t": 0.574,
+    "between": "IQ2_S↔IQ2_M",
+    "comp": 0.7868,
+    "he": 66.71,
+    "if": 63.94,
+    "gs": 83.67,
+    "note": "線性內插;IQ2_S→IQ2_M 段陡升(comp +0.235 / +0.207 b/w),內插值對段內凸性敏感,故同時報 IQ2_M 點(2.727,高於 Wringer 帳 0.089 b/w)為保守對照"
+   },
+   "J3_stage2_zero_training": "comp(P3 2.638)=0.8143 − U_interp 0.7868 = +0.0275 ⇒ PASS;對 IQ2_M 點(2.727)則 -0.0727(零訓練碼在同帳輸 GGUF IQ2_M,he 72.9 vs 81.4)",
+   "J_final_U_term": "comp(B 2.638)=0.9066 − U_interp 0.7868 = +0.1198 PASS;對 IQ2_M 點(2.727,多 0.089 b/w)= +0.0196 仍 PASS;材化列 0.9111 對 IQ2_M +0.0241",
+   "second_round_rule": "B he 78.96 − U_he_interp 66.71 = +12.25 pp ≥ 3 ⇒ 不觸發第二輪;但對 IQ2_M 點 he 81.40 為 -2.44 pp(材化列 he 83.38 為 +1.98)——he 仍是 Wringer 在本模型的最弱科,GGUF 在 he 上以 +0.09 b/w 追平",
+   "falsifier_s1_settle": "S1 三張 MLP 4 級探針 he 88.72/90.55/90.55 @3.236 vs U 同帳(IQ3_XXS 3.066 he 87.20)− 10 = 77.2 ⇒ NOT_TRIGGERED(事後裁定)",
+   "whole_lm_note": "GGUF 帳含量化 embedding(bpw_whole IQ2_M 2.900);Wringer 主幹 2.638 但 embedding bf16(全模型 3.93)。依 ledger_rule 以 body 同帳比較;全模型帳 Wringer 需 embedding 另量化(未做)",
+   "timing": "S1U2 09-13 20:07 → 09-14 04:2x(IQ2_S 重跑 + IQ2_M + IQ3_XXS;llama-server np16;IQ2_S GS 有 llama-server 500 亂碼列計 0)"
+  }
+ },
+ "instruments_not_judges": [
+  "區塊誤差",
+  "val CE",
+  "KD loss",
+  "碼熵"
+ ],
+ "schedule_est": {
+  "S0 錨補 seed + 工程 + 煙測": "09-13 上午(~4h)",
+  "語料自產 128 窗": "09-13 中午(~2h;與工程可交錯)",
+  "S1 代價表 7 探針": "09-13 下午→晚(~6h)",
+  "GGUF 三點": "09-13 夜(~5h,GPU 與 S1 串行)",
+  "S2 組配 + 官方兩點": "09-14 上午(~5h)",
+  "S3 蓄排 + 官方": "09-14 下午→09-15 上午(~16h)",
+  "total": "≈38h GPU 串行;09-15 中午收卷"
+ },
+ "rules": [
+  "點火前呈用戶(本檔=呈核稿)",
+  "官方三科:P3 與最終檔;其他點只 he",
+  "不用 block 誤差/val CE 裁判",
+  "長鏈 nohup setsid + Monitor;16k 帶 --grad-ckpt",
+  "he 一律 4 seed 均值(S1 例外 2 seed)"
+ ]
+}

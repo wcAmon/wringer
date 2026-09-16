@@ -1,0 +1,101 @@
+{
+ "model": "a1",
+ "states": {
+  "zero": "e74_a_rtnj0",
+  "water": "e73_a_rtnj",
+  "gptq": "p3b_w2",
+  "start": "p3b_w"
+ },
+ "residual_rel_fro": {
+  "zero_training(bf16 target)": 0.3457604498512761,
+  "after_fill(watered target)": 0.019420662926829042
+ },
+ "by_grid": {
+  "g4": {
+   "zero": 0.4129402932438165,
+   "water": 0.020797874475346066
+  },
+  "g8": {
+   "zero": 0.20805436394875781,
+   "water": 0.017977030368393158
+  },
+  "g256": {
+   "zero": 0.01271960023961715,
+   "water": 0.006389047630940265
+  },
+  "g16": {
+   "zero": 0.13113491717956793,
+   "water": 0.01184302948961514
+  }
+ },
+ "code_change_frac": {
+  "nearest_codes_bf16_vs_watered": 0.19578500887926886,
+  "nearest_vs_gptq_on_watered": 0.001945796293370864,
+  "nearest_on_watered_vs_frozen_start_codes(P3 gptq)": 0.0023605624367209043,
+  "nearest_vs_gptq_on_bf16(zero training)": 0.19547896665685316
+ },
+ "n_modules": 200,
+ "n_codes": 3565158400,
+ "by_module_type": {
+  "linear_attn.in_proj_qkv": {
+   "res_zero": 0.4159097034747738,
+   "res_water": 0.014496460371523138,
+   "flip_fill": 0.18835338751475017,
+   "flip_solver": 0.00019782384236653646
+  },
+  "linear_attn.in_proj_z": {
+   "res_zero": 0.4190989551534811,
+   "res_water": 0.016498884749490673,
+   "flip_fill": 0.19506354729334513,
+   "flip_solver": 0.0004247029622395833
+  },
+  "linear_attn.out_proj": {
+   "res_zero": 0.42133619297181707,
+   "res_water": 0.014532041179641863,
+   "flip_fill": 0.19007411400477092,
+   "flip_solver": 0.0002488176027933756
+  },
+  "mlp.down_proj": {
+   "res_zero": 0.20784772213895067,
+   "res_water": 0.017292100582177124,
+   "flip_fill": 0.2073751277393765,
+   "flip_solver": 0.000878592332204183
+  },
+  "mlp.gate_proj": {
+   "res_zero": 0.3992129281358669,
+   "res_water": 0.029462875546091793,
+   "flip_fill": 0.18460720777511597,
+   "flip_solver": 0.001289493507809109
+  },
+  "mlp.up_proj": {
+   "res_zero": 0.20332256934273585,
+   "res_water": 0.01939612539348913,
+   "flip_fill": 0.175434672832489,
+   "flip_solver": 0.0012223826514350044
+  },
+  "self_attn.k_proj": {
+   "res_zero": 0.012648973587501429,
+   "res_water": 0.008143145010202442,
+   "flip_fill": 0.6267023086547852,
+   "flip_solver": 0.11325602531433106
+  },
+  "self_attn.o_proj": {
+   "res_zero": 0.1299699015850861,
+   "res_water": 0.011725297148010363,
+   "flip_fill": 0.22272007465362548,
+   "flip_solver": 0.0027243971824645998
+  },
+  "self_attn.q_proj": {
+   "res_zero": 0.21540851582166004,
+   "res_water": 0.015508386319600932,
+   "flip_fill": 0.20990145206451416,
+   "flip_solver": 0.0018033146858215331
+  },
+  "self_attn.v_proj": {
+   "res_zero": 0.012173589796286848,
+   "res_water": 0.005365521583351173,
+   "flip_fill": 0.5175117492675781,
+   "flip_solver": 0.0573183536529541
+  }
+ }
+}
